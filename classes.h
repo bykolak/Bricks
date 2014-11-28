@@ -25,7 +25,7 @@ private:
 	cTile bricks[BRICKS_X][BRICKS_Y];
 	int score;
 	int game_state;
-
+	bool selection;
 	
 
 public:
@@ -40,10 +40,10 @@ public:
 	void endGame(); // cleans and exit program
 	void highScores(); // open high scores;
 	void options(); // open options screen;
-	void selectTile(int _x, int y); // takes mouse input and selects all same color bricks that are connected to  tile[x][y]
-	void deselectTile(); // clears selection of bricks 
-	void destroyTile(); // after clicking selected bricks destroys them
-	void dropTile(); //after destroying bricks fill holes by dropping them (checks from bottom)
+	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
+	void deselectBrick(); // clears selection of bricks 
+	void destroyBrick(); // after clicking selected bricks destroys them
+	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
 	void saveScores();//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
 };
 

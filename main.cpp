@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	bricksBMP = al_load_bitmap("bricks.bmp");
 
 	ALLEGRO_FONT *arial24 = al_load_font("arial.ttf", 24, 0);
-
+	game.changeScore(1000000);
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 			{
 				if (over_new_game)
 				{
-					game.newGame();
+					game.changeGameState(REFRESH_GAME);
 				}
 
 				if (over_high_scores)
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 				}
 				if (over_game_area)
 				{
-					game.selectTile(ev.mouse.x, ev.mouse.y);
+					game.selectBrick(ev.mouse.x, ev.mouse.y);
 				}
 			}
 		}
@@ -148,13 +148,26 @@ int main(int argc, char **argv)
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))
 		{
-			render = false;
+			
 			al_draw_bitmap(backgroundBMP, 0, 0, 0);
 			game.drawGameArea(bricksBMP);
-			//al_draw_filled_rectangle(pos_x, pos_y, pos_x + 50, pos_y + 50, RED);
-			//al_draw_textf(arial24, RED, width / 2, height / 2, ALLEGRO_ALIGN_CENTRE, "Frames: %i", count);
+			if (over_new_game)
+			{
+				al_draw_rounded_rectangle(NEW_GAME_X, NEW_GAME_Y, NEW_GAME_X + NEW_GAME_WIDTH, NEW_GAME_HEIGHT,15,15, WHITE, 3);
+			}
+			if (over_high_scores)
+			{
+				al_draw_rounded_rectangle(HIGH_SCORES_X, HIGH_SCORES_Y, HIGH_SCORES_X + HIGH_SCORES_WIDTH, HIGH_SCORES_HEIGHT, 15, 15, WHITE, 3);
+			}
+			if (over_options)
+			{
+				al_draw_rounded_rectangle(OPTIONS_X, OPTIONS_Y, OPTIONS_X + OPTIONS_WIDTH, OPTIONS_HEIGHT, 15, 15, WHITE, 3);
+			}
+			
+			al_draw_textf(arial24, WHITE, SCORE_X, SCORE_Y, ALLEGRO_ALIGN_LEFT , " %i", game.getScore());
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0, 0, 0));
+			render = false;
 		}
 
 
