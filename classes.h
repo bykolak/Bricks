@@ -11,8 +11,10 @@ private:
 public:
 	cTile(); //default constructor
 	cTile(int _color, int _state);
-void	changeColor(int _color);
+void	changeColor(int _color); 
 void	changeState(int _state);
+int getColor();
+int getState();
 
 	
 };
@@ -33,7 +35,7 @@ public:
 	int getScore(); // returns score;
 	void changeScore(int _score); //passes int that changes actual score
 	void changeGameState(int _game_state); // changes game_state;
-	void drawGameArea(); // draw all bricks on screen;
+	void drawGameArea(ALLEGRO_BITMAP *_bricksBMP); // draw all bricks on screen;
 	void newGame(); // restart game
 	void endGame(); // cleans and exit program
 	void highScores(); // open high scores;

@@ -9,6 +9,8 @@
 #include "classes.h"
 #include "define.h"
 
+
+
 bool button(int _mouse_x, int _mouse_y, int _x, int _y, int _width, int _height) //jesli w zakresie to zwroc true
 {
 	if (_mouse_x >= _x && _mouse_x <= _x + _width && _mouse_y >= _y && _mouse_y <= _y + _height) return true;
@@ -29,6 +31,7 @@ int main(int argc, char **argv)
 	bool over_options = false;
 	bool over_game_area = false;
 	int FPS = 60;
+	srand(time(NULL));
 	cGame game;
 	game.newGame();
 		
@@ -36,7 +39,7 @@ int main(int argc, char **argv)
 	ALLEGRO_DISPLAY *display = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
-	ALLEGRO_BITMAP *background = NULL;
+	
 
 	if (!al_init())
 	{
@@ -56,8 +59,10 @@ int main(int argc, char **argv)
 	al_install_mouse();
 	// LOADING GRAPHICS
 	al_init_image_addon();
-
-	background = al_load_bitmap("background.bmp");
+	ALLEGRO_BITMAP *backgroundBMP = NULL;
+	ALLEGRO_BITMAP *bricksBMP = NULL;
+	backgroundBMP = al_load_bitmap("background.bmp");
+	bricksBMP = al_load_bitmap("bricks.bmp");
 
 	ALLEGRO_FONT *arial24 = al_load_font("arial.ttf", 24, 0);
 
@@ -144,7 +149,8 @@ int main(int argc, char **argv)
 		if (render && al_is_event_queue_empty(event_queue))
 		{
 			render = false;
-			al_draw_bitmap(background, 0, 0, 0);
+			al_draw_bitmap(backgroundBMP, 0, 0, 0);
+			game.drawGameArea(bricksBMP);
 			//al_draw_filled_rectangle(pos_x, pos_y, pos_x + 50, pos_y + 50, RED);
 			//al_draw_textf(arial24, RED, width / 2, height / 2, ALLEGRO_ALIGN_CENTRE, "Frames: %i", count);
 			al_flip_display();
@@ -158,7 +164,8 @@ int main(int argc, char **argv)
 //	
 //  al_draw_text(arial24, al_map_rgb(255, 0, 0), 100, 100, 0, "Hello World");
 //  al_draw_filled_rectangle(10, 10, 100, 100, RED);
-	al_destroy_bitmap(background);
+	al_destroy_bitmap(backgroundBMP);
+	al_destroy_bitmap(bricksBMP);
 	al_destroy_event_queue(event_queue);
 	al_destroy_display(display);
 	return 0;

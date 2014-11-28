@@ -1,10 +1,12 @@
+#include <stdlib.h>
+#include <allegro5\allegro.h>
+#include <allegro5\allegro_image.h>
 #include "classes.h"
-
 //======cTile methods
 
 cTile::cTile()
 {
-
+	color = rand() % 8;
 }
 cTile::cTile(int _color, int _state)
 {
@@ -22,6 +24,14 @@ void cTile::changeState(int _state)
 	
 }
 
+int cTile::getColor()
+{
+	return color;
+}
+int cTile::getState()
+{
+	return state;
+}
 //=====cGame methods
 
 
@@ -54,9 +64,15 @@ void cGame::changeGameState(int _game_state) // changes game_state;
 	game_state = _game_state;
 }
 
-void cGame::drawGameArea() // draw all bricks on screen;
+void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on screen;
 {
-
+	int i = 0;
+	int t = 0;
+	for (i = 0; i<BRICKS_Y; i++)
+		for (t = 0; t < BRICKS_X; t++)
+		{
+			al_draw_bitmap_region(_bricksBMP, 1 * (bricks[t][i].getColor()*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + GAME_AREA_X, i*BRICK_WIDTH + GAME_AREA_Y, NULL);
+		}
 }
 
 void cGame::newGame() // restart game
