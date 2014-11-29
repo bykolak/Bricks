@@ -30,7 +30,7 @@ private:
 
 public:
 	cGame(); //default constructor
-	cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //public constructor
+	cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
 	int getGameState(); //returns gamestate;
 	int getScore(); // returns score;
 	void changeScore(int _score); //passes int that changes actual score

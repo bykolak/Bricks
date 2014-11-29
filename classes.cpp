@@ -121,31 +121,29 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 	int x = (_mouse_x - GAME_AREA_X) / BRICK_WIDTH;
 	int y = (_mouse_y - GAME_AREA_Y) / BRICK_HEIGHT;
 	
-	if (!selection && bricks[x][y].getState() != EMPTY)
+	if (!selection && bricks[x][y].getState() == FULL)
 	{
 		
 		bricks[x][y].changeState(SELECTED);
-		if (bricks[x][y].getColor() == bricks[x - 1][y].getColor())
+		if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() == FULL)
 		{
 			bricks[x - 1][y].changeState(SELECTED);
 		}
-		
-		if (bricks[x][y].getColor() == bricks[x + 1][y].getColor())
+
+		if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() == FULL)
 		{
 			bricks[x + 1][y].changeState(SELECTED);
 		}
-		
-		if (bricks[x][y].getColor() == bricks[x][y - 1].getColor())
+
+		if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() == FULL)
 		{
 			bricks[x][y - 1].changeState(SELECTED);
 		}
-		
-		if( bricks[x][y].getColor() == bricks[x][y + 1].getColor())
+
+		if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() == FULL)
 		{
 			bricks[x][y + 1].changeState(SELECTED);
 		}
-
-		
 		selection = true;
 	}
 	else if (selection && bricks[x][y].getState() == SELECTED)
@@ -154,25 +152,25 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 	} else if (selection)
 	{
 		deselectBrick();
-		if (bricks[x][y].getState() != EMPTY)
+		if (bricks[x][y].getState() == FULL)
 		{
 			bricks[x][y].changeState(SELECTED);
-			if (bricks[x][y].getColor() == bricks[x - 1][y].getColor())
+			if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() == FULL)
 			{
 				bricks[x - 1][y].changeState(SELECTED);
 			}
 
-			if (bricks[x][y].getColor() == bricks[x + 1][y].getColor())
+			if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() == FULL)
 			{
 				bricks[x + 1][y].changeState(SELECTED);
 			}
 
-			if (bricks[x][y].getColor() == bricks[x][y - 1].getColor())
+			if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x ][y - 1].getState() == FULL)
 			{
 				bricks[x][y - 1].changeState(SELECTED);
 			}
 
-			if (bricks[x][y].getColor() == bricks[x][y + 1].getColor())
+			if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() == FULL)
 			{
 				bricks[x][y + 1].changeState(SELECTED);
 			}
@@ -190,7 +188,7 @@ void cGame::deselectBrick() // clears selection of bricks
 	for (i = 0; i<BRICKS_Y; i++)
 		for (t = 0; t < BRICKS_X; t++)
 		{
-			if (bricks[t][i].getState()!= EMPTY)
+			if (bricks[t][i].getState() == SELECTED)
 			{ 
 				bricks[t][i].changeState(FULL);
 			}
@@ -210,17 +208,32 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 				bricks[t][i].changeState(EMPTY);
 			}
 		}
+	dropBrick();
 	selection = false;
 }
 void cGame::dropBrick() //after destroying bricks fill holes by dropping them (checks from bottom)
 {
-	int i = 0;
-	int t = 0;
-	for (i = 0; i<BRICKS_Y; i++)
-		for (t = 0; t < BRICKS_X; t++)
+
+	int xx = 0;
+	int yy = 0;
+	int refresh = 0;
+	bool check_column = true;
+	for (refresh = BRICKS_Y - 1; refresh > 0; refresh--) // do this BRICKS_Y times to drop bricks if there are bigger gaps 
+	{
+	
+		for (xx = BRICKS_X-1; xx > 0; xx--)//scans for empty bricks and drops them by one
+		for (yy = BRICKS_Y-1; yy > 0; yy--)
 		{
-			
+			if (bricks[xx][yy].getState() == EMPTY)
+			{
+				bricks[xx][yy].changeColor(bricks[xx][yy-1].getColor());
+				bricks[xx][yy].changeState(bricks[xx][yy-1].getState());
+				bricks[xx][yy-1].changeState(EMPTY);
+				
+			}
 		}
+	}
+
 
 }
 void cGame::saveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
