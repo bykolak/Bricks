@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	bricksBMP = al_load_bitmap("bricks.bmp");
 
 	ALLEGRO_FONT *arial24 = al_load_font("arial.ttf", 24, 0);
-	game.changeScore(1000000);
+	//game.changeScore(1000000);
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -141,6 +141,7 @@ int main(int argc, char **argv)
 			{
 				game.newGame();
 			}
+			game.updateNumberOfSelected();
 			render = true;
 		}
 
@@ -165,6 +166,7 @@ int main(int argc, char **argv)
 			}
 			
 			al_draw_textf(arial24, WHITE, SCORE_X, SCORE_Y, ALLEGRO_ALIGN_LEFT , " %i", game.getScore());
+			al_draw_textf(arial24, WHITE, SCORE_X-100, SCORE_Y, ALLEGRO_ALIGN_LEFT, " %i", game.getNumberOfSelected());
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			render = false;

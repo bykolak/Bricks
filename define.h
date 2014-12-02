@@ -19,6 +19,7 @@ const int BRICK_COLORS = 6;
 // dimensions of game area
 const int BRICKS_X = 20;  //number of Bricks in X axis
 const int BRICKS_Y = 15;  //number of Bricks in Y axis;
+const int BRICKS_ON_SCREEN = BRICKS_X*BRICKS_Y;
 const int GAME_AREA_X = 9;
 const int GAME_AREA_Y = 42;
 const int GAME_AREA_WIDTH = BRICK_WIDTH * BRICKS_X;
