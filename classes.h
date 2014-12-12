@@ -22,7 +22,7 @@ int getState();
 class cGame
 {
 private:
-	cTile bricks[BRICKS_X][BRICKS_Y];
+	
 	int score;
 	int game_state;
 	int number_of_selected;
@@ -30,12 +30,13 @@ private:
 	
 
 public:
-	
+	cTile bricks[BRICKS_X][BRICKS_Y];
 	cGame(); //default constructor
 	cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
 	int getGameState(); //returns gamestate;
 	int getScore(); // returns score;
 	int getNumberOfSelected();
+	void changeTile(int x, int y, int color);
 	void changeScore(int _score); //passes int that changes actual score
 	void changeGameState(int _game_state); // changes game_state;
 	void updateNumberOfSelected();

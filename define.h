@@ -6,9 +6,8 @@
 #define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
 
-//screen dimensions;
-const int width = 1024;
-const int height = 768;
+
+
 
 
 
@@ -17,14 +16,20 @@ const int BRICK_HEIGHT = 48;
 const int BRICK_WIDTH = 48;
 const int BRICK_COLORS = 6;
 // dimensions of game area
-const int BRICKS_X = 20;  //number of Bricks in X axis
+const int BRICKS_X = 35;  //number of Bricks in X axis
 const int BRICKS_Y = 15;  //number of Bricks in Y axis;
 const int BRICKS_ON_SCREEN = BRICKS_X*BRICKS_Y;
-const int GAME_AREA_X = 9;
-const int GAME_AREA_Y = 42;
+const int TOP_MARGIN = 42;
+const int LEFT_MARGIN = 9;
+const int RIGHT_MARGIN = 9;
+const int DOWN_MARGIN = 9;
+//const int GAME_AREA_X = 9;
+//const int GAME_AREA_Y = 42;
 const int GAME_AREA_WIDTH = BRICK_WIDTH * BRICKS_X;
-const int GAME_AREA_HEIGHT = BRICK_HEIGHT * BRICKS_X;
-
+const int GAME_AREA_HEIGHT = BRICK_HEIGHT * BRICKS_Y;
+//screen dimensions;
+const int WIDTH = LEFT_MARGIN + GAME_AREA_WIDTH + RIGHT_MARGIN;
+const int HEIGHT = TOP_MARGIN + GAME_AREA_HEIGHT + DOWN_MARGIN;
 // size of buttons
 const int NEW_GAME_X = 5;
 const int NEW_GAME_Y = 3;

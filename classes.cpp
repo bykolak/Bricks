@@ -89,6 +89,12 @@ void cGame::updateNumberOfSelected() // changes game_state;
 //	selection = false;
 }
 
+void cGame::changeTile(int x, int y, int color)
+{
+	bricks[x][y].changeColor(color);
+}
+
+
 void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on screen;
 {
 	int i = 0;
@@ -98,11 +104,11 @@ void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on scree
 		{
 			if (bricks[t][i].getState() == FULL)
 			{
-				al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor()+1)*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + GAME_AREA_X, i*BRICK_WIDTH + GAME_AREA_Y, NULL);
+				al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor()+1)*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + LEFT_MARGIN, i*BRICK_WIDTH + TOP_MARGIN, NULL);
 			}
 			else if (bricks[t][i].getState() == SELECTED)
 			{
-				al_draw_bitmap_region(_bricksBMP, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + GAME_AREA_X, i*BRICK_WIDTH + GAME_AREA_Y, NULL);
+				al_draw_bitmap_region(_bricksBMP, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + LEFT_MARGIN, i*BRICK_WIDTH + TOP_MARGIN, NULL);
 			}
 			
 		}
@@ -140,8 +146,8 @@ void cGame::options()// open options screen;
 }
 void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
-	int x = (_mouse_x - GAME_AREA_X) / BRICK_WIDTH;
-	int y = (_mouse_y - GAME_AREA_Y) / BRICK_HEIGHT;
+	int x = (_mouse_x - LEFT_MARGIN) / BRICK_WIDTH;
+	int y = (_mouse_y - TOP_MARGIN) / BRICK_HEIGHT;
 	int xx = 0;
 	int yy = 0;
 	int refresh = 0; 
@@ -151,7 +157,7 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 		for (refresh = BRICKS_ON_SCREEN; refresh > 0; refresh--) // do this BRICKS_ON_SCREEN times to select all neighbouring bricks
 		{
 
-			for (xx = BRICKS_X - 1; xx >= 0; xx--)//scans for empty bricks and drops them by one
+			for (xx = BRICKS_X - 1; xx >= 0; xx--)//scans neighbouring bricks
 			for (yy = BRICKS_Y - 1; yy >= 0; yy--)
 				{
 					checkNeighbourBrick(xx, yy);
@@ -191,13 +197,13 @@ int cGame::checkNeighbourBrick(int x, int y)  //if x,y brick is already selected
 			selected++;
 		}
 
-		if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY && y > 0)
+		if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY && y!= 0)
 		{
 			bricks[x][y - 1].changeState(SELECTED);
 			selected++;
 		}
 
-		if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY && y < BRICKS_Y)
+		if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY && y+1 < BRICKS_Y)
 		{
 			bricks[x][y + 1].changeState(SELECTED);
 			selected++;
@@ -239,7 +245,7 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 void cGame::calculateScore() //calculates score for destroyed bricks
 {
 	int i = 0;
-	for (i = number_of_selected; i=0; i--)
+	for (i = number_of_selected; i>=0; i--)
 	{
 		changeScore(i*2);
 	}
@@ -253,11 +259,13 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 	int yy = 0;
 	int refresh = 0;
 	bool check_column = true;
-	for (refresh = BRICKS_Y - 1; refresh > 0; refresh--) // do this BRICKS_Y times to drop bricks if there are bigger gaps 
+	for (refresh = BRICKS_Y -1; refresh > 0; refresh--) // do this BRICKS_Y times to drop bricks if there are bigger gaps 
 	{
 	
-		for (xx = BRICKS_X-1; xx > 0; xx--)//scans for empty bricks and drops them by one
-		for (yy = BRICKS_Y-1; yy > 0; yy--)
+		for (xx = BRICKS_X-1; xx >= 0; xx--)//scans for empty bricks and drops them by one
+		for (yy = BRICKS_Y-1; yy >0; yy--)
+	//	for (xx= 0; xx< BRICKS_Y; xx++)
+	//		for (yy = 0; yy < BRICKS_X; yy++)
 		{
 			if (bricks[xx][yy].getState() == EMPTY)
 			{

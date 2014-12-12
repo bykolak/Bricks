@@ -31,6 +31,8 @@ int main(int argc, char **argv)
 	bool over_options = false;
 	bool over_game_area = false;
 	int FPS = 60;
+	int mx = 0; //debug
+	int my = 0;//debug
 	srand(time(NULL));
 	cGame game;
 	game.newGame();
@@ -46,7 +48,7 @@ int main(int argc, char **argv)
 		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing Allegro", NULL, NULL);
 		return -1;
 	}
-	display = al_create_display(width, height);
+	display = al_create_display(WIDTH, HEIGHT);
 	if (!display)
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing display", NULL, NULL);
@@ -87,6 +89,8 @@ int main(int argc, char **argv)
 		}
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) //checks if mouse moved 
 		{
+			mx = (ev.mouse.x - LEFT_MARGIN) / BRICK_WIDTH;//debug
+			my =( ev.mouse.y- TOP_MARGIN) / BRICK_HEIGHT;//debug
 			if (button(ev.mouse.x, ev.mouse.y, NEW_GAME_X, NEW_GAME_Y, NEW_GAME_WIDTH, NEW_GAME_HEIGHT)) //checks if mouse on new game button
 			{
 				over_new_game = true;
@@ -105,7 +109,7 @@ int main(int argc, char **argv)
 			}
 			else over_options = false;
 
-			if (button(ev.mouse.x, ev.mouse.y, GAME_AREA_X, GAME_AREA_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)) //checks if mouse inside of game area
+			if (button(ev.mouse.x, ev.mouse.y, LEFT_MARGIN, TOP_MARGIN, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)) //checks if mouse inside of game area
 			{
 				over_game_area = true;
 			}
@@ -113,7 +117,7 @@ int main(int argc, char **argv)
 		}
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) //checks if mouse button pressed
 		{
-			if (ev.mouse.button & 1)
+			if (ev.mouse.button & 1) //if first mouse button pressed
 			{
 				if (over_new_game)
 				{
@@ -131,6 +135,17 @@ int main(int argc, char **argv)
 				if (over_game_area)
 				{
 					game.selectBrick(ev.mouse.x, ev.mouse.y);
+
+					
+				}
+				
+			}
+			
+			if (ev.mouse.button & 2) //if second mouse button pressed
+			{
+				if (over_game_area)
+				{
+					game.changeTile(mx,my,3); //debug
 				}
 			}
 		}
@@ -166,9 +181,17 @@ int main(int argc, char **argv)
 			}
 			
 			al_draw_textf(arial24, WHITE, SCORE_X, SCORE_Y, ALLEGRO_ALIGN_LEFT , " %i", game.getScore());
-			al_draw_textf(arial24, WHITE, SCORE_X-100, SCORE_Y, ALLEGRO_ALIGN_LEFT, " %i", game.getNumberOfSelected());
+			al_draw_textf(arial24, WHITE, SCORE_X-250, SCORE_Y+60, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());
+			
+			if (over_game_area)//debug
+			{
+				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
+				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 30, ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
+			}
+			
+
 			al_flip_display();
-			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_clear_to_color(al_map_rgb(115, 115, 115));
 			render = false;
 		}
 
