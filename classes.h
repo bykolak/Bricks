@@ -2,6 +2,7 @@
 #define CLASSES_H
 
 #include "define.h"
+
 class cTile
 {
 private:
@@ -26,20 +27,23 @@ private:
 	int score;
 	int game_state;
 	int number_of_selected;
+	int tile_size;
 	bool selection;
 	
-
 public:
-	cTile bricks[BRICKS_X][BRICKS_Y];
+
+	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
-	cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
+	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
 	int getGameState(); //returns gamestate;
 	int getScore(); // returns score;
-	int getNumberOfSelected();
-	void changeTile(int x, int y, int color);
+	int getNumberOfSelected();//returns how many bricks are selected
+	int getTileSize();
+	void changeTileSize(int x);
+	void changeTile(int x, int y, int color); //changes color of x,y tile
 	void changeScore(int _score); //passes int that changes actual score
 	void changeGameState(int _game_state); // changes game_state;
-	void updateNumberOfSelected();
+	void updateNumberOfSelected(); //checks and update number of selected
 	void drawGameArea(ALLEGRO_BITMAP *_bricksBMP); // draw all bricks on screen;
 	void newGame(); // restart game
 	void endGame(); // cleans and exit program

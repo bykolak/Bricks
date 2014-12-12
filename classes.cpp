@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <vector>
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_image.h>
 #include "classes.h"
@@ -38,16 +39,16 @@ int cTile::getState()
 
 
 cGame::cGame() //default constructor
+	:bricks(BRICKS_X, vector<cTile>(BRICKS_Y))
 {
 	game_state = REFRESH_GAME;
 	score = 0;
 	selection = false;
 	number_of_selected = 0;
+	tile_size = 48;
 } 
-cGame::cGame(cTile _bricks[BRICKS_X][BRICKS_Y]) //public constructor
-{
-
-}
+//cGame::cGame(cTile _bricks[BRICKS_X][BRICKS_Y]) //public constructor
+//{}
 
 int cGame::getGameState() //returns gamestate;
 {
@@ -61,6 +62,16 @@ int cGame::getScore() // returns score;
 int cGame::getNumberOfSelected()
 {
 	return number_of_selected;
+}
+
+int cGame::getTileSize()
+{
+	return tile_size;
+}
+void cGame::changeTileSize(int x)
+{
+	tile_size = x;
+	
 }
 
 void cGame::changeScore(int _score) //passes int that changes actual score
@@ -99,16 +110,25 @@ void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on scree
 {
 	int i = 0;
 	int t = 0;
+	//ALLEGRO_BITMAP *temp[BRICK_COLORS];
+	//vector <ALLEGRO_BITMAP> temp;
+//	for (i = 0; i < BRICK_COLORS; i++)
+//	{
+//		al_set_target_bitmap(temp[i]);
+//		al_draw_bitmap_region(_bricksBMP, 1 * i, 0, BRICK_WIDTH, BRICK_HEIGHT, , 0, 0, 0);
+//	}
+//	al_set_target_bitmap(al_get_backbuffer(display));
 	for (i = 0; i<BRICKS_Y; i++)
 		for (t = 0; t < BRICKS_X; t++)
 		{
 			if (bricks[t][i].getState() == FULL)
 			{
-				al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor()+1)*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + LEFT_MARGIN, i*BRICK_WIDTH + TOP_MARGIN, NULL);
+			//	al_draw_scaled_bitmap(temp[bricks[t][i].getColor()], 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
+				al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor()+1)*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
 			}
 			else if (bricks[t][i].getState() == SELECTED)
 			{
-				al_draw_bitmap_region(_bricksBMP, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*BRICK_WIDTH + LEFT_MARGIN, i*BRICK_WIDTH + TOP_MARGIN, NULL);
+				al_draw_bitmap_region(_bricksBMP, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
 			}
 			
 		}
@@ -142,7 +162,7 @@ void cGame::highScores() // open high scores;
 
 void cGame::options()// open options screen;
 {
-
+	game_state = OPTIONS;
 }
 void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
@@ -184,29 +204,38 @@ int cGame::checkNeighbourBrick(int x, int y)  //if x,y brick is already selected
 	int selected = 0;
 	if (bricks[x][y].getState() == SELECTED)
 	{
-	
-		if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() != EMPTY && x>0)
-		{
-			bricks[x - 1][y].changeState(SELECTED);
-			selected++;
-		}
 
-		if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() != EMPTY && x < BRICKS_X)
+		if (x > 0)//avoids going outside of vector
 		{
-			bricks[x + 1][y].changeState(SELECTED);
-			selected++;
+			if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() != EMPTY)
+			{
+				bricks[x - 1][y].changeState(SELECTED);
+				selected++;
+			}
 		}
-
-		if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY && y!= 0)
+		if (x+1 < BRICKS_X) //avoids going outside of vector
 		{
-			bricks[x][y - 1].changeState(SELECTED);
-			selected++;
+			if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() != EMPTY)
+			{
+				bricks[x + 1][y].changeState(SELECTED);
+				selected++;
+			}
 		}
-
-		if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY && y+1 < BRICKS_Y)
+		if (y > 0) //avoids going outside of vector
 		{
-			bricks[x][y + 1].changeState(SELECTED);
-			selected++;
+			if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY )
+			{
+				bricks[x][y - 1].changeState(SELECTED);
+				selected++;
+			}
+		}
+		if (y+1 < BRICKS_Y) //avoids going outside of vector
+		{
+			if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY )
+			{
+				bricks[x][y + 1].changeState(SELECTED);
+				selected++;
+			}
 		}
 		return selected;
 	}
