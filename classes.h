@@ -39,6 +39,7 @@ public:
 	int getScore(); // returns score;
 	int getNumberOfSelected();//returns how many bricks are selected
 	int getTileSize();
+	void resetHighScores();
 	void changeTileSize(int x);
 	void changeTile(int x, int y, int color); //changes color of x,y tile
 	void changeScore(int _score); //passes int that changes actual score

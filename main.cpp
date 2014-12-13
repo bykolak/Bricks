@@ -44,6 +44,8 @@ int main(int argc, char **argv)
 	bool over_24 = false;
 	bool over_36 = false;
 	bool over_48 = false;
+	bool over_high_score_reset = false;
+	bool over_high_score_close = false;
 	int FPS = 60;
 	int mx = 0; //debug
 	int my = 0;//debug
@@ -79,6 +81,7 @@ int main(int argc, char **argv)
 	ALLEGRO_BITMAP *bricksBMP = NULL;
 	ALLEGRO_BITMAP *optionsBMP = NULL;
 	ALLEGRO_BITMAP *shadowBMP = NULL;
+	ALLEGRO_BITMAP *high_scoresBMP = NULL;
 	shadowBMP = al_create_bitmap(WIDTH, HEIGHT);
 	al_set_target_bitmap(shadowBMP);
 	al_clear_to_color(BLACK);
@@ -86,6 +89,7 @@ int main(int argc, char **argv)
 	backgroundBMP = al_load_bitmap("background.bmp");
 	bricksBMP = al_load_bitmap("bricks.bmp");
 	optionsBMP = al_load_bitmap("options.bmp");
+	high_scoresBMP = al_load_bitmap("high_scores.bmp");
 
 	ALLEGRO_FONT *arial24 = al_load_font("arial.ttf", 24, 0);
 	//game.changeScore(1000000);
@@ -180,7 +184,19 @@ int main(int argc, char **argv)
 			}
 			if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 			{
+				if (button(ev.mouse.x, ev.mouse.y, HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, BUTTON_WIDTH, BUTTON_HEIGHT))
+				{
+					over_high_score_reset = true;
+				}
+				else over_high_score_reset = false;
 
+
+				if (button(ev.mouse.x, ev.mouse.y, HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT))
+				{
+					over_high_score_close = true;
+				}
+				else over_high_score_close = false;
+								
 			}
 			if (game.getGameState() == END_GAME)
 			{
@@ -214,7 +230,7 @@ int main(int argc, char **argv)
 
 					}
 
-					if (ev.mouse.button & 2) //if second mouse button pressed
+					if (ev.mouse.button & 2) //if right mouse button pressed
 					{
 						if (over_game_area)
 						{
@@ -223,9 +239,10 @@ int main(int argc, char **argv)
 					}
 			
 				}
+
 				if (game.getGameState() == OPTIONS) //if in options check these events
 				{
-					if (ev.mouse.button & 1) //if second mouse button pressed
+					if (ev.mouse.button & 1) //if left mouse button pressed
 					{
 						if (over_small)
 						{
@@ -242,7 +259,7 @@ int main(int argc, char **argv)
 						if (over_24)
 						{
 							game.changeTileSize(24);
-							al_resize_display(display,)
+						//	al_resize_display(display,)
 						}
 						if (over_36)
 						{
@@ -260,9 +277,27 @@ int main(int argc, char **argv)
 					}
 
 				}
+
 				if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 				{
-
+					if (ev.mouse.button & 1) //if first mouse button pressed
+					{
+						if (over_high_score_reset)
+						{
+							game.resetHighScores();
+						}
+						if (over_high_score_close)
+						{
+							
+							game.changeGameState(PLAY_GAME);
+							over_high_score_close = false;
+						}
+					}
+					if (ev.mouse.button & 2) //if second mouse button pressed
+					{
+						
+						game.changeGameState(PLAY_GAME);
+					}
 				}
 				if (game.getGameState() == END_GAME) //if game ended
 				{
@@ -311,7 +346,7 @@ int main(int argc, char **argv)
 			}
 			if (game.getGameState() == OPTIONS)
 			{
-				al_draw_tinted_bitmap(shadowBMP, al_map_rgba_f(1, 1, 1, 0.8), 0, 0, 0);
+				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
 				al_draw_bitmap(optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
 				if (over_small)
 				{
@@ -345,7 +380,19 @@ int main(int argc, char **argv)
 					al_draw_rounded_rectangle(OPTIONS_48_X, OPTIONS_48_Y, OPTIONS_48_X + SMALL_BUTTON_WIDTH, OPTIONS_48_Y + SMALL_BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
 			}
-
+			if (game.getGameState() == HIGH_SCORE)
+			{
+				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
+				al_draw_bitmap(high_scoresBMP, HIGH_SCORES_X, TOP_MARGIN, 0);
+				if (over_high_score_reset)
+				{
+					al_draw_rounded_rectangle(HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, HIGH_SCORE_RESET_X + BUTTON_WIDTH, HIGH_SCORE_RESET_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
+				}
+				if (over_high_score_close)
+				{
+					al_draw_rounded_rectangle(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, HIGH_SCORE_CLOSE_X + BUTTON_WIDTH, HIGH_SCORE_CLOSE_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
+				}
+			}
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(115, 115, 115));
 			render = false;

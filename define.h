@@ -3,18 +3,16 @@
 
 #include <vector>
 using namespace std;
+
 #define RED al_map_rgb(255,0,0)
 #define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
 #define BLACK al_map_rgb(0,0,0)
-
-
-
-
-
+#define TINT al_map_rgba_f(1, 1, 1, 0.8)
+#define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
 
 //dimensions of single Brick
-const int BRICK_HEIGHT = 48;
+//const int BRICK_HEIGHT = 48;
 const int BRICK_WIDTH = 48;
 extern int BRICK_COLORS;
 // dimensions of game area
@@ -22,8 +20,8 @@ extern int BRICKS_X;  //number of Bricks in X axis
 extern int BRICKS_Y;  //number of Bricks in Y axis;
 const int BRICKS_SMALL_X = 20;
 const int BRICKS_SMALL_Y = 20;
-const int BRICKS_MEDIUM_X = 30;
-const int BRICKS_MEDIUM_Y = 20;
+//const int BRICKS_MEDIUM_X = 30;
+//const int BRICKS_MEDIUM_Y = 20;
 const int BRICKS_LARGE_X = 35;
 const int BRICKS_LARGE_Y = 20;
 const int BRICKS_ON_SCREEN = BRICKS_X*BRICKS_Y;
@@ -53,6 +51,13 @@ const int OPTIONS_Y = 3;
 
 const int SCORE_X = 850;
 const int SCORE_Y = 5;
+
+//position of high_score buttons on screen 6,404  6, 441
+const int HIGH_SCORE_RESET_X = HIGH_SCORES_X + 6;
+const int HIGH_SCORE_RESET_Y = TOP_MARGIN + 404;
+const int HIGH_SCORE_CLOSE_X = HIGH_SCORES_X + 6;
+const int HIGH_SCORE_CLOSE_Y = TOP_MARGIN + 441;
+
 //position of options buttons on screen
 const int OPTIONS_SMALL_X = OPTIONS_X + 5; // +5 is position on bitmap
 const int OPTIONS_SMALL_Y = TOP_MARGIN + 32;

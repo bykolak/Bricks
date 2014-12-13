@@ -68,6 +68,11 @@ int cGame::getTileSize()
 {
 	return tile_size;
 }
+
+void cGame::resetHighScores()
+{
+	//resets all saved highscores
+}
 void cGame::changeTileSize(int x)
 {
 	tile_size = x;
@@ -121,14 +126,15 @@ void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on scree
 	for (i = 0; i<BRICKS_Y; i++)
 		for (t = 0; t < BRICKS_X; t++)
 		{
-			if (bricks[t][i].getState() == FULL)
+			if (bricks[t][i].getState() !=EMPTY)
 			{
 			//	al_draw_scaled_bitmap(temp[bricks[t][i].getColor()], 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
 				al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor()+1)*BRICK_WIDTH), 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
 			}
-			else if (bricks[t][i].getState() == SELECTED)
+			
+			if (bricks[t][i].getState() == SELECTED)
 			{
-				al_draw_bitmap_region(_bricksBMP, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
+				al_draw_tinted_bitmap_region(_bricksBMP,TINT2, 0, 0, BRICK_WIDTH, BRICK_HEIGHT, t*tile_size + LEFT_MARGIN, i*tile_size + TOP_MARGIN, NULL);
 			}
 			
 		}
@@ -157,7 +163,7 @@ void cGame::endGame() // cleans and exit program
 
 void cGame::highScores() // open high scores;
 {
-
+	game_state = HIGH_SCORE;
 }
 
 void cGame::options()// open options screen;
