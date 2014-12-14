@@ -24,17 +24,20 @@ class cGame
 {
 private:
 	
-	int score;
-	int game_state;
-	int number_of_selected;
-	int tile_size;
-	bool selection;
-	
+	int score; // players score
+	int game_state; // using enum GAME_STATE to tell program in what state game is
+	int number_of_selected; //how many selected 
+	int tile_size; //size of bricks
+	bool selection; //if something selectd
+	bool flags[NUMBER_OF_FLAGS]; //button flags
 public:
 
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
 	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
+	bool getFlags( int _flag);//return state of flag
+	void toggleFlags(int _flag);//flips value of a flag;
+	void changeFlags(int _flag, bool _value);//change flag to specific value
 	int getGameState(); //returns gamestate;
 	int getScore(); // returns score;
 	int getNumberOfSelected();//returns how many bricks are selected

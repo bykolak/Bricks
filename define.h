@@ -11,8 +11,9 @@ using namespace std;
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
 #define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
 
+
 //dimensions of single Brick
-//const int BRICK_HEIGHT = 48;
+const int BRICK_HEIGHT = 48;
 const int BRICK_WIDTH = 48;
 extern int BRICK_COLORS;
 // dimensions of game area
@@ -76,6 +77,11 @@ const int OPTIONS_48_Y = TOP_MARGIN + 170;
 
 
 //ENUMS
+enum BUTTON_FLAGS {
+	OVER_NEW_GAME, OVER_HIGH_SCORES, OVER_OPTIONS, OVER_GAME_AREA,  //main screen flags
+	OVER_OPTIONS_SMALL, OVER_OPTIONS_LARGE, OVER_OPTIONS_CAMPAIGN, OVER_OPTIONS_24, OVER_OPTIONS_36, OVER_OPTIONS_48, //inside of options flags
+	OVER_HIGH_SCORE_RESET, OVER_HIGH_SCORE_CLOSE, //inside of high scores flags
+	NUMBER_OF_FLAGS};//number for array index of game.flags[]
 enum TILE_STATE{ EMPTY, FULL, SELECTED };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME};
 enum KEYS { UP, DOWN, LEFT, RIGHT };

@@ -46,10 +46,27 @@ cGame::cGame() //default constructor
 	selection = false;
 	number_of_selected = 0;
 	tile_size = 48;
+	int i = 0; 
+	for (i = 0; i < NUMBER_OF_FLAGS; i++)
+	{
+		flags[i] = false;
+	}
 } 
 //cGame::cGame(cTile _bricks[BRICKS_X][BRICKS_Y]) //public constructor
 //{}
+bool cGame::getFlags(int _flag)//return state of flag
+{
+	return flags[_flag];
+}
+void cGame::toggleFlags(int _flag)//flips value of a flag;
+{
+	flags[_flag] = !flags[_flag];
+}
 
+void cGame::changeFlags(int _flag, bool _value)//change flag to specific value
+{
+	flags[_flag] = _value; //use enum BUTTON_FLAGS as index number of array
+}
 int cGame::getGameState() //returns gamestate;
 {
 	return game_state;
@@ -115,14 +132,7 @@ void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on scree
 {
 	int i = 0;
 	int t = 0;
-	//ALLEGRO_BITMAP *temp[BRICK_COLORS];
-	//vector <ALLEGRO_BITMAP> temp;
-//	for (i = 0; i < BRICK_COLORS; i++)
-//	{
-//		al_set_target_bitmap(temp[i]);
-//		al_draw_bitmap_region(_bricksBMP, 1 * i, 0, BRICK_WIDTH, BRICK_HEIGHT, , 0, 0, 0);
-//	}
-//	al_set_target_bitmap(al_get_backbuffer(display));
+
 	for (i = 0; i<BRICKS_Y; i++)
 		for (t = 0; t < BRICKS_X; t++)
 		{
