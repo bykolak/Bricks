@@ -13,10 +13,6 @@
 
 //GLOBAL VARIABLES
 int BRICK_COLORS = 6;
-// dimensions of game area
-int BRICKS_X = BRICKS_LARGE_X;  //number of Bricks in X axis
-int BRICKS_Y = BRICKS_LARGE_Y;  //number of Bricks in Y axis;
-
 
 bool button(int _mouse_x, int _mouse_y, int _x, int _y, int _width, int _height) //jesli w zakresie to zwroc true
 {
@@ -24,8 +20,6 @@ bool button(int _mouse_x, int _mouse_y, int _x, int _y, int _width, int _height)
 	else return false;
 }
 
-
-	
 
 int main(int argc, char **argv)
 {
@@ -50,7 +44,7 @@ int main(int argc, char **argv)
 		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing Allegro", NULL, NULL);
 		return -1;
 	}
-	display = al_create_display(WIDTH, HEIGHT);
+	display = al_create_display(game.screen_width, game.screen_height);
 	if (!display)
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing display", NULL, NULL);
@@ -68,7 +62,7 @@ int main(int argc, char **argv)
 	ALLEGRO_BITMAP *optionsBMP = NULL;
 	ALLEGRO_BITMAP *shadowBMP = NULL;
 	ALLEGRO_BITMAP *high_scoresBMP = NULL;
-	shadowBMP = al_create_bitmap(WIDTH, HEIGHT);
+	shadowBMP = al_create_bitmap(game.screen_width, game.screen_height);
 	al_set_target_bitmap(shadowBMP);
 	al_clear_to_color(BLACK);
 	al_set_target_bitmap(al_get_backbuffer(display));
@@ -103,14 +97,14 @@ int main(int argc, char **argv)
 			if (game.getGameState() == PLAY_GAME) //if playing game check these events
 			{
 
-				mx = (ev.mouse.x - LEFT_MARGIN) / BRICK_WIDTH;//debug
-				my = (ev.mouse.y - TOP_MARGIN) / BRICK_HEIGHT;//debug
+				mx = (ev.mouse.x - LEFT_MARGIN) / game.getBrickSize();//debug
+				my = (ev.mouse.y - TOP_MARGIN) / game.getBrickSize();//debug
 				//function button check if mouse is OVER_NEW_GAME and returns true/false which is passed to function cGame::changeFlags 
 				//pure awesomness :D
 				game.changeFlags(OVER_NEW_GAME, button(ev.mouse.x, ev.mouse.y, NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT));
 				game.changeFlags(OVER_HIGH_SCORES, button(ev.mouse.x, ev.mouse.y, HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT));//checks if mouse on high scores button
 				game.changeFlags(OVER_OPTIONS, button(ev.mouse.x, ev.mouse.y, OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //checks if mouse on options button
-				game.changeFlags(OVER_GAME_AREA, button(ev.mouse.x, ev.mouse.y, LEFT_MARGIN, TOP_MARGIN, GAME_AREA_WIDTH, GAME_AREA_HEIGHT)); //checks if mouse inside of game area
+				game.changeFlags(OVER_GAME_AREA, button(ev.mouse.x, ev.mouse.y, LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height)); //checks if mouse inside of game area
 			
 			}
 			if (game.getGameState() == OPTIONS) //if in options check these events
@@ -152,12 +146,13 @@ int main(int argc, char **argv)
 						}
 						if (game.getGameState() == OPTIONS) //if in options check these events
 						{
-							if (game.getFlags(OVER_OPTIONS_SMALL))		{}
-							if (game.getFlags(OVER_OPTIONS_LARGE))		{}
+							if (game.getFlags(OVER_OPTIONS_SMALL))		{ game.changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game.changeGameState(REFRESH_GAME); }
+							if (game.getFlags(OVER_OPTIONS_LARGE))		{ game.changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game.changeGameState(REFRESH_GAME); }
 							if (game.getFlags(OVER_OPTIONS_CAMPAIGN))	{}
-							if (game.getFlags(OVER_OPTIONS_24))			{ game.changeTileSize(24); }
-							if (game.getFlags(OVER_OPTIONS_36))			{ game.changeTileSize(36); }
-							if (game.getFlags(OVER_OPTIONS_48))			{ game.changeTileSize(48); }
+							if (game.getFlags(OVER_OPTIONS_24))			{ game.changeBrickSize(BRICKS_24); }
+							if (game.getFlags(OVER_OPTIONS_36))			{ game.changeBrickSize(BRICKS_36); }
+							if (game.getFlags(OVER_OPTIONS_48))			{ game.changeBrickSize(BRICKS_48); }
+							al_resize_display(display, game.screen_width, game.screen_height);
 						}
 						if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 						{
@@ -195,7 +190,7 @@ int main(int argc, char **argv)
 		else if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			// 60 times per second
-			if (game.getGameState() == REFRESH_GAME) //if "new game" button pressed
+			if (game.getGameState() == REFRESH_GAME) //if "new game" or "map size" button pressed
 			{
 				game.newGame();
 			}
@@ -231,7 +226,7 @@ int main(int argc, char **argv)
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 30, ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 60, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());
-				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 90, ALLEGRO_ALIGN_LEFT, "tile_size %i", game.getTileSize());//debug
+				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 90, ALLEGRO_ALIGN_LEFT, "tile_size %i", game.getBrickSize());//debug
 			}
 			if (game.getGameState() == OPTIONS)
 			{
