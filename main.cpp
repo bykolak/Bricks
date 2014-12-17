@@ -13,12 +13,8 @@
 
 //GLOBAL VARIABLES
 int BRICK_COLORS = 6;
+ALLEGRO_DISPLAY *display = NULL;
 
-bool button(int _mouse_x, int _mouse_y, int _x, int _y, int _width, int _height) //jesli w zakresie to zwroc true
-{
-	if (_mouse_x >= _x && _mouse_x <= _x + _width && _mouse_y >= _y && _mouse_y <= _y + _height) return true;
-	else return false;
-}
 
 
 int main(int argc, char **argv)
@@ -30,12 +26,13 @@ int main(int argc, char **argv)
 	int FPS = 60;
 	int mx = 0; //debug
 	int my = 0;//debug
+	int debug_end = 0;//debug
 	srand(time(NULL));
 	cGame game;
 	game.newGame();
-
+	game.loadButton();
 	//======INIT
-	ALLEGRO_DISPLAY *display = NULL;
+	
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 
@@ -62,6 +59,9 @@ int main(int argc, char **argv)
 	ALLEGRO_BITMAP *optionsBMP = NULL;
 	ALLEGRO_BITMAP *shadowBMP = NULL;
 	ALLEGRO_BITMAP *high_scoresBMP = NULL;
+	ALLEGRO_BITMAP *buttonsBMP = NULL;
+	ALLEGRO_BITMAP *endBMP = NULL;
+
 	shadowBMP = al_create_bitmap(game.screen_width, game.screen_height);
 	al_set_target_bitmap(shadowBMP);
 	al_clear_to_color(BLACK);
@@ -70,9 +70,9 @@ int main(int argc, char **argv)
 	bricksBMP = al_load_bitmap("bricks.bmp");
 	optionsBMP = al_load_bitmap("options.bmp");
 	high_scoresBMP = al_load_bitmap("high_scores.bmp");
-
+	buttonsBMP = al_load_bitmap("buttons.bmp");
+	endBMP = al_load_bitmap("end.bmp");
 	ALLEGRO_FONT *arial24 = al_load_font("arial.ttf", 24, 0);
-	//game.changeScore(1000000);
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -99,31 +99,30 @@ int main(int argc, char **argv)
 
 				mx = (ev.mouse.x - LEFT_MARGIN) / game.getBrickSize();//debug
 				my = (ev.mouse.y - TOP_MARGIN) / game.getBrickSize();//debug
-				//function button check if mouse is OVER_NEW_GAME and returns true/false which is passed to function cGame::changeFlags 
-				//pure awesomness :D
-				game.changeFlags(OVER_NEW_GAME, button(ev.mouse.x, ev.mouse.y, NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT));
-				game.changeFlags(OVER_HIGH_SCORES, button(ev.mouse.x, ev.mouse.y, HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT));//checks if mouse on high scores button
-				game.changeFlags(OVER_OPTIONS, button(ev.mouse.x, ev.mouse.y, OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //checks if mouse on options button
-				game.changeFlags(OVER_GAME_AREA, button(ev.mouse.x, ev.mouse.y, LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height)); //checks if mouse inside of game area
-			
+				
+				//if inside of button then change button[].flag to true value else false
+				game.button[NEW_GAME_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[HIGH_SCORES_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[GAME_AREA_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+
 			}
 			if (game.getGameState() == OPTIONS) //if in options check these events
 			{
-								
-				game.changeFlags(OVER_OPTIONS_SMALL, button(ev.mouse.x, ev.mouse.y, OPTIONS_SMALL_X, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //checks if mouse on small option button
-				game.changeFlags(OVER_OPTIONS_LARGE, button(ev.mouse.x, ev.mouse.y, OPTIONS_LARGE_X, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT));//checks if mouse on large option button
-				game.changeFlags(OVER_OPTIONS_CAMPAIGN, button(ev.mouse.x, ev.mouse.y, OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //checks if mouse on campaign option button
-				game.changeFlags(OVER_OPTIONS_24, button(ev.mouse.x, ev.mouse.y, OPTIONS_24_X, OPTIONS_24_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT)); //checks if mouse on 24 option button
-				game.changeFlags(OVER_OPTIONS_36, button(ev.mouse.x, ev.mouse.y, OPTIONS_36_X, OPTIONS_36_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT)); //checks if mouse on 36 option button
-				game.changeFlags(OVER_OPTIONS_48, button(ev.mouse.x, ev.mouse.y, OPTIONS_48_X, OPTIONS_48_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT));//checks if mouse on 48 option button
-			
+				
+				game.button[OPTIONS_SMALL_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_LARGE_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_CAMPAIGN_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_24_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_36_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[OPTIONS_48_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
 
 			}
 			if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 			{
-				game.changeFlags(OVER_HIGH_SCORE_RESET, button(ev.mouse.x, ev.mouse.y, HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //checki if mouse on high score reset button
-				game.changeFlags(OVER_HIGH_SCORE_CLOSE, button(ev.mouse.x, ev.mouse.y, HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT)); //check if mouse on high score close button
-								
+				game.button[HIGH_SCORES_RESET_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[HIGH_SCORES_CLOSE_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+
 			}
 			if (game.getGameState() == END_GAME) //if game ended check these events
 			{
@@ -139,25 +138,25 @@ int main(int argc, char **argv)
 
 						if (game.getGameState() == PLAY_GAME) //if playing game check these clicks
 						{
-							if (game.getFlags(OVER_NEW_GAME))		{ game.changeGameState(REFRESH_GAME); }
-							if (game.getFlags(OVER_HIGH_SCORES))	{ game.highScores(); }
-							if (game.getFlags(OVER_OPTIONS))		{ game.options(); }
-							if (game.getFlags(OVER_GAME_AREA))		{ game.selectBrick(ev.mouse.x, ev.mouse.y); }
+							if (game.button[NEW_GAME_BUTTON].getFlags())		{ game.changeGameState(REFRESH_GAME); }
+							if (game.button[HIGH_SCORES_BUTTON].getFlags())		{ game.highScores(); }
+							if (game.button[OPTIONS_BUTTON].getFlags())			{ game.options(); }
+							if (game.button[GAME_AREA_BUTTON].getFlags())		{ game.selectBrick(ev.mouse.x, ev.mouse.y); }
 						}
 						if (game.getGameState() == OPTIONS) //if in options check these events
 						{
-							if (game.getFlags(OVER_OPTIONS_SMALL))		{ game.changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game.changeGameState(REFRESH_GAME); }
-							if (game.getFlags(OVER_OPTIONS_LARGE))		{ game.changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game.changeGameState(REFRESH_GAME); }
-							if (game.getFlags(OVER_OPTIONS_CAMPAIGN))	{}
-							if (game.getFlags(OVER_OPTIONS_24))			{ game.changeBrickSize(BRICKS_24); }
-							if (game.getFlags(OVER_OPTIONS_36))			{ game.changeBrickSize(BRICKS_36); }
-							if (game.getFlags(OVER_OPTIONS_48))			{ game.changeBrickSize(BRICKS_48); }
+							if (game.button[OPTIONS_SMALL_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game.changeGameState(REFRESH_GAME); }
+							if (game.button[OPTIONS_LARGE_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game.changeGameState(REFRESH_GAME); }
+							if (game.button[OPTIONS_CAMPAIGN_BUTTON].getFlags())	{}
+							if (game.button[OPTIONS_24_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_24); }
+							if (game.button[OPTIONS_36_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_36); }
+							if (game.button[OPTIONS_48_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_48); }
 							al_resize_display(display, game.screen_width, game.screen_height);
 						}
 						if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 						{
-							if (game.getFlags(OVER_HIGH_SCORE_RESET))	{ game.resetHighScores(); }
-							if (game.getFlags(OVER_HIGH_SCORE_CLOSE))	{ game.changeGameState(PLAY_GAME);	game.changeFlags(OVER_HIGH_SCORE_CLOSE, false); }
+							if (game.button[HIGH_SCORES_RESET_BUTTON].getFlags())	{ game.resetHighScores(); }
+							if (game.button[HIGH_SCORES_CLOSE_BUTTON].getFlags())	{ game.changeGameState(PLAY_GAME);	game.button[HIGH_SCORES_CLOSE_BUTTON].changeFlags(false); }
 						}
 						if (game.getGameState() == END_GAME) //if game ended
 						{
@@ -170,7 +169,7 @@ int main(int argc, char **argv)
 					{
 						if (game.getGameState() == PLAY_GAME) //if playing game check these clicks
 						{
-							if (game.getFlags(OVER_GAME_AREA))		{ game.changeTile(mx, my, 3); } //debug		
+							if (game.button[GAME_AREA_BUTTON].getFlags())		{ game.changeTile(mx, my, 3); } //debug		
 						}
 						if (game.getGameState() == OPTIONS) //if in options check these clicks
 						{
@@ -182,7 +181,7 @@ int main(int argc, char **argv)
 						}
 						if (game.getGameState() == END_GAME) //if game ended check these clicks
 						{
-
+							game.changeGameState(REFRESH_GAME);
 						}
 					}									
 
@@ -194,6 +193,7 @@ int main(int argc, char **argv)
 			{
 				game.newGame();
 			}
+			debug_end = game.checkEndGame();
 			game.updateNumberOfSelected();
 			render = true;
 		}
@@ -205,15 +205,15 @@ int main(int argc, char **argv)
 			
 			al_draw_bitmap(backgroundBMP, 0, 0, 0);
 			game.drawGameArea(bricksBMP);
-			if (game.getFlags(OVER_NEW_GAME))
+			if (game.button[NEW_GAME_BUTTON].getFlags())
 			{
 				al_draw_rounded_rectangle(NEW_GAME_X, NEW_GAME_Y, NEW_GAME_X + BUTTON_WIDTH, BUTTON_HEIGHT,15,15, WHITE, 3);
 			}
-			if (game.getFlags(OVER_HIGH_SCORES))
+			if (game.button[HIGH_SCORES_BUTTON].getFlags())
 			{
 				al_draw_rounded_rectangle(HIGH_SCORES_X, HIGH_SCORES_Y, HIGH_SCORES_X + BUTTON_WIDTH, BUTTON_HEIGHT, 15, 15, WHITE, 3);
 			}
-			if (game.getFlags(OVER_OPTIONS))
+			if (game.button[OPTIONS_BUTTON].getFlags())
 			{
 				al_draw_rounded_rectangle(OPTIONS_X, OPTIONS_Y, OPTIONS_X + BUTTON_WIDTH, BUTTON_HEIGHT, 15, 15, WHITE, 3);
 			}
@@ -221,44 +221,46 @@ int main(int argc, char **argv)
 			al_draw_textf(arial24, WHITE, SCORE_X, SCORE_Y, ALLEGRO_ALIGN_LEFT , " %i", game.getScore());
 			
 			
-			if (game.getFlags(OVER_GAME_AREA))//debug
+			if (game.button[GAME_AREA_BUTTON].getFlags())//debug
 			{
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 30, ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 60, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());
 				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 90, ALLEGRO_ALIGN_LEFT, "tile_size %i", game.getBrickSize());//debug
+				al_draw_textf(arial24, WHITE, SCORE_X - 250, SCORE_Y + 120, ALLEGRO_ALIGN_LEFT, "tile_color %i", game.bricks[mx][my].getColor());//debug
+				al_draw_textf(arial24, WHITE, SCORE_X - 400, SCORE_Y , ALLEGRO_ALIGN_LEFT, "left %i", debug_end);//debug
 			}
 			if (game.getGameState() == OPTIONS)
 			{
 				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
 				al_draw_bitmap(optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
-				if (game.getFlags(OVER_OPTIONS_SMALL))
+				if (game.button[OPTIONS_SMALL_BUTTON].getFlags())
 				{
 					
 					al_draw_rounded_rectangle(OPTIONS_SMALL_X, OPTIONS_SMALL_Y, OPTIONS_SMALL_X + BUTTON_WIDTH, OPTIONS_SMALL_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
-				if (game.getFlags(OVER_OPTIONS_LARGE))
+				if (game.button[OPTIONS_LARGE_BUTTON].getFlags())
 				{
 
 					al_draw_rounded_rectangle(OPTIONS_LARGE_X, OPTIONS_LARGE_Y, OPTIONS_LARGE_X + BUTTON_WIDTH, OPTIONS_LARGE_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
-				if (game.getFlags(OVER_OPTIONS_CAMPAIGN))
+				if (game.button[OPTIONS_CAMPAIGN_BUTTON].getFlags())
 				{
 
 					al_draw_rounded_rectangle(OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, OPTIONS_CAMPAIGN_X + BUTTON_WIDTH, OPTIONS_CAMPAIGN_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
-				if (game.getFlags(OVER_OPTIONS_24))
+				if (game.button[OPTIONS_24_BUTTON].getFlags())
 				{
 
 					al_draw_rounded_rectangle(OPTIONS_24_X, OPTIONS_24_Y, OPTIONS_24_X + SMALL_BUTTON_WIDTH, OPTIONS_24_Y + SMALL_BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
 
-				if (game.getFlags(OVER_OPTIONS_36))
+				if (game.button[OPTIONS_36_BUTTON].getFlags())
 				{
 
 					al_draw_rounded_rectangle(OPTIONS_36_X, OPTIONS_36_Y, OPTIONS_36_X + SMALL_BUTTON_WIDTH, OPTIONS_36_Y + SMALL_BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
-				if (game.getFlags(OVER_OPTIONS_48))
+				if (game.button[OPTIONS_48_BUTTON].getFlags())
 				{
 
 					al_draw_rounded_rectangle(OPTIONS_48_X, OPTIONS_48_Y, OPTIONS_48_X + SMALL_BUTTON_WIDTH, OPTIONS_48_Y + SMALL_BUTTON_HEIGHT, 15, 15, WHITE, 3);
@@ -268,14 +270,20 @@ int main(int argc, char **argv)
 			{
 				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
 				al_draw_bitmap(high_scoresBMP, HIGH_SCORES_X, TOP_MARGIN, 0);
-				if (game.getFlags(OVER_HIGH_SCORE_RESET))
+				if (game.button[HIGH_SCORES_RESET_BUTTON].getFlags())
 				{
 					al_draw_rounded_rectangle(HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, HIGH_SCORE_RESET_X + BUTTON_WIDTH, HIGH_SCORE_RESET_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
-				if (game.getFlags(OVER_HIGH_SCORE_CLOSE))
+				if (game.button[HIGH_SCORES_CLOSE_BUTTON].getFlags())
 				{
 					al_draw_rounded_rectangle(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, HIGH_SCORE_CLOSE_X + BUTTON_WIDTH, HIGH_SCORE_CLOSE_Y + BUTTON_HEIGHT, 15, 15, WHITE, 3);
 				}
+			}
+			if (game.getGameState() == END_GAME)
+			{
+				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
+				al_draw_bitmap(endBMP, game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2), game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2), 0);
+				
 			}
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(115, 115, 115));

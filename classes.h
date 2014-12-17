@@ -20,6 +20,22 @@ int getState();
 	
 };
 
+class cButton
+{
+private:
+	int x;
+	int y;
+	int width;
+	int height;
+	bool flags;
+public:
+	cButton();//constructor
+	bool getFlags();//return state of flag
+	void toggleFlags();//flips value of a flag;
+	void changeFlags( bool _value);//change flag to specific value
+	bool overButton(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
+	void changeButtonSize(int _x, int _y, int _width, int _height); //sets all button parameters
+};
 class cGame
 {
 private:
@@ -29,8 +45,10 @@ private:
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
 	bool selection; //if something selectd
-	bool flags[NUMBER_OF_FLAGS]; //button flags
+	//bool flags[NUMBER_OF_FLAGS]; //button flags
+	
 public:
+	cButton button[NUMBER_OF_BUTTONS];
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
@@ -41,9 +59,7 @@ public:
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
 	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
-	bool getFlags( int _flag);//return state of flag
-	void toggleFlags(int _flag);//flips value of a flag;
-	void changeFlags(int _flag, bool _value);//change flag to specific value
+	void loadButton(); //loads button locations from file
 	int getGameState(); //returns gamestate
 	int getScore(); // returns score
 	int getNumberOfSelected();//returns how many bricks are selected
@@ -57,7 +73,7 @@ public:
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(ALLEGRO_BITMAP *_bricksBMP); // draw all bricks on screen
 	void newGame(); // restart game
-	void endGame(); //checks if game ended (no more bricks to destroy)
+	int checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void highScores(); // open high scores;
 	void options(); // open options screen;
 	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]

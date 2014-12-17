@@ -4,10 +4,11 @@
 #include <allegro5\allegro_image.h>
 #include "classes.h"
 
+extern ALLEGRO_DISPLAY *display;
 //======cTile methods
 cTile::cTile()//default constructor
 {
-	color = rand() % BRICK_COLORS; //needs EVALUATION
+	color = 0; 
 	state = FULL;
 	
 }
@@ -33,7 +34,43 @@ int cTile::getState()
 {
 	return state;
 }
-
+//=====cButton methods
+cButton::cButton()//constructor
+{
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+}
+bool cButton::getFlags()//return state of flag
+{
+	return flags;
+}
+void cButton::toggleFlags()//flips value of a flag;
+{
+	flags = !flags;
+}
+void cButton::changeFlags( bool _value)//change flag to specific value
+{
+	flags = _value; 
+}
+bool cButton::overButton(int _mouse_x, int _mouse_y) //if inside button then change flags to true else make it false
+{
+	if (_mouse_x >= x && _mouse_x <= x + width && _mouse_y >= y && _mouse_y <= y + height)
+	{
+		flags = true;
+		return true;
+	}
+	else
+	{
+		flags = false;
+		return false;
+	}
+}
+void cButton::changeButtonSize(int _x, int _y, int _width, int _height) //sets all button parameters
+{
+	x = _x; y = _y; width = _width; height = _height;
+}
 //=====cGame methods
 cGame::cGame() //default constructor
 	:bricks(BRICKS_LARGE_X, vector<cTile>(BRICKS_LARGE_Y))
@@ -52,22 +89,26 @@ cGame::cGame() //default constructor
 	number_of_selected = 0;
 	
 	int i = 0; 
-	for (i = 0; i < NUMBER_OF_FLAGS; i++)
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
-		flags[i] = false;
+		button[i].changeFlags(false);
 	}
 } 
-bool cGame::getFlags(int _flag)//return state of flag
+void cGame::loadButton() //using predefined const int as placeholder
 {
-	return flags[_flag];
-}
-void cGame::toggleFlags(int _flag)//flips value of a flag;
-{
-	flags[_flag] = !flags[_flag];
-}
-void cGame::changeFlags(int _flag, bool _value)//change flag to specific value
-{
-	flags[_flag] = _value; //use enum BUTTON_FLAGS as index number of array
+	button[NEW_GAME_BUTTON].changeButtonSize(NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_BUTTON].changeButtonSize(HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_BUTTON].changeButtonSize(OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
+	button[OPTIONS_SMALL_BUTTON].changeButtonSize(OPTIONS_SMALL_X, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_LARGE_BUTTON].changeButtonSize(OPTIONS_LARGE_X, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_24_BUTTON].changeButtonSize(OPTIONS_24_X, OPTIONS_24_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_36_BUTTON].changeButtonSize(OPTIONS_36_X, OPTIONS_36_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_48_BUTTON].changeButtonSize(OPTIONS_48_X, OPTIONS_48_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+
 }
 int cGame::getGameState() //returns gamestate;
 {
@@ -165,23 +206,75 @@ void cGame::newGame() // restart game
 	for (i = 0; i<bricks_y; i++)
 		for (t = 0; t < bricks_x; t++)
 		{
-			bricks[t][i].changeColor( rand() % BRICK_COLORS);
+			//bricks[t][i].changeColor( rand() % BRICK_COLORS);  
+			 bricks[t][i].changeColor(1);//DEBUG
 			bricks[t][i].changeState(FULL);
-			
 		}
 	
-	for (i = 0; i < NUMBER_OF_FLAGS; i++)
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
-		flags[i] = false;
+		button[i].changeFlags(false);
 	}
 	game_state = PLAY_GAME;
 	score = 0;
 	number_of_selected = 0;
 }
-void cGame::endGame() //checks if game ended (no more bricks to destroy)
+int cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 {
-	//TODO
-}
+	int selected = 0;
+	int i = 0;
+	int x = 0;
+	int y = 0;
+	//for (i = 0; i < BRICK_COLORS; i++)
+	//{
+		for (x = bricks_x - 1; x >= 0; x--)
+			for (y = bricks_y - 1; y >= 0; y--)
+			{
+				if (bricks[x][y].getState()!=EMPTY)
+				{
+
+					if (x > 0)//avoids going outside of vector
+					{
+					if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() != EMPTY)
+					{
+						//bricks[x - 1][y].changeState(SELECTED);
+						selected++;
+					}
+					}
+					if (x + 1 < bricks_x) //avoids going outside of vector
+					{
+					if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() != EMPTY)
+					{
+						//bricks[x + 1][y].changeState(SELECTED);
+						selected++;
+					}
+					}
+					if (y > 0) //avoids going outside of vector
+					{
+					if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY)
+					{
+					//	bricks[x][y - 1].changeState(SELECTED);
+						selected++;
+					}
+					}
+					if (y + 1 < bricks_y) //avoids going outside of vector
+					{
+					if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY)
+					{
+					//	bricks[x][y + 1].changeState(SELECTED);
+						selected++;
+					}
+					}
+				}
+
+			}
+		if (selected == 0) game_state = END_GAME;
+		return selected;
+	}
+
+	
+	
+
 
 void cGame::highScores() // open high scores;
 {
