@@ -3,6 +3,9 @@
 
 #include "define.h"
 
+extern ALLEGRO_FONT *arial24;
+extern ALLEGRO_DISPLAY *display;
+//extern ALLEGRO_BITMAP *buttonsBMP;
 class cTile
 {
 private:
@@ -27,14 +30,22 @@ private:
 	int y;
 	int width;
 	int height;
+	
 	bool flags;
+	
+	ALLEGRO_BITMAP *buttonBMP;
+	ALLEGRO_BITMAP *buttonPressedBMP;
 public:
+	int type;
+	const char* text;
 	cButton();//constructor
 	bool getFlags();//return state of flag
 	void toggleFlags();//flips value of a flag;
 	void changeFlags( bool _value);//change flag to specific value
 	bool overButton(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
 	void changeButtonSize(int _x, int _y, int _width, int _height); //sets all button parameters
+	void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
+	void drawButton();//draw button on screen
 };
 class cGame
 {
@@ -59,6 +70,7 @@ public:
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
 	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
+	
 	void loadButton(); //loads button locations from file
 	int getGameState(); //returns gamestate
 	int getScore(); // returns score

@@ -12,6 +12,8 @@ using namespace std;
 #define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
 
 extern int BRICK_COLORS;
+
+
 // predefined sizes of game
 const int BRICKS_SMALL_X = 10;
 const int BRICKS_SMALL_Y = 10;
@@ -19,9 +21,9 @@ const int BRICKS_SMALL_Y = 10;
 const int BRICKS_LARGE_X = 35;
 const int BRICKS_LARGE_Y = 20;
 //sizes of bricks
-const int BRICKS_48 = 48;
-const int BRICKS_36 = 36;
-const int BRICKS_24 = 24;
+const int BRICKS_LARGE = 48;
+const int BRICKS_MEDIUM = 36;
+const int BRICKS_SMALL = 24;
 //margins
 const int TOP_MARGIN = 42;
 const int LEFT_MARGIN = 9;
@@ -30,9 +32,10 @@ const int DOWN_MARGIN = 9;
 
 // size of buttons //NEEDS EVALUATION (needs to be scalable)
 const int BUTTON_WIDTH = 250;
-const int BUTTON_HEIGHT = 34;
+const int BUTTON_HEIGHT = 31;
+const int MAX_CHARS = 25;//length of text on button
 const int SMALL_BUTTON_WIDTH = 70;
-const int SMALL_BUTTON_HEIGHT = 34;
+const int SMALL_BUTTON_HEIGHT = 31;
 
 // positions of buttons on main screen //NEEDS EVALUATION (needs to be scalable)
 const int NEW_GAME_X = 5;
@@ -44,8 +47,8 @@ const int HIGH_SCORES_Y = 3;
 const int OPTIONS_X = 515;
 const int OPTIONS_Y = 3;
 
-const int SCORE_X = 850;
-const int SCORE_Y = 5;
+const int SCORE_X = 770;
+const int SCORE_Y = 3;
 
 //position of high_score buttons on screen 6,404  6, 441
 const int HIGH_SCORE_RESET_X = HIGH_SCORES_X + 6;
@@ -70,9 +73,10 @@ const int OPTIONS_48_Y = TOP_MARGIN + 170;
 
 //ENUMS
 enum BUTTON_XY{
-	NEW_GAME_BUTTON, HIGH_SCORES_BUTTON, OPTIONS_BUTTON,GAME_AREA_BUTTON,//main screen buttons
+	NEW_GAME_BUTTON, HIGH_SCORES_BUTTON, OPTIONS_BUTTON,SCORE_BUTTON,GAME_AREA_BUTTON,//main screen buttons
 	OPTIONS_SMALL_BUTTON, OPTIONS_LARGE_BUTTON, OPTIONS_CAMPAIGN_BUTTON, OPTIONS_24_BUTTON, OPTIONS_36_BUTTON, OPTIONS_48_BUTTON,//options buttons
 	HIGH_SCORES_RESET_BUTTON, HIGH_SCORES_CLOSE_BUTTON, //high scores buttons
+	END_GAME_NEW_GAME_BUTTON, END_GAME_SAVE_SCORE_BUTTON, //end game buttons
 	NUMBER_OF_BUTTONS //array index of game.button[NUMBER_OF_BUTTONS]
 };
 enum TILE_STATE{ EMPTY, FULL, SELECTED };

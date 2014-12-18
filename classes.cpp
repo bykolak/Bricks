@@ -2,9 +2,12 @@
 #include <vector>
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_image.h>
+#include <allegro5\allegro_font.h>
+#include <allegro5\allegro_ttf.h>
+#include <allegro5\allegro_primitives.h>
 #include "classes.h"
 
-extern ALLEGRO_DISPLAY *display;
+
 //======cTile methods
 cTile::cTile()//default constructor
 {
@@ -41,6 +44,10 @@ cButton::cButton()//constructor
 	y = 0;
 	width = 0;
 	height = 0;
+	type = 0;
+	buttonBMP = NULL;
+	buttonPressedBMP = NULL;
+	text = "fgdgd";
 }
 bool cButton::getFlags()//return state of flag
 {
@@ -71,6 +78,33 @@ void cButton::changeButtonSize(int _x, int _y, int _width, int _height) //sets a
 {
 	x = _x; y = _y; width = _width; height = _height;
 }
+void cButton::createButton(ALLEGRO_BITMAP *temp)
+{
+
+	buttonBMP = al_create_bitmap(width, height);
+	al_set_target_bitmap(buttonBMP);
+	al_draw_bitmap_region(temp, 0, 0, width, height, 0, 0, 0);
+	if (type>2)al_draw_textf(arial24, WHITE, 10, 2, ALLEGRO_ALIGN_LEFT, text);
+	else al_draw_textf(arial24, WHITE, width /2, 2, ALLEGRO_ALIGN_CENTRE, text);
+	
+	buttonPressedBMP = al_create_bitmap(width, height);
+	al_set_target_bitmap(buttonPressedBMP);
+	al_draw_bitmap_region(temp, 0, 0, width, height, 0, 0, 0);
+
+	al_draw_textf(arial24, RED, width / 2, 2, ALLEGRO_ALIGN_CENTRE, text);
+
+	al_set_target_bitmap(al_get_backbuffer(display));
+}
+
+void cButton::drawButton()//draw button on screen
+{
+	if (flags)
+	{
+		al_draw_bitmap(buttonPressedBMP, x, y, NULL);
+		if (type<2) al_draw_rounded_rectangle(x, y, x+width, y+height, 15, 15, WHITE, 3); //only for type 0,1 not 2
+	}
+	else al_draw_bitmap(buttonBMP, x, y,NULL);
+}
 //=====cGame methods
 cGame::cGame() //default constructor
 	:bricks(BRICKS_LARGE_X, vector<cTile>(BRICKS_LARGE_Y))
@@ -96,19 +130,35 @@ cGame::cGame() //default constructor
 } 
 void cGame::loadButton() //using predefined const int as placeholder
 {
+	
 	button[NEW_GAME_BUTTON].changeButtonSize(NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[NEW_GAME_BUTTON].text = "NEW GAME";
 	button[HIGH_SCORES_BUTTON].changeButtonSize(HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_BUTTON].text = "HIGH SCORES";
 	button[OPTIONS_BUTTON].changeButtonSize(OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_BUTTON].text = "OPTIONS";
+	button[SCORE_BUTTON].changeButtonSize(SCORE_X, SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[SCORE_BUTTON].text = "SCORE";
+	button[SCORE_BUTTON].type = 3;
 	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
+	button[GAME_AREA_BUTTON].text = "";
+	button[GAME_AREA_BUTTON].type = 2;
 	button[OPTIONS_SMALL_BUTTON].changeButtonSize(OPTIONS_SMALL_X, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_SMALL_BUTTON].text = "SMALL";
 	button[OPTIONS_LARGE_BUTTON].changeButtonSize(OPTIONS_LARGE_X, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_LARGE_BUTTON].text = "LARGE";
 	button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_CAMPAIGN_BUTTON].text = "CAMPAIGN";
 	button[OPTIONS_24_BUTTON].changeButtonSize(OPTIONS_24_X, OPTIONS_24_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_24_BUTTON].text = "24";
 	button[OPTIONS_36_BUTTON].changeButtonSize(OPTIONS_36_X, OPTIONS_36_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_36_BUTTON].text = "36";
 	button[OPTIONS_48_BUTTON].changeButtonSize(OPTIONS_48_X, OPTIONS_48_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_48_BUTTON].text = "48";
 	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_RESET_BUTTON].text = "RESET SCORE";
 	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-
+	button[HIGH_SCORES_CLOSE_BUTTON].text = "CLOSE";
 }
 int cGame::getGameState() //returns gamestate;
 {
@@ -187,9 +237,9 @@ void cGame::drawGameArea(ALLEGRO_BITMAP *_bricksBMP) // draw all bricks on scree
 			
 			if (bricks[t][i].getState() !=EMPTY)
 			{
-				if (brick_size == BRICKS_48)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 0, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_36)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 48, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_24)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 84, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_LARGE)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 0, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 48, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)	al_draw_bitmap_region(_bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 84, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
 			}
 			
 			if (bricks[t][i].getState() == SELECTED)
@@ -222,11 +272,9 @@ void cGame::newGame() // restart game
 int cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 {
 	int selected = 0;
-	int i = 0;
 	int x = 0;
 	int y = 0;
-	//for (i = 0; i < BRICK_COLORS; i++)
-	//{
+	
 		for (x = bricks_x - 1; x >= 0; x--)
 			for (y = bricks_y - 1; y >= 0; y--)
 			{
@@ -235,35 +283,19 @@ int cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 
 					if (x > 0)//avoids going outside of vector
 					{
-					if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() != EMPTY)
-					{
-						//bricks[x - 1][y].changeState(SELECTED);
-						selected++;
-					}
+					if (bricks[x][y].getColor() == bricks[x - 1][y].getColor() && bricks[x - 1][y].getState() != EMPTY)		{ selected++; }
 					}
 					if (x + 1 < bricks_x) //avoids going outside of vector
 					{
-					if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() != EMPTY)
-					{
-						//bricks[x + 1][y].changeState(SELECTED);
-						selected++;
-					}
+					if (bricks[x][y].getColor() == bricks[x + 1][y].getColor() && bricks[x + 1][y].getState() != EMPTY)		{ selected++; }
 					}
 					if (y > 0) //avoids going outside of vector
 					{
-					if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY)
-					{
-					//	bricks[x][y - 1].changeState(SELECTED);
-						selected++;
-					}
+					if (bricks[x][y].getColor() == bricks[x][y - 1].getColor() && bricks[x][y - 1].getState() != EMPTY) 	{ selected++; }
 					}
 					if (y + 1 < bricks_y) //avoids going outside of vector
 					{
-					if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY)
-					{
-					//	bricks[x][y + 1].changeState(SELECTED);
-						selected++;
-					}
+					if (bricks[x][y].getColor() == bricks[x][y + 1].getColor() && bricks[x][y + 1].getState() != EMPTY)		{ selected++; }
 					}
 				}
 
