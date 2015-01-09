@@ -2,9 +2,11 @@
 #define CLASSES_H
 
 #include "define.h"
-
+#include <fstream>
+#include <string>
 extern ALLEGRO_FONT *arial24;
 extern ALLEGRO_DISPLAY *display;
+extern ALLEGRO_BITMAP *endBMP;
 //extern ALLEGRO_BITMAP *buttonsBMP;
 class cTile
 {
@@ -55,11 +57,14 @@ private:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
-	bool selection; //if something selectd
+	bool selection; //if something selected
+	bool saved_scores; //if high scores already saved
 	//bool flags[NUMBER_OF_FLAGS]; //button flags
-	
+	fstream settings_file;
 public:
+	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
 	cButton button[NUMBER_OF_BUTTONS];
+	//int left_margin;
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
@@ -70,7 +75,6 @@ public:
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
 	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
-	
 	void loadButton(); //loads button locations from file
 	int getGameState(); //returns gamestate
 	int getScore(); // returns score

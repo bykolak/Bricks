@@ -75,6 +75,7 @@ int main(int argc, char **argv)
 	endBMP = al_load_bitmap("end.bmp");
 	arial24 = al_load_font("arial.ttf", 24, 0);
 	arial14 = al_load_font("arial.ttf", 14, 0);
+	game.changeScore(100000);
 	int i = 0;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
@@ -134,7 +135,10 @@ int main(int argc, char **argv)
 			}
 			if (game.getGameState() == END_GAME) //if game ended check these events
 			{
+				game.button[END_GAME_NEW_GAME_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
+				game.button[END_GAME_SAVE_SCORE_BUTTON].overButton(ev.mouse.x, ev.mouse.y);
 
+				
 			}
 		}
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) //checks if mouse button pressed
@@ -157,19 +161,38 @@ int main(int argc, char **argv)
 							if (game.button[OPTIONS_SMALL_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game.changeGameState(REFRESH_GAME); }
 							if (game.button[OPTIONS_LARGE_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game.changeGameState(REFRESH_GAME); }
 							if (game.button[OPTIONS_CAMPAIGN_BUTTON].getFlags())	{}
-							if (game.button[OPTIONS_24_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_SMALL); }
-							if (game.button[OPTIONS_36_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_MEDIUM); }
-							if (game.button[OPTIONS_48_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_LARGE); }
-						//	al_resize_display(display, game.screen_width, game.screen_height); // casuses crash
+							if (game.button[OPTIONS_24_BUTTON].getFlags())			
+							{
+								game.changeBrickSize(BRICKS_SMALL);
+								
+						//		game.changeGameState(PLAY_GAME);
+							}
+							if (game.button[OPTIONS_36_BUTTON].getFlags())			
+							{ 
+								game.changeBrickSize(BRICKS_MEDIUM);
+								game.button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height);
+								
+
+							
+						//		game.changeGameState(PLAY_GAME);
+							}
+							if (game.button[OPTIONS_48_BUTTON].getFlags())			
+							{
+								game.changeBrickSize(BRICKS_LARGE);
+								game.button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height);
+						//		game.changeGameState(PLAY_GAME);
+							}
+							
 						}
 						if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 						{
 							if (game.button[HIGH_SCORES_RESET_BUTTON].getFlags())	{ game.resetHighScores(); }
-							if (game.button[HIGH_SCORES_CLOSE_BUTTON].getFlags())	{ game.changeGameState(PLAY_GAME);	game.button[HIGH_SCORES_CLOSE_BUTTON].changeFlags(false); }
+							if (game.button[HIGH_SCORES_CLOSE_BUTTON].getFlags())	{ game.changeGameState(PLAY_GAME); 	game.button[HIGH_SCORES_CLOSE_BUTTON].changeFlags(false); }
 						}
 						if (game.getGameState() == END_GAME) //if game ended
 						{
-
+							if (game.button[END_GAME_NEW_GAME_BUTTON].getFlags()) { game.changeGameState(REFRESH_GAME); }
+							if (game.button[END_GAME_SAVE_SCORE_BUTTON].getFlags()) { game.saveScores(); }
 						}
 
 					}
@@ -190,7 +213,7 @@ int main(int argc, char **argv)
 						}
 						if (game.getGameState() == END_GAME) //if game ended check these clicks
 						{
-							game.changeGameState(REFRESH_GAME);
+						//	game.changeGameState(REFRESH_GAME);
 						}
 					}									
 
@@ -204,6 +227,11 @@ int main(int argc, char **argv)
 			}
 			debug_end = game.checkEndGame();
 			game.updateNumberOfSelected();
+			game.button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X,
+				game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+			game.button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X,
+				game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 			render = true;
 		}
 
@@ -230,8 +258,8 @@ int main(int argc, char **argv)
 				al_draw_textf(arial14, WHITE, SCORE_X + 250, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
 				al_draw_textf(arial14, WHITE, SCORE_X + 350, SCORE_Y , ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
 				al_draw_textf(arial14, WHITE, SCORE_X + 450, SCORE_Y, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());//debug
-				al_draw_textf(arial14, WHITE, SCORE_X + 550, SCORE_Y, ALLEGRO_ALIGN_LEFT, "tile_size %i", game.getBrickSize());//debug
-				al_draw_textf(arial14, WHITE, SCORE_X + 650, SCORE_Y, ALLEGRO_ALIGN_LEFT, "tile_color %i", game.bricks[mx][my].getColor());//debug
+				al_draw_textf(arial14, WHITE, SCORE_X + 550, SCORE_Y, ALLEGRO_ALIGN_LEFT, "brick_size %i", game.getBrickSize());//debug
+		//		al_draw_textf(arial14, WHITE, SCORE_X + 650, SCORE_Y, ALLEGRO_ALIGN_LEFT, "tile_color %i", game.bricks[mx][my].getColor());//debug
 				al_draw_textf(arial14, WHITE, SCORE_X + 760, SCORE_Y, ALLEGRO_ALIGN_LEFT, "left %i", debug_end);//debug
 			}
 			if (game.getGameState() == OPTIONS)
@@ -256,7 +284,14 @@ int main(int argc, char **argv)
 			{
 				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
 				al_draw_bitmap(endBMP, game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2), game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2), 0);
-				al_draw_textf(arial24, WHITE,game.screen_width / 2, game.screen_height / 2 , ALLEGRO_ALIGN_CENTRE, "you scored %i !", game.getScore());
+				game.button[END_GAME_NEW_GAME_BUTTON].drawButton();
+				game.button[END_GAME_SAVE_SCORE_BUTTON].drawButton();
+				for (i = 0; i < MAX_HIGH_SCORE; i++)
+				{
+					al_draw_textf(arial24, WHITE, game.screen_width / 2, game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + 25 * i+6, ALLEGRO_ALIGN_CENTRE, " %i points !", game.high_score[i]);
+				}
+				
+				al_draw_textf(arial24, WHITE,game.screen_width / 2, game.screen_height / 2 +75 , ALLEGRO_ALIGN_CENTRE, "you scored %i points !", game.getScore());
 			}
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(115, 115, 115));

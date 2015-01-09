@@ -12,13 +12,16 @@ using namespace std;
 #define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
 
 extern int BRICK_COLORS;
-
-
+//high scores 
+const int MAX_HIGH_SCORE = 10;
+//minimum size of screen
+const int MIN_SCREEN_X = 1030;
+const int MIN_SCREEN_Y = 530;
 // predefined sizes of game
-const int BRICKS_SMALL_X = 10;
-const int BRICKS_SMALL_Y = 10;
+const int BRICKS_SMALL_X = 25;
+const int BRICKS_SMALL_Y = 13;
 
-const int BRICKS_LARGE_X = 35;
+const int BRICKS_LARGE_X = 40;
 const int BRICKS_LARGE_Y = 20;
 //sizes of bricks
 const int BRICKS_LARGE = 48;
@@ -39,7 +42,7 @@ const int SMALL_BUTTON_HEIGHT = 31;
 
 // positions of buttons on main screen //NEEDS EVALUATION (needs to be scalable)
 const int NEW_GAME_X = 5;
-const int NEW_GAME_Y = 3; 
+const int NEW_GAME_Y = 3;
 
 const int HIGH_SCORES_X = 260;
 const int HIGH_SCORES_Y = 3;
@@ -64,13 +67,17 @@ const int OPTIONS_LARGE_Y = TOP_MARGIN + 69;
 const int OPTIONS_CAMPAIGN_X = OPTIONS_X + 5;
 const int OPTIONS_CAMPAIGN_Y = TOP_MARGIN + 106;
 
-const int OPTIONS_24_X = OPTIONS_X + 14;
+const int OPTIONS_24_X = OPTIONS_X +16; //260optionsBMP - 232sizeOfAllButtonsAndMargings = 32 /2margins
 const int OPTIONS_24_Y = TOP_MARGIN + 170;
-const int OPTIONS_36_X = OPTIONS_X + 96;
+const int OPTIONS_36_X = OPTIONS_24_X +SMALL_BUTTON_WIDTH + LEFT_MARGIN;;
 const int OPTIONS_36_Y = TOP_MARGIN + 170;
-const int OPTIONS_48_X = OPTIONS_X + 176;
+const int OPTIONS_48_X = OPTIONS_36_X + SMALL_BUTTON_WIDTH + LEFT_MARGIN;;
 const int OPTIONS_48_Y = TOP_MARGIN + 170;
 
+const int END_GAME_NEW_GAME_X = 3;
+const int END_GAME_NEW_GAME_Y = 333;
+const int END_GAME_SAVE_SCORE_X = 390;
+const int END_GAME_SAVE_SCORE_Y = 333;
 //ENUMS
 enum BUTTON_XY{
 	NEW_GAME_BUTTON, HIGH_SCORES_BUTTON, OPTIONS_BUTTON,SCORE_BUTTON,GAME_AREA_BUTTON,//main screen buttons
@@ -82,5 +89,5 @@ enum BUTTON_XY{
 enum TILE_STATE{ EMPTY, FULL, SELECTED };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME};
 enum KEYS { UP, DOWN, LEFT, RIGHT };
-
+enum BUTTON_TYPE{ LARGE_BUTTON, SMALL_BUTTON, SHOW_ONLY_BUTTON,FAKE_BUTTON };
 #endif

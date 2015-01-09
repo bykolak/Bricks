@@ -83,16 +83,16 @@ void cButton::createButton(ALLEGRO_BITMAP *temp)
 
 	buttonBMP = al_create_bitmap(width, height);
 	al_set_target_bitmap(buttonBMP);
-	al_draw_bitmap_region(temp, 0, 0, width, height, 0, 0, 0);
-	if (type>2)al_draw_textf(arial24, WHITE, 10, 2, ALLEGRO_ALIGN_LEFT, text);
+	if (type<FAKE_BUTTON) al_draw_bitmap_region(temp, 0, type*31, width, height, 0, 0, 0);
+	if (type>SMALL_BUTTON)al_draw_textf(arial24, WHITE, 10, 2, ALLEGRO_ALIGN_LEFT, text);
 	else al_draw_textf(arial24, WHITE, width /2, 2, ALLEGRO_ALIGN_CENTRE, text);
 	
 	buttonPressedBMP = al_create_bitmap(width, height);
 	al_set_target_bitmap(buttonPressedBMP);
-	al_draw_bitmap_region(temp, 0, 0, width, height, 0, 0, 0);
-
-	al_draw_textf(arial24, RED, width / 2, 2, ALLEGRO_ALIGN_CENTRE, text);
-
+	
+	if (type<FAKE_BUTTON) al_draw_bitmap_region(temp, 0, type * 31, width, height, 0, 0, 0);
+	if (type>SMALL_BUTTON)al_draw_textf(arial24, RED, 10, 2, ALLEGRO_ALIGN_LEFT, text);
+	else al_draw_textf(arial24, RED, width / 2, 2, ALLEGRO_ALIGN_CENTRE, text);
 	al_set_target_bitmap(al_get_backbuffer(display));
 }
 
@@ -101,7 +101,7 @@ void cButton::drawButton()//draw button on screen
 	if (flags)
 	{
 		al_draw_bitmap(buttonPressedBMP, x, y, NULL);
-		if (type<2) al_draw_rounded_rectangle(x, y, x+width, y+height, 15, 15, WHITE, 3); //only for type 0,1 not 2
+		if (type<SHOW_ONLY_BUTTON) al_draw_rounded_rectangle(x, y, x+width, y+height, 15, 15, WHITE, 3); //only for type 0,1 not 2
 	}
 	else al_draw_bitmap(buttonBMP, x, y,NULL);
 }
@@ -121,7 +121,7 @@ cGame::cGame() //default constructor
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
 	number_of_selected = 0;
-	
+	//left_margin = LEFT_MARGIN;
 	int i = 0; 
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
@@ -130,35 +130,84 @@ cGame::cGame() //default constructor
 } 
 void cGame::loadButton() //using predefined const int as placeholder
 {
+	string line;
+	//string equals;
+	settings_file.open("vars.txt", fstream::out);
+	if (settings_file.is_open())
+	{
+		getline(settings_file, line);
+		//equals = line.find('=');
+		std::size_t found = line.find('=');
+		if (found != string::npos)
+		{
+
+		}
+		
+
+	}
 	
+	settings_file.close();
+	
+	//everything should be loaded from file. its temporary solution
 	button[NEW_GAME_BUTTON].changeButtonSize(NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[NEW_GAME_BUTTON].text = "NEW GAME";
+	button[NEW_GAME_BUTTON].type = LARGE_BUTTON;
+
 	button[HIGH_SCORES_BUTTON].changeButtonSize(HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_BUTTON].text = "HIGH SCORES";
+	button[NEW_GAME_BUTTON].type = LARGE_BUTTON;
+
 	button[OPTIONS_BUTTON].changeButtonSize(OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_BUTTON].text = "OPTIONS";
+	button[OPTIONS_BUTTON].type = LARGE_BUTTON;
+
 	button[SCORE_BUTTON].changeButtonSize(SCORE_X, SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[SCORE_BUTTON].text = "SCORE";
-	button[SCORE_BUTTON].type = 3;
+	button[SCORE_BUTTON].type = SHOW_ONLY_BUTTON;
+
 	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
 	button[GAME_AREA_BUTTON].text = "";
-	button[GAME_AREA_BUTTON].type = 2;
+	button[GAME_AREA_BUTTON].type = FAKE_BUTTON;
+
 	button[OPTIONS_SMALL_BUTTON].changeButtonSize(OPTIONS_SMALL_X, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_SMALL_BUTTON].text = "SMALL";
+	button[OPTIONS_SMALL_BUTTON].type = LARGE_BUTTON;
+
 	button[OPTIONS_LARGE_BUTTON].changeButtonSize(OPTIONS_LARGE_X, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_LARGE_BUTTON].text = "LARGE";
+	button[OPTIONS_LARGE_BUTTON].type = LARGE_BUTTON;
+
 	button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_CAMPAIGN_BUTTON].text = "CAMPAIGN";
+	button[OPTIONS_CAMPAIGN_BUTTON].type = LARGE_BUTTON;
+
 	button[OPTIONS_24_BUTTON].changeButtonSize(OPTIONS_24_X, OPTIONS_24_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_24_BUTTON].text = "24";
+	button[OPTIONS_24_BUTTON].type = SMALL_BUTTON;
+
 	button[OPTIONS_36_BUTTON].changeButtonSize(OPTIONS_36_X, OPTIONS_36_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_36_BUTTON].text = "36";
+	button[OPTIONS_36_BUTTON].type = SMALL_BUTTON;
+
 	button[OPTIONS_48_BUTTON].changeButtonSize(OPTIONS_48_X, OPTIONS_48_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_48_BUTTON].text = "48";
+	button[OPTIONS_48_BUTTON].type = SMALL_BUTTON;
+
 	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(HIGH_SCORE_RESET_X, HIGH_SCORE_RESET_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_RESET_BUTTON].text = "RESET SCORE";
+	button[HIGH_SCORES_RESET_BUTTON].type = LARGE_BUTTON;
+
 	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_CLOSE_BUTTON].text = "CLOSE";
+	button[HIGH_SCORES_CLOSE_BUTTON].type = LARGE_BUTTON;
+	
+	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(END_GAME_NEW_GAME_X, END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_NEW_GAME_BUTTON].text = "PLAY AGAIN?";
+	button[END_GAME_NEW_GAME_BUTTON].type = LARGE_BUTTON;
+	
+	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(HIGH_SCORE_CLOSE_X, HIGH_SCORE_CLOSE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_SAVE_SCORE_BUTTON].text = "SAVE SCORES";
+	button[END_GAME_SAVE_SCORE_BUTTON].type = LARGE_BUTTON;
 }
 int cGame::getGameState() //returns gamestate;
 {
@@ -188,7 +237,12 @@ void cGame::changeBricksXY(int _x, int _y)//changes map size
 	area_width = brick_size * bricks_x;
 	area_height = brick_size * bricks_y;
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
+	if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
+	if (screen_height < MIN_SCREEN_Y) screen_height = MIN_SCREEN_Y;
+	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
+	al_resize_display(display, screen_width, screen_height);
+	//left_margin = (screen_width - area_width) / 2;
 	
 }
 void cGame::changeBrickSize(int x)//changes brick size
@@ -197,7 +251,12 @@ void cGame::changeBrickSize(int x)//changes brick size
 	area_width = brick_size * bricks_x;
 	area_height = brick_size * bricks_y;
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
+	if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
+	if (screen_height < MIN_SCREEN_Y) screen_height = MIN_SCREEN_Y;
+	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
+	al_resize_display(display, screen_width, screen_height); // casuses crash
+	//left_margin = (screen_width - area_width) / 2;
 }
 void cGame::changeScore(int _score) //passes int that changes actual score
 {
@@ -256,8 +315,8 @@ void cGame::newGame() // restart game
 	for (i = 0; i<bricks_y; i++)
 		for (t = 0; t < bricks_x; t++)
 		{
-			//bricks[t][i].changeColor( rand() % BRICK_COLORS);  
-			 bricks[t][i].changeColor(1);//DEBUG
+			bricks[t][i].changeColor( rand() % BRICK_COLORS);  
+			bricks[t][i].changeColor(1);//DEBUG
 			bricks[t][i].changeState(FULL);
 		}
 	
@@ -268,6 +327,7 @@ void cGame::newGame() // restart game
 	game_state = PLAY_GAME;
 	score = 0;
 	number_of_selected = 0;
+	saved_scores = false;
 }
 int cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 {
@@ -452,5 +512,28 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 }
 void cGame::saveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
 {
+	int i = 0; 
+	int t = 0;
+	high_score[0] = 1000000;
+	if (!saved_scores)
+	{
+		for (i = 0; i<MAX_HIGH_SCORE; i++)
+		{
+			if (score>high_score[i])
+			{
+				for (t = MAX_HIGH_SCORE-1; t > i; t--)
+				{
+
+					high_score[t] = high_score[t - 1];
+				}
+				high_score[i] = score;
+				saved_scores = true;
+				i = MAX_HIGH_SCORE + 1;
+			}
+		}
+	}
 	//TODO
+	//add enter nickname
+	//add saving to file
+
 }
