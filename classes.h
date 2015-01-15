@@ -40,6 +40,7 @@ private:
 public:
 	int type;
 	const char* text;
+	
 	cButton();//constructor
 	bool getFlags();//return state of flag
 	void toggleFlags();//flips value of a flag;
@@ -63,7 +64,10 @@ private:
 	fstream settings_file;
 public:
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
+	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
 	cButton button[NUMBER_OF_BUTTONS];
+	ALLEGRO_USTR* player_name = al_ustr_new("");
+	ALLEGRO_USTR* edited_text = al_ustr_new("");
 	//int left_margin;
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
@@ -98,7 +102,8 @@ public:
 	void destroyBrick(); // after clicking selected bricks destroys them
 	void calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
-	void saveScores();//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
+	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
+	void saveScores();//
 };
 
 

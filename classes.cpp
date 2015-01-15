@@ -122,10 +122,15 @@ cGame::cGame() //default constructor
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
 	number_of_selected = 0;
 	//left_margin = LEFT_MARGIN;
+	player_name = NULL;
 	int i = 0; 
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		button[i].changeFlags(false);
+	}
+	for (i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		high_score_name[i] = al_ustr_new("Zbigniew");
 	}
 } 
 void cGame::loadButton() //using predefined const int as placeholder
@@ -317,6 +322,7 @@ void cGame::newGame() // restart game
 		{
 			bricks[t][i].changeColor( rand() % BRICK_COLORS);  
 			bricks[t][i].changeColor(1);//DEBUG
+			/////////////////////////////////////////////////////////////////
 			bricks[t][i].changeState(FULL);
 		}
 	
@@ -510,30 +516,50 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 		}
 	}
 }
-void cGame::saveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
+bool cGame::checkSaveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
 {
-	int i = 0; 
-	int t = 0;
-	high_score[0] = 1000000;
 	if (!saved_scores)
 	{
+		int i;
+		int t = 0;
 		for (i = 0; i<MAX_HIGH_SCORE; i++)
 		{
-			if (score>high_score[i])
-			{
-				for (t = MAX_HIGH_SCORE-1; t > i; t--)
-				{
+			if (score>high_score[i])	{ t++; }
+		}
+		if (t > 0) return true;
+		else return false;
+	}
+	return false;
+}
+void cGame::saveScores()
+{
+int i = 0;
+int t = 0;
 
-					high_score[t] = high_score[t - 1];
-				}
-				high_score[i] = score;
-				saved_scores = true;
-				i = MAX_HIGH_SCORE + 1;
+if (!saved_scores)
+{
+	for (i = 0; i<MAX_HIGH_SCORE; i++)
+	{
+		if (score>high_score[i])
+		{
+			for (t = MAX_HIGH_SCORE - 1; t > i; t--)
+			{
+
+				high_score[t] = high_score[t - 1];
 			}
+			high_score[i] = score;
+			high_score_name[i] = player_name;
+			player_name = al_ustr_new("");
+			edited_text = al_ustr_new("");
+			game_state = END_GAME;
+			saved_scores = true;
+			i = MAX_HIGH_SCORE + 1;
 		}
 	}
+}
 	//TODO
 	//add enter nickname
 	//add saving to file
+
 
 }

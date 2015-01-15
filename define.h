@@ -14,6 +14,7 @@ using namespace std;
 extern int BRICK_COLORS;
 //high scores 
 const int MAX_HIGH_SCORE = 10;
+const int MAX_USERNAME_LENGTH = 21;
 //minimum size of screen
 const int MIN_SCREEN_X = 1030;
 const int MIN_SCREEN_Y = 530;
@@ -87,7 +88,7 @@ enum BUTTON_XY{
 	NUMBER_OF_BUTTONS //array index of game.button[NUMBER_OF_BUTTONS]
 };
 enum TILE_STATE{ EMPTY, FULL, SELECTED };
-enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME};
+enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME, SAVING_SCORE};
 enum KEYS { UP, DOWN, LEFT, RIGHT };
 enum BUTTON_TYPE{ LARGE_BUTTON, SMALL_BUTTON, SHOW_ONLY_BUTTON,FAKE_BUTTON };
 #endif
