@@ -1,16 +1,16 @@
 Bricks
 ======
-Its my first project to make a clone of Bejeweled.
-You start with screen full of randomized 6-colored bricks.
-You get points by selecting and removing same color bricks. 
-You cant remove single bricks.
-More points are awarded for big chunks of bricks removed by single selection.
-If only single bricks left or all are removed you finish game.
-Gravity affects bricks so if you make a hole they will fall down.
-Theres gonna be three menu options "New Game" "High Scores" and "Quit"
+My first project to make a clone of Bejeweled.
+You start with a screen full of randomized 6-colored bricks.
+You get points by selecting and removing bricks of the same color. 
+You can't remove single bricks.
+More points are awarded for big chunks of bricks that are removed by a single selection.
+If only a single brick is left or all are removed, you finish the game.
+Bricks are affected by gravity so if you make a hole they fall down.
+There's gonna be three menu options: "New Game" "High Scores" and "Quit"
 "High Scores" will be kept in binary file called high.bri
 
-If i manage to finish it i will think about some additions to game like:
+If I manage to finish the procjet, I will think about some additions to game like:
 
 - anti gravity blocks
 
