@@ -6,8 +6,7 @@
 #include <string>
 extern ALLEGRO_FONT *arial24;
 extern ALLEGRO_DISPLAY *display;
-extern ALLEGRO_BITMAP *endBMP;
-//extern ALLEGRO_BITMAP *buttonsBMP;
+
 class cTile
 {
 private:
@@ -39,6 +38,7 @@ private:
 	ALLEGRO_BITMAP *buttonPressedBMP;
 public:
 	int type;
+	int state;
 	const char* text;
 	
 	cButton();//constructor
@@ -68,6 +68,12 @@ public:
 	cButton button[NUMBER_OF_BUTTONS];
 	ALLEGRO_USTR* player_name = al_ustr_new("");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
+	ALLEGRO_BITMAP *endBMP = NULL;
+	ALLEGRO_BITMAP *bricksBMP = NULL;
+	ALLEGRO_BITMAP *optionsBMP = NULL;
+	ALLEGRO_BITMAP *shadowBMP = NULL;
+	ALLEGRO_BITMAP *high_scoresBMP = NULL;
+	ALLEGRO_BITMAP *buttonsBMP = NULL;
 	//int left_margin;
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
@@ -91,9 +97,9 @@ public:
 	void changeScore(int _score); //passes int that changes actual score
 	void changeGameState(int _game_state); // changes game_state
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
-	void drawGameArea(ALLEGRO_BITMAP *_bricksBMP); // draw all bricks on screen
+	void drawGameArea(); // draw all bricks on screen
 	void newGame(); // restart game
-	int checkEndGame(); //checks if game ended (no more bricks to destroy)
+	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void highScores(); // open high scores;
 	void options(); // open options screen;
 	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
@@ -104,6 +110,9 @@ public:
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void saveScores();//
+	void enterPlayerName(int keycode, int unichar); 
+	void saveToFile();
+	void loadFromFile();
 };
 
 

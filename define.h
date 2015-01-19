@@ -10,6 +10,7 @@ using namespace std;
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
 #define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
+#define MASK_COLOR al_map_rgb(255,0,255)
 
 extern int BRICK_COLORS;
 //high scores 
@@ -41,19 +42,14 @@ const int MAX_CHARS = 25;//length of text on button
 const int SMALL_BUTTON_WIDTH = 70;
 const int SMALL_BUTTON_HEIGHT = 31;
 
-// positions of buttons on main screen //NEEDS EVALUATION (needs to be scalable)
-const int NEW_GAME_X = 5;
-const int NEW_GAME_Y = 3;
+const int DEBUG_X = 770;
+const int DEBUG_Y = 3;
 
 const int HIGH_SCORES_X = 260;
 const int HIGH_SCORES_Y = 3;
 
 const int OPTIONS_X = 515;
 const int OPTIONS_Y = 3;
-
-const int SCORE_X = 770;
-const int SCORE_Y = 3;
-
 //position of high_score buttons on screen 6,404  6, 441
 const int HIGH_SCORE_RESET_X = HIGH_SCORES_X + 6;
 const int HIGH_SCORE_RESET_Y = TOP_MARGIN + 404;

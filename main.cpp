@@ -22,76 +22,28 @@ int main(int argc, char **argv)
 	//main loop bools
 	bool done = false;
 	bool render = true;
-	bool back_space = false;
-	int keyboard_timer=0;
-	
+
 	int FPS = 60;
 	int mx = 0; //debug
 	int my = 0;//debug
-	int debug_end = 0;//debug
+
 	srand(time(NULL));
-	ALLEGRO_BITMAP *backgroundBMP = NULL;
-	ALLEGRO_BITMAP *bricksBMP = NULL;
-	ALLEGRO_BITMAP *optionsBMP = NULL;
-	ALLEGRO_BITMAP *shadowBMP = NULL;
-	ALLEGRO_BITMAP *high_scoresBMP = NULL;
-	ALLEGRO_BITMAP *buttonsBMP = NULL;
-	ALLEGRO_BITMAP *endBMP = NULL;
+
 	//======INIT
 	cGame game;
 	game.newGame();
-	game.high_score[0] = 1000000;
-	game.high_score[1] = 1000000;
-	game.high_score[2] = 1000000;
-	game.high_score[3] = 1000000;
-	game.high_score[4] = 1000000;
-	game.high_score[5] = 1000000;
-	game.high_score[6] = 1000000;
-	game.high_score[7] = 1000000;
-	//game.high_score[8] = 1000000;
 	game.loadButton();
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 
-	if (!al_init())
-	{
-		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing Allegro", NULL, NULL);
-		return -1;
-	}
-	display = al_create_display(game.screen_width, game.screen_height);
-	if (!display)
-	{
-		al_show_native_message_box(NULL, NULL, NULL, "Error Initializing display", NULL, NULL);
-		return -1;
-	}
-	al_init_font_addon();
-	al_init_ttf_addon();
-	al_init_primitives_addon();
-	al_install_keyboard();
-	al_install_mouse();
-	// LOADING GRAPHICS
-	al_init_image_addon();
-
-
-	shadowBMP = al_create_bitmap(game.screen_width, game.screen_height);
-	al_set_target_bitmap(shadowBMP);
-	al_clear_to_color(BLACK);
-	al_set_target_bitmap(al_get_backbuffer(display));
-
-	backgroundBMP = al_load_bitmap("background.bmp");
-	bricksBMP = al_load_bitmap("bricks.bmp");
-	optionsBMP = al_load_bitmap("options.bmp");
-	high_scoresBMP = al_load_bitmap("high_scores.bmp");
-	buttonsBMP = al_load_bitmap("buttons.bmp");
-	endBMP = al_load_bitmap("end.bmp");
 	arial24 = al_load_font("arial.ttf", 24, 0);
 	arial14 = al_load_font("arial.ttf", 14, 0);
-	game.changeScore(100000);
+	//game.changeScore(100000);
 	int i = 0;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 
-		game.button[i].createButton(buttonsBMP);
+		game.button[i].createButton(game.buttonsBMP);
 	}
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
@@ -172,28 +124,9 @@ int main(int argc, char **argv)
 					if (game.button[OPTIONS_SMALL_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game.changeGameState(REFRESH_GAME); }
 					if (game.button[OPTIONS_LARGE_BUTTON].getFlags())		{ game.changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game.changeGameState(REFRESH_GAME); }
 					if (game.button[OPTIONS_CAMPAIGN_BUTTON].getFlags())	{}
-					if (game.button[OPTIONS_24_BUTTON].getFlags())
-					{
-						game.changeBrickSize(BRICKS_SMALL);
-
-						//		game.changeGameState(PLAY_GAME);
-					}
-					if (game.button[OPTIONS_36_BUTTON].getFlags())
-					{
-						game.changeBrickSize(BRICKS_MEDIUM);
-						game.button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height);
-
-
-
-						//		game.changeGameState(PLAY_GAME);
-					}
-					if (game.button[OPTIONS_48_BUTTON].getFlags())
-					{
-						game.changeBrickSize(BRICKS_LARGE);
-						game.button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, game.area_width, game.area_height);
-						//		game.changeGameState(PLAY_GAME);
-					}
-
+					if (game.button[OPTIONS_24_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_SMALL); }
+					if (game.button[OPTIONS_36_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_MEDIUM); }
+					if (game.button[OPTIONS_48_BUTTON].getFlags())			{ game.changeBrickSize(BRICKS_LARGE); }
 				}
 				if (game.getGameState() == HIGH_SCORE) //if in high scores check these events
 				{
@@ -240,88 +173,51 @@ int main(int argc, char **argv)
 			}
 
 		}
-		else if (ev.type == ALLEGRO_EVENT_KEY_DOWN)
-		{
-			if (game.getGameState() == SAVING_SCORE)
-			{
-
-
-			}
-
-		}
-
+		
 		else if (ev.type == ALLEGRO_EVENT_KEY_CHAR)
 		{
 			if (game.getGameState() == SAVING_SCORE)
 			{
-				if (ev.keyboard.keycode <= ALLEGRO_KEY_9 || ev.keyboard.keycode == ALLEGRO_KEY_SPACE) //if A-Z and 0-9 pressed or spacebar
-					if (al_ustr_length(game.edited_text)<MAX_USERNAME_LENGTH) al_ustr_append_chr(game.edited_text, ev.keyboard.unichar);
-
-				if (ev.keyboard.keycode == ALLEGRO_KEY_BACKSPACE)
-				{
-					if (al_ustr_length(game.edited_text) > 0)
-					{
-
-						al_ustr_truncate(game.edited_text, al_ustr_length(game.edited_text) - 1);
-					} //temp
-
-				}
-				if (ev.keyboard.keycode == ALLEGRO_KEY_ENTER)
-				{
-					game.player_name = game.edited_text;
-					game.saveScores();
-				}
+				game.enterPlayerName(ev.keyboard.keycode,ev.keyboard.unichar);
+				
 			}
 		}
 		else if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			// 60 times per second
-			if (game.getGameState() == REFRESH_GAME) //if "new game" or "map size" button pressed
-			{
-				game.newGame();
-			}
-
-			if (game.getGameState() == PLAY_GAME)	debug_end = game.checkEndGame();
+			if (game.getGameState() == REFRESH_GAME)	{ game.newGame(); } //if "new game" or "map size" button pressed
+			if (game.getGameState() == PLAY_GAME)	{ game.checkEndGame(); }
 			game.updateNumberOfSelected();
-			game.button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X,
-				game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-			game.button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X,
-				game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 			render = true;
 		}
-
 
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))
 		{
-
-			//	al_draw_bitmap(backgroundBMP, 0, 0, 0);
-			game.drawGameArea(bricksBMP);
-
+			game.drawGameArea();
 			game.button[NEW_GAME_BUTTON].drawButton();
 			game.button[HIGH_SCORES_BUTTON].drawButton();
 			game.button[OPTIONS_BUTTON].drawButton();
 			game.button[SCORE_BUTTON].drawButton();
-			al_draw_textf(arial14, WHITE, SCORE_X + 650, SCORE_Y, ALLEGRO_ALIGN_LEFT, "gamestate %i", game.getGameState());//debug
+			
 
 
-			al_draw_textf(arial24, WHITE, SCORE_X + 240, SCORE_Y + 2, ALLEGRO_ALIGN_RIGHT, " %i", game.getScore());
+			al_draw_textf(arial24, WHITE, DEBUG_X + 240, DEBUG_Y + 2, ALLEGRO_ALIGN_RIGHT, " %i", game.getScore());
 
+			//al_draw_textf(arial14, WHITE, DEBUG_X + 650, DEBUG_Y, ALLEGRO_ALIGN_LEFT, "gamestate %i", game.getGameState());//debug
+			//if (game.button[GAME_AREA_BUTTON].getFlags())//debug
+			//{
+			//	al_draw_textf(arial14, WHITE, DEBUG_X + 250, DEBUG_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
+			//	al_draw_textf(arial14, WHITE, DEBUG_X + 350, DEBUG_Y, ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
+			//	al_draw_textf(arial14, WHITE, DEBUG_X + 450, DEBUG_Y, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());//debug
+			//	al_draw_textf(arial14, WHITE, DEBUG_X + 550, DEBUG_Y, ALLEGRO_ALIGN_LEFT, "brick_size %i", game.getBrickSize());//debug
 
-			if (game.button[GAME_AREA_BUTTON].getFlags())//debug
-			{
-				al_draw_textf(arial14, WHITE, SCORE_X + 250, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseX %i", mx);//debug
-				al_draw_textf(arial14, WHITE, SCORE_X + 350, SCORE_Y, ALLEGRO_ALIGN_LEFT, "mouseY %i", my);//debug
-				al_draw_textf(arial14, WHITE, SCORE_X + 450, SCORE_Y, ALLEGRO_ALIGN_LEFT, " Selected:%i", game.getNumberOfSelected());//debug
-				al_draw_textf(arial14, WHITE, SCORE_X + 550, SCORE_Y, ALLEGRO_ALIGN_LEFT, "brick_size %i", game.getBrickSize());//debug
-
-				al_draw_textf(arial14, WHITE, SCORE_X + 760, SCORE_Y, ALLEGRO_ALIGN_LEFT, "left %i", debug_end);//debug
-			}
+			//
+			//}
 			if (game.getGameState() == OPTIONS)
 			{
-				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-				al_draw_bitmap(optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
+				al_draw_tinted_bitmap(game.shadowBMP, TINT, 0, 0, 0);
+				al_draw_bitmap(game.optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
 				game.button[OPTIONS_SMALL_BUTTON].drawButton();
 				game.button[OPTIONS_LARGE_BUTTON].drawButton();
 				game.button[OPTIONS_CAMPAIGN_BUTTON].drawButton();
@@ -331,23 +227,32 @@ int main(int argc, char **argv)
 			}
 			if (game.getGameState() == HIGH_SCORE)
 			{
-				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-				al_draw_bitmap(high_scoresBMP, HIGH_SCORES_X, TOP_MARGIN, 0);
+				al_draw_tinted_bitmap(game.shadowBMP, TINT, 0, 0, 0);
+				//al_draw_bitmap(game.high_scoresBMP, HIGH_SCORES_X, TOP_MARGIN, 0);
+				al_draw_bitmap(game.endBMP, game.screen_width / 2 - (al_get_bitmap_width(game.endBMP) / 2), game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2), 0);
 				game.button[HIGH_SCORES_RESET_BUTTON].drawButton();
 				game.button[HIGH_SCORES_CLOSE_BUTTON].drawButton();
+				for (i = 0; i < MAX_HIGH_SCORE; i++)
+				{
+					al_draw_ustr(arial24, WHITE, game.screen_width / 2 - 300, game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, game.high_score_name[i]);
+
+
+					al_draw_textf(arial24, WHITE, game.screen_width / 2 + 250, game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_CENTRE, "%i ", game.high_score[i]);
+				}
+
 			}
 			if (game.getGameState() == END_GAME|| game.getGameState()==SAVING_SCORE)
 			{
-				al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-				al_draw_bitmap(endBMP, game.screen_width / 2 - (al_get_bitmap_width(endBMP) / 2), game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2), 0);
+				al_draw_tinted_bitmap(game.shadowBMP, TINT, 0, 0, 0);
+				al_draw_bitmap(game.endBMP, game.screen_width / 2 - (al_get_bitmap_width(game.endBMP) / 2), game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2), 0);
 				game.button[END_GAME_NEW_GAME_BUTTON].drawButton();
 				if (game.checkSaveScores()) game.button[END_GAME_SAVE_SCORE_BUTTON].drawButton();
 				for (i = 0; i < MAX_HIGH_SCORE; i++)
 				{
-				al_draw_ustr(arial24, WHITE, game.screen_width / 2 - 300, game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, game.high_score_name[i]);
+				al_draw_ustr(arial24, WHITE, game.screen_width / 2 - 300, game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, game.high_score_name[i]);
 				
 				
-					al_draw_textf(arial24, WHITE, game.screen_width / 2+250, game.screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + 25 * i+6, ALLEGRO_ALIGN_CENTRE, "%i ", game.high_score[i]);
+					al_draw_textf(arial24, WHITE, game.screen_width / 2+250, game.screen_height / 2 - (al_get_bitmap_height(game.endBMP) / 2) + 25 * i+6, ALLEGRO_ALIGN_CENTRE, "%i ", game.high_score[i]);
 				}
 				
 				al_draw_textf(arial24, WHITE,game.screen_width / 2, game.screen_height / 2 +75 , ALLEGRO_ALIGN_CENTRE, "you scored %i points !", game.getScore());
@@ -366,12 +271,6 @@ int main(int argc, char **argv)
 		
 		
 	}
-//	
-//  al_draw_text(arial24, al_map_rgb(255, 0, 0), 100, 100, 0, "Hello World");
-//  al_draw_filled_rectangle(10, 10, 100, 100, RED);
-	al_destroy_bitmap(backgroundBMP);
-	al_destroy_bitmap(bricksBMP);
-	al_destroy_bitmap(optionsBMP);
 	al_destroy_event_queue(event_queue);
 	al_destroy_display(display);
 	return 0;
