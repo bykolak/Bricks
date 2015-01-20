@@ -31,16 +31,13 @@ private:
 	int y;
 	int width;
 	int height;
-	
 	bool flags;
-	
 	ALLEGRO_BITMAP *buttonBMP;
 	ALLEGRO_BITMAP *buttonPressedBMP;
 public:
 	int type;
 	int state;
 	const char* text;
-	
 	cButton();//constructor
 	bool getFlags();//return state of flag
 	void toggleFlags();//flips value of a flag;
@@ -49,42 +46,42 @@ public:
 	void changeButtonSize(int _x, int _y, int _width, int _height); //sets all button parameters
 	void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
 	void drawButton();//draw button on screen
+	int getWidth();
+	int getHeight();
 };
 class cGame
 {
 private:
-	
 	int score; // players score
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
-	//bool flags[NUMBER_OF_FLAGS]; //button flags
-	fstream settings_file;
-public:
-	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
-	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
-	cButton button[NUMBER_OF_BUTTONS];
-	ALLEGRO_USTR* player_name = al_ustr_new("");
-	ALLEGRO_USTR* edited_text = al_ustr_new("");
-	ALLEGRO_BITMAP *endBMP = NULL;
-	ALLEGRO_BITMAP *bricksBMP = NULL;
-	ALLEGRO_BITMAP *optionsBMP = NULL;
-	ALLEGRO_BITMAP *shadowBMP = NULL;
-	ALLEGRO_BITMAP *high_scoresBMP = NULL;
-	ALLEGRO_BITMAP *buttonsBMP = NULL;
-	//int left_margin;
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
+	
+public:
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels
+	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
+	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
+	cButton button[NUMBER_OF_BUTTONS];
+	ALLEGRO_USTR* player_name = al_ustr_new("");
+	ALLEGRO_USTR* edited_text = al_ustr_new("");
+	ALLEGRO_BITMAP *scoreBMP = NULL;
+	ALLEGRO_BITMAP *bricksBMP = NULL;
+	ALLEGRO_BITMAP *optionsBMP = NULL;
+	ALLEGRO_BITMAP *shadowBMP = NULL;
+	ALLEGRO_BITMAP *buttonsBMP = NULL;
+	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
-	//cGame(cTile _bricks[BRICKS_X][BRICKS_Y]); //constructor for predefined maps
+	void updateButtons(int mouseX, int mouseY);//checks if mouse over button
+	void clickButtons(int mouseButton, int mouseX, int mouseY);
 	void loadButton(); //loads button locations from file
 	int getGameState(); //returns gamestate
 	int getScore(); // returns score
@@ -100,14 +97,16 @@ public:
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
-	void highScores(); // open high scores;
-	void options(); // open options screen;
+	void highScores(); // draw high scores;
+	void options(); // draw options screen;
+	void endGame(); //draw end game screen
 	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
 	void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them
 	void calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
+	void moveBrickLeft();//if empty vertical line then move rest of screen to left
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void saveScores();//
 	void enterPlayerName(int keycode, int unichar); 

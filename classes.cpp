@@ -46,7 +46,7 @@ cButton::cButton()//constructor
 	width = 0;
 	height = 0;
 	type = 0;
-	text = "fgdgd";
+	text = "default";
 	buttonBMP = NULL;
 	buttonPressedBMP = NULL;
 	
@@ -86,15 +86,15 @@ void cButton::createButton(ALLEGRO_BITMAP *temp)
 	buttonBMP = al_create_bitmap(width, height);
 	al_set_target_bitmap(buttonBMP);
 	if (type<FAKE_BUTTON) al_draw_bitmap_region(temp, 0, type*31, width, height, 0, 0, 0);
-	if (type>SMALL_BUTTON)al_draw_textf(arial24, WHITE, 10, 2, ALLEGRO_ALIGN_LEFT, text);
-	else al_draw_textf(arial24, WHITE, width /2, 2, ALLEGRO_ALIGN_CENTRE, text);
+	if (type>SMALL_BUTTON)al_draw_textf(arial24, WHITE, 10, 0, ALLEGRO_ALIGN_LEFT, text);
+	else al_draw_textf(arial24, WHITE, width /2, 0, ALLEGRO_ALIGN_CENTRE, text);
 	al_convert_mask_to_alpha(buttonBMP, MASK_COLOR);
 	buttonPressedBMP = al_create_bitmap(width, height);
 	al_set_target_bitmap(buttonPressedBMP);
 	
 	if (type<FAKE_BUTTON) al_draw_bitmap_region(temp, 0, type * 31, width, height, 0, 0, 0);
-	if (type>SMALL_BUTTON)al_draw_textf(arial24, RED, 10, 2, ALLEGRO_ALIGN_LEFT, text);
-	else al_draw_textf(arial24, RED, width / 2, 2, ALLEGRO_ALIGN_CENTRE, text);
+	if (type>SMALL_BUTTON)al_draw_textf(arial24, RED, 10, 0, ALLEGRO_ALIGN_LEFT, text);
+	else al_draw_textf(arial24, RED, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 	al_convert_mask_to_alpha(buttonPressedBMP, MASK_COLOR);
 	al_set_target_bitmap(al_get_backbuffer(display));
 }
@@ -110,6 +110,15 @@ void cButton::drawButton()//draw button on screen
 		}
 		else al_draw_bitmap(buttonBMP, x, y, NULL);
 //	}
+}
+
+int cButton::getWidth()
+{
+	return width;
+}
+int cButton::getHeight()
+{
+	return height;
 }
 //=====cGame methods
 cGame::cGame() //default constructor
@@ -140,15 +149,104 @@ cGame::cGame() //default constructor
 	al_init_image_addon();
 	bricksBMP = al_load_bitmap("bricks.bmp");
 	optionsBMP = al_load_bitmap("options.bmp");
-	high_scoresBMP = al_load_bitmap("high_scores.bmp");
 	buttonsBMP = al_load_bitmap("buttons.bmp");
-	endBMP = al_load_bitmap("end.bmp");
+	scoreBMP = al_load_bitmap("score.bmp");
 	shadowBMP = al_create_bitmap(screen_width, screen_height);
+	backgroundBMP = al_load_bitmap("background.bmp");
 	al_set_target_bitmap(shadowBMP);
 	al_clear_to_color(BLACK);
 	al_set_target_bitmap(al_get_backbuffer(display));
 	loadFromFile();
 } 
+void cGame::updateButtons(int mouseX,int mouseY)
+{
+	if (game_state == PLAY_GAME) //if playing game check these events
+	{
+		//if inside of button then change button[].flag to true value else false
+		button[NEW_GAME_BUTTON].overButton(mouseX, mouseY);
+		button[HIGH_SCORES_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_BUTTON].overButton(mouseX, mouseY);
+		button[GAME_AREA_BUTTON].overButton(mouseX, mouseY);
+	}
+	if (game_state == OPTIONS) //if in options check these events
+	{
+		button[OPTIONS_SMALL_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_LARGE_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_CAMPAIGN_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_24_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_36_BUTTON].overButton(mouseX, mouseY);
+		button[OPTIONS_48_BUTTON].overButton(mouseX, mouseY);
+	}
+	if (game_state == HIGH_SCORE) //if in high scores check these events
+	{
+		button[HIGH_SCORES_RESET_BUTTON].overButton(mouseX, mouseY);
+		button[HIGH_SCORES_CLOSE_BUTTON].overButton(mouseX, mouseY);
+	}
+	if (game_state == END_GAME) //if game ended check these events
+	{
+		button[END_GAME_NEW_GAME_BUTTON].overButton(mouseX, mouseY);
+		button[END_GAME_SAVE_SCORE_BUTTON].overButton(mouseX, mouseY);
+	}
+	if (game_state == SAVING_SCORE) //if saving score check these events
+	{
+		button[END_GAME_NEW_GAME_BUTTON].overButton(mouseX, mouseY);
+		button[END_GAME_SAVE_SCORE_BUTTON].overButton(mouseX, mouseY);
+	}
+
+}
+void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
+{
+	if (mouseButton==1) //if left mouse button pressed
+	{
+
+		if (game_state == PLAY_GAME) //if playing game check these clicks
+		{
+
+			if (button[NEW_GAME_BUTTON].getFlags())		{ game_state = REFRESH_GAME; }
+			if (button[HIGH_SCORES_BUTTON].getFlags())		{ game_state = HIGH_SCORE; }
+			if (button[OPTIONS_BUTTON].getFlags())			{ game_state = OPTIONS; }
+			if (button[GAME_AREA_BUTTON].getFlags())		{ selectBrick(mouseX, mouseY); }
+		}
+		if (game_state == OPTIONS) //if in options check these events
+		{
+			if (button[OPTIONS_SMALL_BUTTON].getFlags())		{ changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game_state = REFRESH_GAME; }
+			if (button[OPTIONS_LARGE_BUTTON].getFlags())		{ changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game_state = REFRESH_GAME; }
+			if (button[OPTIONS_CAMPAIGN_BUTTON].getFlags())	{}
+			if (button[OPTIONS_24_BUTTON].getFlags())			{ changeBrickSize(BRICKS_SMALL); }
+			if (button[OPTIONS_36_BUTTON].getFlags())			{ changeBrickSize(BRICKS_MEDIUM); }
+			if (button[OPTIONS_48_BUTTON].getFlags())			{ changeBrickSize(BRICKS_LARGE); }
+		}
+		if (game_state == HIGH_SCORE) //if in high scores check these events
+		{
+			if (button[HIGH_SCORES_RESET_BUTTON].getFlags())	{ resetHighScores(); }
+			if (button[HIGH_SCORES_CLOSE_BUTTON].getFlags())	{ game_state = PLAY_GAME; 	button[HIGH_SCORES_CLOSE_BUTTON].changeFlags(false); }
+		}
+		if (game_state == END_GAME) //if game ended
+		{
+			if (button[END_GAME_NEW_GAME_BUTTON].getFlags()) { game_state = REFRESH_GAME; }
+			if (button[END_GAME_SAVE_SCORE_BUTTON].getFlags() && checkSaveScores()) { game_state = SAVING_SCORE; }
+		}
+		if (game_state == SAVING_SCORE) //if game ended
+		{
+			if (button[END_GAME_NEW_GAME_BUTTON].getFlags()) { game_state = REFRESH_GAME; }
+			if (button[END_GAME_SAVE_SCORE_BUTTON].getFlags()) { game_state = SAVING_SCORE; }
+		}
+
+	}
+
+	if (mouseButton == 2) //if right mouse button pressed
+	{
+		if (game_state == PLAY_GAME) //if playing game check these clicks
+		{
+			if (button[GAME_AREA_BUTTON].getFlags())		
+			{ changeTile((mouseX - LEFT_MARGIN) / getBrickSize(), (mouseY - TOP_MARGIN) / getBrickSize(), 3); } //debug		
+		}
+		if (game_state == OPTIONS)		{ game_state = PLAY_GAME; }
+		if (game_state == HIGH_SCORE)	{ game_state = PLAY_GAME; }
+
+	}
+
+}
 void cGame::loadButton() //using predefined const int as placeholder
 {
 	
@@ -202,22 +300,28 @@ void cGame::loadButton() //using predefined const int as placeholder
 	button[OPTIONS_48_BUTTON].text = "48";
 	button[OPTIONS_48_BUTTON].type = SMALL_BUTTON;
 
-	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_RESET_BUTTON].text = "RESET SCORE";
 	button[HIGH_SCORES_RESET_BUTTON].type = LARGE_BUTTON;
 
-	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_CLOSE_BUTTON].text = "CLOSE";
 	button[HIGH_SCORES_CLOSE_BUTTON].type = LARGE_BUTTON;
 	
-	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[END_GAME_NEW_GAME_BUTTON].text = "PLAY AGAIN?";
 	button[END_GAME_NEW_GAME_BUTTON].type = LARGE_BUTTON;
 	
-	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[END_GAME_SAVE_SCORE_BUTTON].text = "SAVE SCORES";
 	button[END_GAME_SAVE_SCORE_BUTTON].type = LARGE_BUTTON;
 
+	int i = 0;
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+
+		button[i].createButton(buttonsBMP);
+	}
 
 }
 int cGame::getGameState() //returns gamestate;
@@ -262,10 +366,10 @@ void cGame::changeBricksXY(int _x, int _y)//changes map size
 	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
 	al_resize_display(display, screen_width, screen_height);
 
-	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(endBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(endBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	
 	
 }
@@ -311,6 +415,13 @@ void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 }
 void cGame::drawGameArea() // draw all bricks on screen;
 {
+	int  x_times = screen_width / al_get_bitmap_width(backgroundBMP) + 1;
+	int  y_times = screen_height / al_get_bitmap_height(backgroundBMP) + 1;
+	for (int i = 0; i < x_times; i++)
+		for (int t = 0; t < y_times; t++)	al_draw_bitmap(backgroundBMP, i * 128, t * 128, NULL);
+	
+	al_draw_tinted_bitmap_region(shadowBMP, TINT3,0, 0, button[GAME_AREA_BUTTON].getWidth(), button[GAME_AREA_BUTTON].getHeight(), LEFT_MARGIN, TOP_MARGIN, NULL);
+	al_draw_rectangle(LEFT_MARGIN, TOP_MARGIN, button[GAME_AREA_BUTTON].getWidth() + LEFT_MARGIN+1, button[GAME_AREA_BUTTON].getHeight() + TOP_MARGIN+1, BLACK, 3);
 	int i = 0;
 	int t = 0;
 
@@ -331,6 +442,11 @@ void cGame::drawGameArea() // draw all bricks on screen;
 			}
 			
 		}
+	button[NEW_GAME_BUTTON].drawButton();
+	button[HIGH_SCORES_BUTTON].drawButton();
+	button[OPTIONS_BUTTON].drawButton();
+	button[SCORE_BUTTON].drawButton();
+	al_draw_textf(arial24, WHITE, DEBUG_X + 240, DEBUG_Y + 2, ALLEGRO_ALIGN_RIGHT, " %i", score);
 }
 void cGame::newGame() // restart game
 {
@@ -395,12 +511,44 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 
 void cGame::highScores() // open high scores;
 {
-	game_state = HIGH_SCORE; //NEEDS EVALUATION COZ SAME AS changeState(HIGH_SCORE)
+	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
+	al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2), 0);
+	button[HIGH_SCORES_RESET_BUTTON].drawButton();
+	button[HIGH_SCORES_CLOSE_BUTTON].drawButton();
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		al_draw_ustr(arial24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+
+
+		al_draw_textf(arial24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
+	}
 }
 
 void cGame::options()// open options screen;
 {
-	game_state = OPTIONS; //NEEDS EVALUATION COZ SAME AS changeState(OPTIONS)
+	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
+	al_draw_bitmap(optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
+	button[OPTIONS_SMALL_BUTTON].drawButton();
+	button[OPTIONS_LARGE_BUTTON].drawButton();
+	button[OPTIONS_CAMPAIGN_BUTTON].drawButton();
+	button[OPTIONS_24_BUTTON].drawButton();
+	button[OPTIONS_36_BUTTON].drawButton();
+	button[OPTIONS_48_BUTTON].drawButton();
+}
+void cGame::endGame()
+{
+	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
+	al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2), 0);
+	button[END_GAME_NEW_GAME_BUTTON].drawButton();
+	if (checkSaveScores()) button[END_GAME_SAVE_SCORE_BUTTON].drawButton();
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		al_draw_ustr(arial24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_textf(arial24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
+	}
+
+	al_draw_textf(arial24, WHITE, screen_width / 2, screen_height / 2 + 75, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", score);
+
 }
 void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
@@ -534,6 +682,21 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 			}
 		}
 	}
+	moveBrickLeft();
+}
+void cGame::moveBrickLeft()
+{
+	for (int x = 0; x < bricks_x; x++)
+	{
+		for (int y = 0; y < bricks_y; y++)
+		{
+			if (bricks[x][y].getState() == EMPTY)
+			{
+				//TODO
+			}
+
+		}
+	}
 }
 bool cGame::checkSaveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
 {
@@ -583,18 +746,13 @@ saveToFile();
 void cGame::enterPlayerName(int keycode, int unichar)
 {
 	if (keycode <= ALLEGRO_KEY_9 || keycode == ALLEGRO_KEY_SPACE) //if A-Z and 0-9 pressed or spacebar
-		if (al_ustr_length(edited_text)<MAX_USERNAME_LENGTH) al_ustr_append_chr(edited_text, unichar);
+		if (al_ustr_length(edited_text) < MAX_USERNAME_LENGTH) al_ustr_append_chr(edited_text, unichar);
 
 	if (keycode == ALLEGRO_KEY_BACKSPACE)
 	{
-		if (al_ustr_length(edited_text) > 0)
-		{
-
-			al_ustr_truncate(edited_text, al_ustr_length(edited_text) - 1);
-		} //temp
-
+		if (al_ustr_length(edited_text) > 0)	{ al_ustr_truncate(edited_text, al_ustr_length(edited_text) - 1); }
 	}
-	if (keycode == ALLEGRO_KEY_ENTER)
+	if (keycode == ALLEGRO_KEY_ENTER|| keycode== ALLEGRO_KEY_PAD_ENTER)
 	{
 		player_name = edited_text;
 		saveScores();
@@ -603,7 +761,7 @@ void cGame::enterPlayerName(int keycode, int unichar)
 
 void cGame::saveToFile()
 {
-	ALLEGRO_FILE* high_score_file = al_fopen("hs.txt", "wb");
+	ALLEGRO_FILE* high_score_file = al_fopen("high_score.bri", "wb");
 	int i = 0;
 	for (i = 0; i < MAX_HIGH_SCORE; i++)
 	{
@@ -617,7 +775,7 @@ void cGame::saveToFile()
 }
 void cGame::loadFromFile()
 {
-	ALLEGRO_FILE* high_score_file = al_fopen("hs.txt", "rb");
+	ALLEGRO_FILE* high_score_file = al_fopen("high_score.bri", "rb");
 	int i = 0;
 	for (i = 0; i < MAX_HIGH_SCORE; i++)
 	{
