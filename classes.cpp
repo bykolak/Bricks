@@ -136,6 +136,7 @@ cGame::cGame() //default constructor
 	area_height = brick_size * bricks_y;
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
+	left_game_area_margin = (screen_width - area_width) / 2;
 	number_of_selected = 0;
 	player_name = NULL;
 	al_init();
@@ -158,7 +159,7 @@ cGame::cGame() //default constructor
 	al_set_target_bitmap(al_get_backbuffer(display));
 	loadFromFile();
 } 
-void cGame::updateButtons(int mouseX,int mouseY)
+void cGame::checkButtons(int mouseX,int mouseY)
 {
 	if (game_state == PLAY_GAME) //if playing game check these events
 	{
@@ -229,7 +230,7 @@ void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
 		if (game_state == SAVING_SCORE) //if game ended
 		{
 			if (button[END_GAME_NEW_GAME_BUTTON].getFlags()) { game_state = REFRESH_GAME; }
-			if (button[END_GAME_SAVE_SCORE_BUTTON].getFlags()) { game_state = SAVING_SCORE; }
+		//	if (button[END_GAME_SAVE_SCORE_BUTTON].getFlags() && !saved_scores) { player_name = edited_text; saveScores(); }
 		}
 
 	}
@@ -238,65 +239,105 @@ void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
 	{
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
+			if (button[NEW_GAME_BUTTON].getFlags())		{ game_state = CHEAT; }
 			if (button[GAME_AREA_BUTTON].getFlags())		
-			{ changeTile((mouseX - LEFT_MARGIN) / getBrickSize(), (mouseY - TOP_MARGIN) / getBrickSize(), 3); } //debug		
+			{
+				changeTile((mouseX - left_game_area_margin ) / brick_size, (mouseY - TOP_MARGIN) / brick_size, 3);
+			} //debug		
 		}
 		if (game_state == OPTIONS)		{ game_state = PLAY_GAME; }
 		if (game_state == HIGH_SCORE)	{ game_state = PLAY_GAME; }
-
+		
 	}
 
+}
+void cGame::updatePositions()
+{
+		bricks_on_screen = bricks_x * bricks_y;
+		area_width = brick_size * bricks_x;
+		area_height = brick_size * bricks_y;
+		screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
+		if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
+
+		left_game_area_margin = (screen_width - area_width) / 2;
+
+		screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
+		if (screen_height <= MIN_SCREEN_Y) screen_height = MIN_SCREEN_Y;
+		left_button_margin = (screen_width - (4 * BUTTON_WIDTH + 3 * LEFT_MARGIN)) / 2;
+		for (int i = 0; i <= SCORE_BUTTON; i++)
+		{
+			button[i].changeButtonSize(left_button_margin + (i*LEFT_MARGIN) + (BUTTON_WIDTH*i), 3, BUTTON_WIDTH, BUTTON_HEIGHT);
+		}
+		int optionsX = left_button_margin + (2 * LEFT_MARGIN) + (BUTTON_WIDTH * 2);
+		button[OPTIONS_SMALL_BUTTON].changeButtonSize(optionsX + 5, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		button[OPTIONS_LARGE_BUTTON].changeButtonSize(optionsX + 5, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(optionsX + 5, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		
+		for (int i = OPTIONS_24_BUTTON; i <= OPTIONS_48_BUTTON; i++)
+		{
+			button[i].changeButtonSize(optionsX + 16 + ((i - OPTIONS_24_BUTTON) * SMALL_BUTTON_WIDTH + (i - OPTIONS_24_BUTTON) * LEFT_MARGIN), OPTIONS_SIZE_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+		}
+
+
+		button[GAME_AREA_BUTTON].changeButtonSize(left_game_area_margin, TOP_MARGIN, area_width, area_height);
+
+		button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+		button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+		button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	if (update_position)
+	{
+		al_resize_display(display, screen_width, screen_height);
+		update_position = false;
+	}
 }
 void cGame::loadButton() //using predefined const int as placeholder
 {
 	
 	// positions of buttons on main screen //NEEDS EVALUATION (needs to be scalable)
-	const int NEW_GAME_X = 5;
-	const int NEW_GAME_Y = 3;
-	const int SCORE_X = 770;
-	const int SCORE_Y = 3;
-	//everything should be loaded from file. its temporary solution
-	button[NEW_GAME_BUTTON].changeButtonSize(NEW_GAME_X, NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	for (int i = 0; i <= SCORE_BUTTON; i++)
+	{
+		button[i].changeButtonSize(LEFT_MARGIN + (i*LEFT_MARGIN) + (BUTTON_WIDTH*i), 3, BUTTON_WIDTH, BUTTON_HEIGHT);
+	}
+
 	button[NEW_GAME_BUTTON].text = "NEW GAME";
 	button[NEW_GAME_BUTTON].type = LARGE_BUTTON;
 
-	button[HIGH_SCORES_BUTTON].changeButtonSize(HIGH_SCORES_X, HIGH_SCORES_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[HIGH_SCORES_BUTTON].text = "HIGH SCORES";
 	button[HIGH_SCORES_BUTTON].type = LARGE_BUTTON;
 
-	button[OPTIONS_BUTTON].changeButtonSize(OPTIONS_X, OPTIONS_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_BUTTON].text = "OPTIONS";
 	button[OPTIONS_BUTTON].type = LARGE_BUTTON;
 
-	button[SCORE_BUTTON].changeButtonSize(SCORE_X, SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[SCORE_BUTTON].text = "SCORE";
 	button[SCORE_BUTTON].type = SHOW_ONLY_BUTTON;
 
-	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
+	button[GAME_AREA_BUTTON].changeButtonSize(left_game_area_margin, TOP_MARGIN, area_width, area_height);
 	button[GAME_AREA_BUTTON].text = "";
 	button[GAME_AREA_BUTTON].type = FAKE_BUTTON;
 
-	button[OPTIONS_SMALL_BUTTON].changeButtonSize(OPTIONS_SMALL_X, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_SMALL_BUTTON].changeButtonSize(0, OPTIONS_SMALL_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_SMALL_BUTTON].text = "SMALL";
 	button[OPTIONS_SMALL_BUTTON].type = LARGE_BUTTON;
 
-	button[OPTIONS_LARGE_BUTTON].changeButtonSize(OPTIONS_LARGE_X, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_LARGE_BUTTON].changeButtonSize(0, OPTIONS_LARGE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_LARGE_BUTTON].text = "LARGE";
 	button[OPTIONS_LARGE_BUTTON].type = LARGE_BUTTON;
 
-	button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(OPTIONS_CAMPAIGN_X, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	button[OPTIONS_CAMPAIGN_BUTTON].changeButtonSize(0, OPTIONS_CAMPAIGN_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	button[OPTIONS_CAMPAIGN_BUTTON].text = "CAMPAIGN";
 	button[OPTIONS_CAMPAIGN_BUTTON].type = LARGE_BUTTON;
 
-	button[OPTIONS_24_BUTTON].changeButtonSize(OPTIONS_24_X, OPTIONS_24_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_24_BUTTON].changeButtonSize(0, 0, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_24_BUTTON].text = "24";
 	button[OPTIONS_24_BUTTON].type = SMALL_BUTTON;
 
-	button[OPTIONS_36_BUTTON].changeButtonSize(OPTIONS_36_X, OPTIONS_36_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_36_BUTTON].changeButtonSize(0, 0, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_36_BUTTON].text = "36";
 	button[OPTIONS_36_BUTTON].type = SMALL_BUTTON;
 
-	button[OPTIONS_48_BUTTON].changeButtonSize(OPTIONS_48_X, OPTIONS_48_Y, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
+	button[OPTIONS_48_BUTTON].changeButtonSize(0, 0, SMALL_BUTTON_WIDTH, SMALL_BUTTON_HEIGHT);
 	button[OPTIONS_48_BUTTON].text = "48";
 	button[OPTIONS_48_BUTTON].type = SMALL_BUTTON;
 
@@ -324,21 +365,10 @@ void cGame::loadButton() //using predefined const int as placeholder
 	}
 
 }
-int cGame::getGameState() //returns gamestate;
+bool cGame::checkGameState(int state)//returns true if state=game_state
 {
-	return game_state;
-}
-int cGame::getScore() // returns score;
-{
-	return score;
-}
-int cGame::getNumberOfSelected()  //returns how many bricks are selected
-{
-	return number_of_selected;
-}
-int cGame::getBrickSize()//returns size of brick in pixels
-{
-	return brick_size;
+	if (state == game_state)	{ return true; }
+	else { return false; }
 }
 void cGame::resetHighScores() //resets all saved highscores TODO
 {
@@ -347,7 +377,7 @@ void cGame::resetHighScores() //resets all saved highscores TODO
 	{
 
 		high_score[i] = 0;
-		high_score_name[i] = al_ustr_new("  ");
+		high_score_name[i] = al_ustr_new(".....");
 	}
 	saveToFile();
 	
@@ -356,43 +386,12 @@ void cGame::changeBricksXY(int _x, int _y)//changes map size
 {
 	bricks_x =_x;
 	bricks_y = _y;
-	bricks_on_screen = bricks_x * bricks_y;
-	area_width = brick_size * bricks_x;
-	area_height = brick_size * bricks_y;
-	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
-	if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
-	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
-	if (screen_height < MIN_SCREEN_Y) screen_height = MIN_SCREEN_Y;
-	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
-	al_resize_display(display, screen_width, screen_height);
-
-	button[HIGH_SCORES_CLOSE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[HIGH_SCORES_RESET_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[END_GAME_NEW_GAME_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_NEW_GAME_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_NEW_GAME_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	button[END_GAME_SAVE_SCORE_BUTTON].changeButtonSize(screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2) + END_GAME_SAVE_SCORE_X, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + END_GAME_SAVE_SCORE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-	
-	
+	update_position = true;	
 }
 void cGame::changeBrickSize(int x)//changes brick size
 {
 	brick_size = x;
-	area_width = brick_size * bricks_x;
-	area_height = brick_size * bricks_y;
-	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
-	if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
-	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
-	if (screen_height < MIN_SCREEN_Y) screen_height = MIN_SCREEN_Y;
-	button[GAME_AREA_BUTTON].changeButtonSize(LEFT_MARGIN, TOP_MARGIN, area_width, area_height);
-	al_resize_display(display, screen_width, screen_height); // casuses crash
-	//left_margin = (screen_width - area_width) / 2;
-}
-void cGame::changeScore(int _score) //passes int that changes actual score
-{
-	score += _score;
-}
-void cGame::changeGameState(int _game_state) // changes game_state;
-{
-	game_state = _game_state;
+	update_position = true;
 }
 void cGame::updateNumberOfSelected() //checks and update number of selected bricks
 {
@@ -420,8 +419,9 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	for (int i = 0; i < x_times; i++)
 		for (int t = 0; t < y_times; t++)	al_draw_bitmap(backgroundBMP, i * 128, t * 128, NULL);
 	
-	al_draw_tinted_bitmap_region(shadowBMP, TINT3,0, 0, button[GAME_AREA_BUTTON].getWidth(), button[GAME_AREA_BUTTON].getHeight(), LEFT_MARGIN, TOP_MARGIN, NULL);
-	al_draw_rectangle(LEFT_MARGIN, TOP_MARGIN, button[GAME_AREA_BUTTON].getWidth() + LEFT_MARGIN+1, button[GAME_AREA_BUTTON].getHeight() + TOP_MARGIN+1, BLACK, 3);
+	left_game_area_margin = (screen_width - area_width) / 2;
+	al_draw_tinted_bitmap_region(shadowBMP, TINT3, 0, 0, button[GAME_AREA_BUTTON].getWidth(), button[GAME_AREA_BUTTON].getHeight(), left_game_area_margin, TOP_MARGIN, NULL);
+	al_draw_rectangle(left_game_area_margin, TOP_MARGIN, button[GAME_AREA_BUTTON].getWidth() + left_game_area_margin + 1, button[GAME_AREA_BUTTON].getHeight() + TOP_MARGIN + 1, BLACK, 3);
 	int i = 0;
 	int t = 0;
 
@@ -431,14 +431,14 @@ void cGame::drawGameArea() // draw all bricks on screen;
 			
 			if (bricks[t][i].getState() !=EMPTY)
 			{
-				if (brick_size == BRICKS_LARGE)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 0, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 48, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_SMALL)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*getBrickSize()), 84, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_LARGE)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 48, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 84, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
 			}
 			
 			if (bricks[t][i].getState() == SELECTED)
 			{
-				al_draw_tinted_bitmap_region(bricksBMP, TINT2, 0, 0, getBrickSize(), getBrickSize(), t*getBrickSize() + LEFT_MARGIN, i*getBrickSize() + TOP_MARGIN, NULL);
+				al_draw_tinted_bitmap_region(bricksBMP, TINT2, 0, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
 			}
 			
 		}
@@ -446,9 +446,9 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	button[HIGH_SCORES_BUTTON].drawButton();
 	button[OPTIONS_BUTTON].drawButton();
 	button[SCORE_BUTTON].drawButton();
-	al_draw_textf(arial24, WHITE, DEBUG_X + 240, DEBUG_Y + 2, ALLEGRO_ALIGN_RIGHT, " %i", score);
+	al_draw_textf(arial24, WHITE, left_button_margin + (SCORE_BUTTON*LEFT_MARGIN) + (BUTTON_WIDTH*SCORE_BUTTON) + 240,5, ALLEGRO_ALIGN_RIGHT, " %i", score);
 }
-void cGame::newGame() // restart game
+void cGame::newGame(bool debug) // restart game
 {
 	int i = 0;
 	int t = 0;
@@ -456,8 +456,7 @@ void cGame::newGame() // restart game
 		for (t = 0; t < bricks_x; t++)
 		{
 			bricks[t][i].changeColor( rand() % BRICK_COLORS);  
-		//	bricks[t][i].changeColor(1);//DEBUG
-			/////////////////////////////////////////////////////////////////
+			if (debug) bricks[t][i].changeColor(1);//DEBUG
 			bricks[t][i].changeState(FULL);
 		}
 	
@@ -504,30 +503,29 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 		if (selected == 0) game_state = END_GAME;
 		
 	}
-
-	
-	
-
-
 void cGame::highScores() // open high scores;
 {
+//	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;//helps with bug that makes screen_height 0 after clicking reset score button 
 	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-	al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2), 0);
+	al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), (screen_height / 2) - (al_get_bitmap_height(scoreBMP) / 2), 0);
+
 	button[HIGH_SCORES_RESET_BUTTON].drawButton();
 	button[HIGH_SCORES_CLOSE_BUTTON].drawButton();
+	al_draw_textf(arial24, RED, 0, 0, 0, "XX: %d  YY: %d", xx, yy);
+	al_draw_textf(arial24, RED, 0, 30, 0, "bitmap height: %d screen height: %d", al_get_bitmap_height(scoreBMP), screen_height);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		al_draw_ustr(arial24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_ustr(arial24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + (25 * i) + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
 
 
-		al_draw_textf(arial24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
+		al_draw_textf(arial24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + (25 * i) + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
 	}
 }
 
 void cGame::options()// open options screen;
 {
 	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-	al_draw_bitmap(optionsBMP, OPTIONS_X, TOP_MARGIN, 0);
+	al_draw_bitmap(optionsBMP, left_button_margin + (OPTIONS_BUTTON*LEFT_MARGIN) + (BUTTON_WIDTH*OPTIONS_BUTTON), TOP_MARGIN, 0);
 	button[OPTIONS_SMALL_BUTTON].drawButton();
 	button[OPTIONS_LARGE_BUTTON].drawButton();
 	button[OPTIONS_CAMPAIGN_BUTTON].drawButton();
@@ -552,8 +550,8 @@ void cGame::endGame()
 }
 void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
-	int x = (_mouse_x - LEFT_MARGIN) / getBrickSize();
-	int y = (_mouse_y - TOP_MARGIN) / getBrickSize();
+	int x = (_mouse_x - left_game_area_margin) / brick_size;
+	int y = (_mouse_y - TOP_MARGIN) / brick_size;
 	int xx = 0;
 	int yy = 0;
 	int refresh = 0; 
@@ -622,6 +620,7 @@ int cGame::checkNeighbourBrick(int x, int y)  //if x,y brick is already selected
 		}
 		return selected;
 	}
+	return 0;
 }
 void cGame::deselectBrick() // clears selection of bricks 
 {
@@ -659,7 +658,7 @@ void cGame::calculateScore() //calculates score for destroyed bricks
 	int i = 0;
 	for (i = number_of_selected; i>=0; i--)
 	{
-		changeScore(i*2); //NEEDS EVALUATION
+		score+= i*2; //NEEDS EVALUATION
 	}
 	
 }
@@ -758,7 +757,6 @@ void cGame::enterPlayerName(int keycode, int unichar)
 		saveScores();
 	}
 }
-
 void cGame::saveToFile()
 {
 	ALLEGRO_FILE* high_score_file = al_fopen("high_score.bri", "wb");

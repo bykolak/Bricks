@@ -24,14 +24,11 @@ int main(int argc, char **argv)
 	bool render = true;
 
 	int FPS = 60;
-	int mx = 0; //debug
-	int my = 0;//debug
-
-	srand(time(NULL));
+		srand(time(NULL));
 
 	//======INIT
 	cGame game;
-	game.newGame();
+	game.newGame(false);
 	arial24 = al_load_font("arial.ttf", 24, 0);
 	arial14 = al_load_font("arial.ttf", 14, 0);
 	game.loadButton();
@@ -58,9 +55,7 @@ int main(int argc, char **argv)
 		}
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_AXES) //checks if mouse moved 
 		{
-			mx = (ev.mouse.x - LEFT_MARGIN) / game.getBrickSize();//debug
-			my = (ev.mouse.y - TOP_MARGIN) / game.getBrickSize();//debug
-			game.updateButtons(ev.mouse.x,ev.mouse.y);//update flags
+			game.checkButtons(ev.mouse.x,ev.mouse.y);//update if mouse over button
 		}
 		else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) //checks if mouse button pressed
 		{
@@ -69,13 +64,15 @@ int main(int argc, char **argv)
 		}		
 		else if (ev.type == ALLEGRO_EVENT_KEY_CHAR)
 		{
-			if (game.getGameState() == SAVING_SCORE) {	game.enterPlayerName(ev.keyboard.keycode,ev.keyboard.unichar);	}
+			if (game.checkGameState(SAVING_SCORE)) { game.enterPlayerName(ev.keyboard.keycode, ev.keyboard.unichar); }
 		}
 		else if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			// 60 times per second
-			if (game.getGameState() == REFRESH_GAME)	{ game.newGame(); } //if "new game" or "map size" button pressed
-			if (game.getGameState() == PLAY_GAME)	{ game.checkEndGame(); }
+			game.updatePositions();
+			if (game.checkGameState(REFRESH_GAME))	{ game.newGame(false); } //if "new game" or "map size" button pressed
+			if (game.checkGameState(CHEAT))			{ game.newGame(true); }
+			if (game.checkGameState(PLAY_GAME))		{ game.checkEndGame(); }
 			game.updateNumberOfSelected();
 			render = true;
 		}
@@ -84,16 +81,16 @@ int main(int argc, char **argv)
 		{
 			
 			game.drawGameArea();
-			if (game.getGameState() == OPTIONS)											{ game.options(); }
-			if (game.getGameState() == HIGH_SCORE)										{ game.highScores(); }
-			if (game.getGameState() == END_GAME|| game.getGameState()==SAVING_SCORE)	{ game.endGame(); }
-			if (game.getGameState() == SAVING_SCORE)
+			if (game.checkGameState(OPTIONS))											{ game.options(); }
+			if (game.checkGameState(HIGH_SCORE))										{ game.highScores(); }
+			if (game.checkGameState(END_GAME) || game.checkGameState(SAVING_SCORE))	{ game.endGame(); }
+			if (game.checkGameState(SAVING_SCORE))
 			{
 				al_draw_textf(arial24, WHITE, game.screen_width / 2-100, game.screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
 				al_draw_ustr(arial24, RED, game.screen_width / 2, game.screen_height / 2 + 100, NULL, game.edited_text);
 			}
-			
-			
+			al_draw_textf(arial24, RED, 0, 50, 0, "screen height: %d", game.screen_height);
+			al_draw_textf(arial24, RED, 0, 80, 0, "left margin: %d", game.button[GAME_AREA_BUTTON].x);
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(115, 115, 115));
 			render = false;

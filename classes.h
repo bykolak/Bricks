@@ -27,14 +27,15 @@ int getState();
 class cButton
 {
 private:
-	int x;
-	int y;
+	
 	int width;
 	int height;
 	bool flags;
 	ALLEGRO_BITMAP *buttonBMP;
 	ALLEGRO_BITMAP *buttonPressedBMP;
 public:
+	int x;
+	int y;
 	int type;
 	int state;
 	const char* text;
@@ -52,21 +53,25 @@ public:
 class cGame
 {
 private:
+	int xx, yy;
 	int score; // players score
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
+	bool update_position;
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
-	
+	int left_button_margin;//where to start draw top buttons
+	int left_game_area_margin;// where to start draw game area
+
 public:
 	int screen_width;//screen size x in pixels
-	int screen_height;//screen size y in pixels
+	int screen_height;//screen size y in pixels	
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
 	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
 	cButton button[NUMBER_OF_BUTTONS];
@@ -80,22 +85,18 @@ public:
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
-	void updateButtons(int mouseX, int mouseY);//checks if mouse over button
+	void checkButtons(int mouseX, int mouseY);//checks if mouse over button
 	void clickButtons(int mouseButton, int mouseX, int mouseY);
+	void updatePositions();
 	void loadButton(); //loads button locations from file
-	int getGameState(); //returns gamestate
-	int getScore(); // returns score
-	int getNumberOfSelected();//returns how many bricks are selected
-	int getBrickSize();//returns size of brick in pixels
-	void resetHighScores();
+	bool checkGameState(int state);//returns true if state=game_state
+	void resetHighScores();//resets and saves new high score file
 	void changeBricksXY(int _x, int _y); //changes map size
 	void changeBrickSize(int x);//changes brick size
 	void changeTile(int x, int y, int color); //changes color of x,y tile
-	void changeScore(int _score); //passes int that changes actual score
-	void changeGameState(int _game_state); // changes game_state
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(); // draw all bricks on screen
-	void newGame(); // restart game
+	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void highScores(); // draw high scores;
 	void options(); // draw options screen;
