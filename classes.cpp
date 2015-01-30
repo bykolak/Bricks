@@ -124,7 +124,7 @@ int cButton::getHeight()
 cGame::cGame() //default constructor
 	:bricks(BRICKS_LARGE_X, vector<cTile>(BRICKS_LARGE_Y))
 {
-	
+	score_count = 0;
 	game_state = REFRESH_GAME;
 	score = 0;
 	selection = false;
@@ -148,9 +148,9 @@ cGame::cGame() //default constructor
 	al_install_mouse();
 	// LOADING GRAPHICS
 	al_init_image_addon();
-	bricksBMP = al_load_bitmap("bricks.bmp");
+	bricksBMP = al_load_bitmap("bricks.png");
 	optionsBMP = al_load_bitmap("options.bmp");
-	buttonsBMP = al_load_bitmap("buttons.bmp");
+	buttonsBMP = al_load_bitmap("buttons.png");
 	scoreBMP = al_load_bitmap("score.bmp");
 	shadowBMP = al_create_bitmap(screen_width, screen_height);
 	backgroundBMP = al_load_bitmap("background.bmp");
@@ -159,6 +159,34 @@ cGame::cGame() //default constructor
 	al_set_target_bitmap(al_get_backbuffer(display));
 	loadFromFile();
 } 
+
+void cGame::updateScore()//updates on_screen score
+{
+	int score_delay = 0;
+	if (score - on_screen_score < 60) score_delay = 4;
+	if (score - on_screen_score > 60) score_delay = 3;
+	if (score - on_screen_score > 500) score_delay = 2;
+	if (score - on_screen_score > 1000) score_delay = 1;
+
+
+	if (++score_count >= score_delay)
+	{
+		if (score_delay == 4)	on_screen_score += 1;
+		if (score_delay == 3)	on_screen_score += 3;
+		if (score_delay == 2)	on_screen_score += 11;
+		if (score_delay == 1)	on_screen_score += 111;
+		if (on_screen_score > score) on_screen_score = score;
+		score_count = 0;
+	}
+}
+void cGame::drawScore()//draws score to the screen
+{
+	al_draw_textf(arial24, WHITE, left_button_margin + (SCORE_BUTTON*LEFT_MARGIN) + (BUTTON_WIDTH*SCORE_BUTTON) + 240, 5, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
+}
+
+
+
+
 void cGame::checkButtons(int mouseX,int mouseY)
 {
 	if (game_state == PLAY_GAME) //if playing game check these events
@@ -431,14 +459,14 @@ void cGame::drawGameArea() // draw all bricks on screen;
 			
 			if (bricks[t][i].getState() !=EMPTY)
 			{
-				if (brick_size == BRICKS_LARGE)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 48, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_SMALL)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() + 1)*brick_size), 84, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 48, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 96, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
 			}
 			
 			if (bricks[t][i].getState() == SELECTED)
 			{
-				al_draw_tinted_bitmap_region(bricksBMP, TINT2, 0, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				al_draw_tinted_bitmap_region(bricksBMP, TINT2, 0, 144, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL); //needs fixing
 			}
 			
 		}
@@ -446,7 +474,7 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	button[HIGH_SCORES_BUTTON].drawButton();
 	button[OPTIONS_BUTTON].drawButton();
 	button[SCORE_BUTTON].drawButton();
-	al_draw_textf(arial24, WHITE, left_button_margin + (SCORE_BUTTON*LEFT_MARGIN) + (BUTTON_WIDTH*SCORE_BUTTON) + 240,5, ALLEGRO_ALIGN_RIGHT, " %i", score);
+	drawScore();
 }
 void cGame::newGame(bool debug) // restart game
 {
@@ -545,7 +573,7 @@ void cGame::endGame()
 		al_draw_textf(arial24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + 25 * i + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
 	}
 
-	al_draw_textf(arial24, WHITE, screen_width / 2, screen_height / 2 + 75, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", score);
+	al_draw_textf(arial24, WHITE, screen_width / 2, screen_height / 2 + 75, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen_score);
 
 }
 void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
@@ -685,15 +713,32 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 }
 void cGame::moveBrickLeft()
 {
+	
 	for (int x = 0; x < bricks_x; x++)
 	{
+		int empty = 0;
 		for (int y = 0; y < bricks_y; y++)
 		{
 			if (bricks[x][y].getState() == EMPTY)
 			{
+				empty++;
 				//TODO
 			}
-
+			if (empty == bricks_y)
+			{
+					for (int xx = x; xx < bricks_x; xx++)
+					for (int yy = 0; yy < bricks_y; yy++)
+					{
+						if (xx + 1 < bricks_x) //avoids going outside of vector
+						{
+							bricks[xx][yy].changeColor(bricks[xx + 1][yy].getColor());
+							bricks[xx][yy].changeState(bricks[xx + 1][yy].getState());
+							bricks[xx + 1][yy].changeColor(0);
+							bricks[xx + 1][yy].changeState(EMPTY);
+						}
+					}
+		}
+		
 		}
 	}
 }

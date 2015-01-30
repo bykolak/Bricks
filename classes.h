@@ -55,6 +55,8 @@ class cGame
 private:
 	int xx, yy;
 	int score; // players score
+	int on_screen_score;//shown score
+	int score_count;
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
@@ -85,6 +87,8 @@ public:
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
+	void updateScore();//updates on_screen score
+	void drawScore();//draws score to the screen
 	void checkButtons(int mouseX, int mouseY);//checks if mouse over button
 	void clickButtons(int mouseButton, int mouseX, int mouseY);
 	void updatePositions();

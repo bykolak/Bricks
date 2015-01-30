@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 		else if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			// 60 times per second
+			game.updateScore();
 			game.updatePositions();
 			if (game.checkGameState(REFRESH_GAME))	{ game.newGame(false); } //if "new game" or "map size" button pressed
 			if (game.checkGameState(CHEAT))			{ game.newGame(true); }
@@ -89,8 +90,8 @@ int main(int argc, char **argv)
 				al_draw_textf(arial24, WHITE, game.screen_width / 2-100, game.screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
 				al_draw_ustr(arial24, RED, game.screen_width / 2, game.screen_height / 2 + 100, NULL, game.edited_text);
 			}
-			al_draw_textf(arial24, RED, 0, 50, 0, "screen height: %d", game.screen_height);
-			al_draw_textf(arial24, RED, 0, 80, 0, "left margin: %d", game.button[GAME_AREA_BUTTON].x);
+			al_draw_textf(arial24, RED, 0, 50, 0, "screen height: %d", game.screen_height);//debug
+			al_draw_textf(arial24, RED, 0, 80, 0, "left margin: %d", game.button[GAME_AREA_BUTTON].x);//debug
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(115, 115, 115));
 			render = false;

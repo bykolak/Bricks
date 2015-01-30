@@ -14,6 +14,8 @@ using namespace std;
 #define MASK_COLOR al_map_rgb(255,0,255)
 
 extern int BRICK_COLORS;
+
+const int SCORE_DELAY = 4;
 //high scores 
 const int MAX_HIGH_SCORE = 10;
 const int MAX_USERNAME_LENGTH = 21;
