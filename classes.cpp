@@ -128,6 +128,7 @@ cGame::cGame() //default constructor
 	game_state = REFRESH_GAME;
 	score = 0;
 	selection = false;
+	destroy_brick = false;
 	brick_size = 48;
 	bricks_x=BRICKS_LARGE_X;
 	bricks_y=BRICKS_LARGE_Y;
@@ -137,6 +138,8 @@ cGame::cGame() //default constructor
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
 	left_game_area_margin = (screen_width - area_width) / 2;
+	curFrame = 0;
+	frameCount = 0;
 	number_of_selected = 0;
 	player_name = NULL;
 	al_init();
@@ -158,6 +161,8 @@ cGame::cGame() //default constructor
 	al_clear_to_color(BLACK);
 	al_set_target_bitmap(al_get_backbuffer(display));
 	loadFromFile();
+	loadGame();
+	game_state = PLAY_GAME;
 } 
 
 void cGame::updateScore()//updates on_screen score
@@ -234,7 +239,7 @@ void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
 			if (button[NEW_GAME_BUTTON].getFlags())		{ game_state = REFRESH_GAME; }
 			if (button[HIGH_SCORES_BUTTON].getFlags())		{ game_state = HIGH_SCORE; }
 			if (button[OPTIONS_BUTTON].getFlags())			{ game_state = OPTIONS; }
-			if (button[GAME_AREA_BUTTON].getFlags())		{ selectBrick(mouseX, mouseY); }
+			if (button[GAME_AREA_BUTTON].getFlags() && !destroy_brick)		{ selectBrick(mouseX, mouseY); }
 		}
 		if (game_state == OPTIONS) //if in options check these events
 		{
@@ -270,7 +275,7 @@ void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
 			if (button[NEW_GAME_BUTTON].getFlags())		{ game_state = CHEAT; }
 			if (button[GAME_AREA_BUTTON].getFlags())		
 			{
-				changeTile((mouseX - left_game_area_margin ) / brick_size, (mouseY - TOP_MARGIN) / brick_size, 3);
+				changeTile((mouseX - left_game_area_margin ) / brick_size, (mouseY - TOP_MARGIN) / brick_size, 0);
 			} //debug		
 		}
 		if (game_state == OPTIONS)		{ game_state = PLAY_GAME; }
@@ -456,19 +461,34 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	for (i = 0; i<bricks_y; i++)
 		for (t = 0; t < bricks_x; t++)
 		{
-			
-			if (bricks[t][i].getState() !=EMPTY)
+			//BAD CODE needs fixing
+			if (bricks[t][i].getState() ==FULL && !destroy_brick)
 			{
-				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 48, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
-				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor() )*brick_size), 96, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 288 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 504 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
 			}
-			
-			if (bricks[t][i].getState() == SELECTED)
+			if (bricks[t][i].getState() == FULL && destroy_brick)
 			{
-				al_draw_tinted_bitmap_region(bricksBMP, TINT2, 0, 144, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL); //needs fixing
+				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 288 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 504 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
 			}
-			
+
+			if (bricks[t][i].getState() == SELECTED && !destroy_brick)
+			{
+				
+				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 288 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 504 + ((bricks[t][i].getColor())*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				al_draw_tinted_bitmap_region(bricksBMP, TINT3, 0, 288, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL); //needs fixing
+			}
+			if (bricks[t][i].getState() == SELECTED && destroy_brick)
+			{
+				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 1 * ((bricks[t][i].getColor())*brick_size), brick_size * curFrame, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, 288 + ((bricks[t][i].getColor())*brick_size), brick_size * curFrame, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+				if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 504 + ((bricks[t][i].getColor())*brick_size), brick_size * curFrame, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN, NULL);
+			}
 		}
 	button[NEW_GAME_BUTTON].drawButton();
 	button[HIGH_SCORES_BUTTON].drawButton();
@@ -484,7 +504,7 @@ void cGame::newGame(bool debug) // restart game
 		for (t = 0; t < bricks_x; t++)
 		{
 			bricks[t][i].changeColor( rand() % BRICK_COLORS);  
-			if (debug) bricks[t][i].changeColor(1);//DEBUG
+			if (debug) bricks[t][i].changeColor(0);//DEBUG
 			bricks[t][i].changeState(FULL);
 		}
 	
@@ -528,7 +548,7 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 				}
 
 			}
-		if (selected == 0) game_state = END_GAME;
+		if (selected == 0 && !destroy_brick) game_state = END_GAME;
 		
 	}
 void cGame::highScores() // open high scores;
@@ -539,8 +559,8 @@ void cGame::highScores() // open high scores;
 
 	button[HIGH_SCORES_RESET_BUTTON].drawButton();
 	button[HIGH_SCORES_CLOSE_BUTTON].drawButton();
-	al_draw_textf(arial24, RED, 0, 0, 0, "XX: %d  YY: %d", xx, yy);
-	al_draw_textf(arial24, RED, 0, 30, 0, "bitmap height: %d screen height: %d", al_get_bitmap_height(scoreBMP), screen_height);
+//	al_draw_textf(arial24, RED, 0, 0, 0, "XX: %d  YY: %d", xx, yy);
+//	al_draw_textf(arial24, RED, 0, 30, 0, "bitmap height: %d screen height: %d", al_get_bitmap_height(scoreBMP), screen_height);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
 		al_draw_ustr(arial24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + (25 * i) + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
@@ -600,7 +620,8 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 	}else 
 	if (selection && bricks[x][y].getState() == SELECTED) // else if selected
 	{
-		destroyBrick();
+		destroy_brick = true;
+		
 	}else 
 	if (selection && bricks[x][y].getState() != SELECTED)
 	{
@@ -667,19 +688,34 @@ void cGame::deselectBrick() // clears selection of bricks
 }
 void cGame::destroyBrick() // after clicking selected bricks destroys them
 {
+	bool start_destroy = false;
+	if (++frameCount >= frameDelay)
+	{
+		if (++curFrame >= maxFrame)
+		{
+			start_destroy = true;
+			curFrame = 0;
+		}
+		frameCount = 0;
+		
+	}
 	int i = 0;
 	int t = 0;
-	for (i = 0; i < bricks_y; i++)
-		for (t = 0; t < bricks_x; t++)
-		{
-			if (bricks[t][i].getState() == SELECTED)
+	if (start_destroy)
+	{
+		for (i = 0; i < bricks_y; i++)
+			for (t = 0; t < bricks_x; t++)
 			{
-				bricks[t][i].changeState(EMPTY);
+				if (bricks[t][i].getState() == SELECTED)
+				{
+					bricks[t][i].changeState(EMPTY);
+				}
 			}
-		}
-	calculateScore();
-	dropBrick();
-	selection = false;
+		calculateScore();
+		dropBrick();
+		selection = false;
+		destroy_brick = false;
+	}
 }
 void cGame::calculateScore() //calculates score for destroyed bricks
 {
@@ -772,6 +808,7 @@ if (!saved_scores)
 			{
 
 				high_score[t] = high_score[t - 1];
+				high_score_name[t] = high_score_name[t - 1];
 			}
 			high_score[i] = score;
 			high_score_name[i] = player_name;
@@ -838,4 +875,65 @@ void cGame::loadFromFile()
 	}
 
 	al_fclose(high_score_file);
+}
+
+void cGame::saveGame()
+{
+	if (game_state == PLAY_GAME)
+	{
+		ALLEGRO_FILE* save_game = al_fopen("save.bri", "wb");
+
+		al_fwrite(save_game, &score, sizeof(int));
+		al_fwrite(save_game, &brick_size, sizeof(int));
+		al_fwrite(save_game, &bricks_x, sizeof(int));
+		al_fwrite(save_game, &bricks_y, sizeof(int));
+
+		for (int i = 0; i < bricks_x; i++)
+			for (int t = 0; t < bricks_y; t++)
+			{
+				int color = bricks[i][t].getColor();
+				int state = bricks[i][t].getState();
+				al_fwrite(save_game, &color, sizeof(int));
+				al_fwrite(save_game, &state, sizeof(int));
+
+			}
+		al_fclose(save_game);
+	}
+	/*what to save
+	cGame
+	//int score;
+	//int brick_size;
+	//int bricks_x;
+	//int bricks_y;
+	vector< vector<cTile> > bricks;
+
+	cTile
+	int color;
+	int state;
+	*/
+
+}
+void cGame::loadGame()
+{
+	ALLEGRO_FILE* save_game = al_fopen("save.bri", "rb");
+	int *buffer = &score;
+	al_fread(save_game, buffer, sizeof(int));
+	//buffer = &brick_size;
+	al_fread(save_game, &brick_size, sizeof(int));
+	al_fread(save_game, &bricks_x, sizeof(int));
+	al_fread(save_game, &bricks_y, sizeof(int));
+
+	for (int i = 0; i < bricks_x; i++)
+		for (int t = 0; t < bricks_y; t++)
+		{
+			int color;
+			int state;
+			al_fread(save_game, &color, sizeof(int));
+			bricks[i][t].changeColor(color);
+			al_fread(save_game, &state, sizeof(int));
+			bricks[i][t].changeState(state);
+		}
+	al_fclose(save_game);
+	on_screen_score = score;
+	update_position = true;
 }

@@ -49,20 +49,21 @@ public:
 	void drawButton();//draw button on screen
 	int getWidth();
 	int getHeight();
-};
+	};
 class cGame
 {
 private:
-	int xx, yy;
+	//int xx, yy;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
-	int game_state; // using enum GAME_STATE to tell program in what state game is
+	
 	int number_of_selected; //how many selected 
 	int brick_size; //size of bricks
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
+	
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
@@ -71,7 +72,13 @@ private:
 	int left_button_margin;//where to start draw top buttons
 	int left_game_area_margin;// where to start draw game area
 
+	int frameCount;
+	const int frameDelay = 5;
+	int curFrame;
+	const int maxFrame=6;
 public:
+	int game_state; // using enum GAME_STATE to tell program in what state game is
+	bool destroy_brick;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
@@ -117,6 +124,8 @@ public:
 	void enterPlayerName(int keycode, int unichar); 
 	void saveToFile();
 	void loadFromFile();
+	void saveGame();
+	void loadGame();
 };
 
 

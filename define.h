@@ -9,7 +9,7 @@ using namespace std;
 #define WHITE al_map_rgb(255,255,255)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
-#define TINT2 al_map_rgba_f(0.5, 0.5, 0.5, 0.5)
+#define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
 #define TINT3 al_map_rgba_f(0.3, 0.3, 0.3, 0.3)
 #define MASK_COLOR al_map_rgb(255,0,255)
 
