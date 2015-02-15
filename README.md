@@ -8,7 +8,7 @@ More points are awarded for big chunks of bricks that are removed by a single se
 If only a single brick is left or all are removed, you finish the game.
 Bricks are affected by gravity so if you make a hole they fall down.
 There's gonna be three menu options: "New Game" "High Scores" and "Quit"
-"High Scores" will be kept in binary file called high.bri
+"High Scores" will be kept in a binary file called high.bri
 
 If I manage to finish the procjet, I will think about some additions to game like:
 
