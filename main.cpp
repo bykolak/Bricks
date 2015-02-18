@@ -22,13 +22,12 @@ int main(int argc, char **argv)
 	//main loop bools
 	bool done = false;
 	bool render = true;
-
+	int cur = 0; //debug
 	int FPS = 60;
 		srand(time(NULL));
 
 	//======INIT
 	cGame game;
-//	game.newGame(false);
 	arial24 = al_load_font("arial.ttf", 24, 0);
 	arial14 = al_load_font("arial.ttf", 14, 0);
 	game.loadButton();
@@ -77,11 +76,12 @@ int main(int argc, char **argv)
 			if (game.checkGameState(PLAY_GAME) )		{ game.checkEndGame(); }
 			game.updateNumberOfSelected();
 			render = true;
+			cur++;
+			if (cur > 60) cur = 0; 
 		}
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))
 		{
-			
 			game.drawGameArea();
 			if (game.checkGameState(OPTIONS))											{ game.options(); }
 			if (game.checkGameState(HIGH_SCORE))										{ game.highScores(); }
@@ -91,10 +91,7 @@ int main(int argc, char **argv)
 				al_draw_textf(arial24, WHITE, game.screen_width / 2-100, game.screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
 				al_draw_ustr(arial24, RED, game.screen_width / 2, game.screen_height / 2 + 100, NULL, game.edited_text);
 			}
-			//al_draw_textf(arial24, RED, 0, 50, 0, "screen height: %d", game.screen_height);//debug
-			//al_draw_textf(arial24, RED, 0, 80, 0, "left margin: %d", game.button[GAME_AREA_BUTTON].x);//debug
 			al_flip_display();
-			al_clear_to_color(al_map_rgb(115, 115, 115));
 			render = false;
 		}
 	}

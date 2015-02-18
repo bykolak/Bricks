@@ -59,7 +59,7 @@ private:
 	int score_count;
 	
 	int number_of_selected; //how many selected 
-	int brick_size; //size of bricks
+	
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
@@ -71,12 +71,13 @@ private:
 	int area_height;//number of bricks in y axis * brick_size
 	int left_button_margin;//where to start draw top buttons
 	int left_game_area_margin;// where to start draw game area
-
+	int screen_shake;// move everything on screen (in pixels)
 	int frameCount;
-	const int frameDelay = 5;
+	const int frameDelay = 0;
 	int curFrame;
-	const int maxFrame=6;
+	const int maxFrame=40;
 public:
+	int brick_size; //size of bricks
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	bool destroy_brick;
 	int screen_width;//screen size x in pixels
@@ -92,6 +93,7 @@ public:
 	ALLEGRO_BITMAP *shadowBMP = NULL;
 	ALLEGRO_BITMAP *buttonsBMP = NULL;
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
+	ALLEGRO_BITMAP *explosionBMP = NULL;
 	vector< vector<cTile> > bricks;
 	cGame(); //default constructor
 	void updateScore();//updates on_screen score
