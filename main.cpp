@@ -8,12 +8,15 @@
 #include <allegro5\allegro_native_dialog.h>
 #include <allegro5\allegro_primitives.h>
 #include <allegro5\allegro_image.h>
+#include <allegro5\allegro_audio.h>
+#include <allegro5\allegro_acodec.h>
 #include "classes.h"
 #include "define.h"
 
 //GLOBAL VARIABLES
 int BRICK_COLORS = 6;
 ALLEGRO_DISPLAY *display = NULL;
+ALLEGRO_FONT *arial36 = NULL;
 ALLEGRO_FONT *arial24 = NULL;
 ALLEGRO_FONT *arial14 = NULL;
 
@@ -28,6 +31,7 @@ int main(int argc, char **argv)
 
 	//======INIT
 	cGame game;
+	arial36 = al_load_font("arial.ttf", 36, 0);
 	arial24 = al_load_font("arial.ttf", 24, 0);
 	arial14 = al_load_font("arial.ttf", 14, 0);
 	game.loadButton();
@@ -70,7 +74,11 @@ int main(int argc, char **argv)
 			// 60 times per second
 			game.updateScore();
 			game.updatePositions();
-			if (game.destroy_brick) { game.destroyBrick(); }
+			if (game.destroy_brick) 
+			{ 
+			
+				game.destroyBrick();
+			}
 			if (game.checkGameState(REFRESH_GAME))	{ game.newGame(false); } //if "new game" or "map size" button pressed
 			if (game.checkGameState(CHEAT))			{ game.newGame(true); }
 			if (game.checkGameState(PLAY_GAME) )		{ game.checkEndGame(); }
@@ -78,6 +86,8 @@ int main(int argc, char **argv)
 			render = true;
 			cur++;
 			if (cur > 60) cur = 0; 
+			
+
 		}
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))

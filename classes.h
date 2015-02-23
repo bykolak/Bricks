@@ -6,7 +6,7 @@
 #include <string>
 extern ALLEGRO_FONT *arial24;
 extern ALLEGRO_DISPLAY *display;
-
+extern ALLEGRO_FONT *arial36;
 class cTile
 {
 private:
@@ -76,7 +76,16 @@ private:
 	const int frameDelay = 0;
 	int curFrame;
 	const int maxFrame=40;
+	int last_score; //holds value of last destroyed bricks
+	int last_clicked_x ;
+	int last_clicked_y ;
 public:
+	ALLEGRO_SAMPLE *explosionOGG;
+	ALLEGRO_SAMPLE *clickWAV;
+	ALLEGRO_SAMPLE_INSTANCE *instance;
+	ALLEGRO_SAMPLE_INSTANCE *instance2;
+	ALLEGRO_SAMPLE_INSTANCE *instanceClick;
+	ALLEGRO_SAMPLE_INSTANCE *instanceClick2;
 	int brick_size; //size of bricks
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	bool destroy_brick;
@@ -118,7 +127,7 @@ public:
 	int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
 	void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them
-	void calculateScore(); //calculates score for destroyed bricks
+	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
 	void moveBrickLeft();//if empty vertical line then move rest of screen to left
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
