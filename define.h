@@ -7,6 +7,7 @@ using namespace std;
 #define RED al_map_rgb(255,0,0)
 #define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
+#define YELLOW al_map_rgb(255,255,0)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
 #define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
@@ -29,7 +30,7 @@ const int BRICKS_SMALL_Y = 13;
 const int BRICKS_LARGE_X = 35;
 const int BRICKS_LARGE_Y = 18;
 //sizes of bricks
-const int BRICKS_LARGE = 48;
+const int BRICKS_LARGE = 40;
 const int BRICKS_MEDIUM = 36;
 const int BRICKS_SMALL = 24;
 //margins

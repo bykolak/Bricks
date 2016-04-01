@@ -43,3 +43,22 @@ Temporary Items
 .apdisk
 
 *.psd
+*.log
+*.tlog
+Release/Bricks.ipdb
+*.opendb
+Release/Bricks.exe
+*.iobj
+*.pdb
+*.obj
+Project1.sdf
+*.suo
+Debug/vc120.idb
+*.suo
+Project1.v12.suo
+*.exe
+*.ilk
+*.suo
+Project1.v12.suo
+*.suo
+*.suo

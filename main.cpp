@@ -16,9 +16,9 @@
 //GLOBAL VARIABLES
 int BRICK_COLORS = 6;
 ALLEGRO_DISPLAY *display = NULL;
-ALLEGRO_FONT *arial36 = NULL;
-ALLEGRO_FONT *arial24 = NULL;
-ALLEGRO_FONT *arial14 = NULL;
+ALLEGRO_FONT *font18 = NULL;
+ALLEGRO_FONT *font24 = NULL;
+ALLEGRO_FONT *font36 = NULL;
 
 int main(int argc, char **argv)
 {
@@ -31,9 +31,11 @@ int main(int argc, char **argv)
 
 	//======INIT
 	cGame game;
-	arial36 = al_load_font("arial.ttf", 36, 0);
-	arial24 = al_load_font("arial.ttf", 24, 0);
-	arial14 = al_load_font("arial.ttf", 14, 0);
+	
+	font24 = al_load_font("luculent.ttf", 24, 0);
+	font18 = al_load_font("luculent.ttf", 18, 0);
+	font36 = al_load_font("luculent.ttf", 36, 0);
+	
 	game.loadButton();
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
@@ -98,8 +100,9 @@ int main(int argc, char **argv)
 			if (game.checkGameState(END_GAME) || game.checkGameState(SAVING_SCORE))	{ game.endGame(); }
 			if (game.checkGameState(SAVING_SCORE))
 			{
-				al_draw_textf(arial24, WHITE, game.screen_width / 2-100, game.screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
-				al_draw_ustr(arial24, RED, game.screen_width / 2, game.screen_height / 2 + 100, NULL, game.edited_text);
+				al_draw_textf(font18, WHITE, game.screen_width / 2-100, game.screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
+				al_draw_text(font18, WHITE, game.screen_width / 2, game.screen_height / 2 + 100, NULL,"_____________________");
+				al_draw_ustr(font18, YELLOW, game.screen_width / 2, game.screen_height / 2 + 100, NULL, game.edited_text);
 			}
 			al_flip_display();
 			render = false;

@@ -4,30 +4,20 @@
 #include "define.h"
 #include <fstream>
 #include <string>
-extern ALLEGRO_FONT *arial24;
 extern ALLEGRO_DISPLAY *display;
-extern ALLEGRO_FONT *arial36;
-class cTile
+extern ALLEGRO_FONT *font18;
+extern ALLEGRO_FONT *font24;
+extern ALLEGRO_FONT *font36;
+struct cTile
 {
-private:
 	int color;
 	int state;
-	
-public:
-	cTile(); //default constructor
-	cTile(int _color, int _state);
-void	changeColor(int _color); 
-void	changeState(int _state);
-int getColor();
-int getState();
-
-	
 };
 
 class cButton
 {
+	friend class cGame;
 private:
-	
 	int width;
 	int height;
 	bool flags;
@@ -40,30 +30,23 @@ public:
 	int state;
 	const char* text;
 	cButton();//constructor
-	bool getFlags();//return state of flag
-	void toggleFlags();//flips value of a flag;
-	void changeFlags( bool _value);//change flag to specific value
 	bool overButton(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
 	void changeButtonSize(int _x, int _y, int _width, int _height); //sets all button parameters
 	void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
 	void drawButton();//draw button on screen
-	int getWidth();
-	int getHeight();
 	};
 class cGame
 {
+	friend class cButton;
 private:
 	//int xx, yy;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
-	
 	int number_of_selected; //how many selected 
-	
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
-	
 	int bricks_x;//bricks in x axis
 	int bricks_y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
@@ -94,7 +77,7 @@ public:
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
 	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
 	cButton button[NUMBER_OF_BUTTONS];
-	ALLEGRO_USTR* player_name = al_ustr_new("");
+	ALLEGRO_USTR* player_name = al_ustr_new("_");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
 	ALLEGRO_BITMAP *scoreBMP = NULL;
 	ALLEGRO_BITMAP *bricksBMP = NULL;
@@ -129,12 +112,12 @@ public:
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
-	void moveBrickLeft();//if empty vertical line then move rest of screen to left
+	void moveBrickLeft();//if empty vertical line then move rest of screen to the left
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void saveScores();//
 	void enterPlayerName(int keycode, int unichar); 
-	void saveToFile();
-	void loadFromFile();
+	void saveHighScore();
+	void loadHighScore();
 	void saveGame();
 	void loadGame();
 };
