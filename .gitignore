@@ -45,6 +45,7 @@ Temporary Items
 *.psd
 *.log
 *.tlog
+*.bmp
 Release/Bricks.ipdb
 *.opendb
 Release/Bricks.exe
