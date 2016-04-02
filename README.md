@@ -20,8 +20,8 @@ It`s my first project to make a Bejeweled, Same, Candy Crush like game using c++
 
 **"New Game"**
 
- * Left Click creates new game and resets your current score.
- * Right Click is for debug (creates new map with one colored bricks).<br>
+ * [x] Left Click creates new game and resets your current score.
+ * [x] Right Click is for debug (creates new map with one colored bricks).<br>
 
 **"High Scores"**
 
