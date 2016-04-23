@@ -18,21 +18,22 @@ It`s my first project to make a Bejeweled, Same, Candy Crush like game using c++
 
 **INGAME BUTTONS:**
 
-**"New Game"**
+**New Game**
 
  * [x] Left Click creates new game and resets your current score.
  * [x] Right Click is for debug (creates new map with one colored bricks).
 
-**"High Scores"**
+**High Scores**
 
-* [ ] List of 10 best scores and usernames. (needs some work)
+* [x] List of 10 best scores and usernames. (needs some work)
 * [x] Close button
 * [x] Reset Score
 * [x] High Scores are kept in a binary file called high.bri
-* 
-**"Score"** - Shows current Score
 
-**"Options"**
+**Score**
+* [x] Shows current Score (needs some work)
+
+**Options**
 
  * [ ] Volume Slider - slide between 0% and 100% of volume 
  * [ ] Mute Button - disable sound 
