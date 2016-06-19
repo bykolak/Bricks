@@ -81,7 +81,7 @@ cGame::cGame() //default constructor
 	score = 0;
 	selection = false;
 	destroy_brick = false;
-	brick_size = BRICKS_SIZE;
+	brick_size = BRICK_SIZE;
 	bricks_on_screen = BRICKS_MAP_X * BRICKS_MAP_Y;
 	area_width = brick_size * BRICKS_MAP_X;
 	area_height = brick_size * BRICKS_MAP_Y;

@@ -1,12 +1,6 @@
-
-//#include <stdlib.h>
-//#include <vector>
-//#include <fstream>
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_font.h>
 #include <allegro5\allegro_ttf.h>
-//#include <allegro5\allegro_native_dialog.h>
-//#include <allegro5\allegro_primitives.h>
 #include <allegro5\allegro_image.h>
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
@@ -86,10 +80,6 @@ int main(int argc, char **argv)
 			if (game.checkGameState(PLAY_GAME) )	{ game.checkEndGame(); }
 			game.updateNumberOfSelected();
 			render = true;
-		/*	cur++;
-			if (cur > 60) cur = 0; */
-			
-
 		}
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))
