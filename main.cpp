@@ -1,12 +1,12 @@
 
-#include <stdlib.h>
-#include <vector>
-#include <fstream>
+//#include <stdlib.h>
+//#include <vector>
+//#include <fstream>
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_font.h>
 #include <allegro5\allegro_ttf.h>
-#include <allegro5\allegro_native_dialog.h>
-#include <allegro5\allegro_primitives.h>
+//#include <allegro5\allegro_native_dialog.h>
+//#include <allegro5\allegro_primitives.h>
 #include <allegro5\allegro_image.h>
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	//main loop bools
 	bool done = false;
 	bool render = true;
-	int cur = 0; //debug
+	//int cur = 0; //debug
 	int FPS = 60;
 		srand(time(NULL));
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	cGame game;
 	
 	font24 = al_load_font("luculent.ttf", 24, 0);
-	font18 = al_load_font("luculent.ttf", 18, 0);
+	font18 = al_load_font("luculent.ttf", 12, 0);
 	font36 = al_load_font("luculent.ttf", 36, 0);
 	
 	game.loadButton();
@@ -83,11 +83,11 @@ int main(int argc, char **argv)
 			}
 			if (game.checkGameState(REFRESH_GAME))	{ game.newGame(false); } //if "new game" or "map size" button pressed
 			if (game.checkGameState(CHEAT))			{ game.newGame(true); }
-			if (game.checkGameState(PLAY_GAME) )		{ game.checkEndGame(); }
+			if (game.checkGameState(PLAY_GAME) )	{ game.checkEndGame(); }
 			game.updateNumberOfSelected();
 			render = true;
-			cur++;
-			if (cur > 60) cur = 0; 
+		/*	cur++;
+			if (cur > 60) cur = 0; */
 			
 
 		}

@@ -8,10 +8,24 @@ extern ALLEGRO_DISPLAY *display;
 extern ALLEGRO_FONT *font18;
 extern ALLEGRO_FONT *font24;
 extern ALLEGRO_FONT *font36;
+
+class cList
+{
+	
+public:
+	bool state;
+	int x;
+	int y;
+	cList();
+	cList(int _x, int _y, bool _state);//constructor
+	void setState(bool _state);
+	void set(int _x, int _y, bool _state);
+};
 struct cTile
 {
 	int color;
 	int state;
+	//bool select=false;
 };
 
 class cButton
@@ -47,8 +61,8 @@ private:
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
-	int bricks_x;//bricks in x axis
-	int bricks_y;//bricks in y axis
+	//int BRICKS_LARGE_X;//bricks in x axis
+	//int BRICKS_LARGE_Y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
@@ -86,7 +100,7 @@ public:
 	ALLEGRO_BITMAP *buttonsBMP = NULL;
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	ALLEGRO_BITMAP *explosionBMP = NULL;
-	vector< vector<cTile> > bricks;
+	std::vector< std::vector<cTile> > bricks;
 	cGame(); //default constructor
 	void updateScore();//updates on_screen score
 	void drawScore();//draws score to the screen
@@ -96,7 +110,7 @@ public:
 	void loadButton(); //loads button locations from file
 	bool checkGameState(int state);//returns true if state=game_state
 	void resetHighScores();//resets and saves new high score file
-	void changeBricksXY(int _x, int _y); //changes map size
+	//void changeBricksXY(int _x, int _y); //changes map size
 	void changeBrickSize(int x);//changes brick size
 	void changeTile(int x, int y, int color); //changes color of x,y tile
 	void updateNumberOfSelected(); //checks and update number of selected brcisk

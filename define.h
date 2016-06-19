@@ -2,15 +2,15 @@
 #define DEFINE_H
 
 #include <vector>
-using namespace std;
+//using namespace std;
 
-#define RED al_map_rgb(255,0,0)
-#define BLUE al_map_rgb(0,0,255)
+//#define RED al_map_rgb(255,0,0)
+//#define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
 #define YELLOW al_map_rgb(255,255,0)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
-#define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
+//#define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
 #define TINT3 al_map_rgba_f(0.3, 0.3, 0.3, 0.3)
 #define MASK_COLOR al_map_rgb(255,0,255)
 
@@ -27,17 +27,17 @@ const int MIN_SCREEN_Y = 400;
 const int BRICKS_SMALL_X = 22;
 const int BRICKS_SMALL_Y = 13;
 
-const int BRICKS_LARGE_X = 35;
+const int BRICKS_LARGE_X = 45;
 const int BRICKS_LARGE_Y = 18;
 //sizes of bricks
 const int BRICKS_LARGE = 40;
-const int BRICKS_MEDIUM = 36;
-const int BRICKS_SMALL = 24;
+//const int BRICKS_MEDIUM = 36;
+//const int BRICKS_SMALL = 24;
 //margins
 const int TOP_MARGIN = 42;
 const int LEFT_MARGIN = 9;
 const int RIGHT_MARGIN = 9;
-const int DOWN_MARGIN = 9;
+const int DOWN_MARGIN = 119;
 
 // size of buttons //NEEDS EVALUATION (needs to be scalable)
 const int BUTTON_WIDTH = 250;
@@ -51,7 +51,6 @@ const int OPTIONS_SMALL_Y = TOP_MARGIN + 32;
 const int OPTIONS_LARGE_Y = TOP_MARGIN + 69;
 const int OPTIONS_CAMPAIGN_Y = TOP_MARGIN + 106;
 const int OPTIONS_SIZE_Y = TOP_MARGIN + 170;
-
 
 const int END_GAME_NEW_GAME_X = 3;
 const int END_GAME_NEW_GAME_Y = 333;

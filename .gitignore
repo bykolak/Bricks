@@ -63,3 +63,11 @@ Project1.v12.suo
 Project1.v12.suo
 *.suo
 *.suo
+*.sdf
+*.xml
+Debug/classes.obj.enc
+*.idb
+*.lib
+*.lastcodeanalysissucceeded
+Project1.vcxproj.user
+sSave.bri
