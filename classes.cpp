@@ -74,19 +74,17 @@ void cButton::drawButton()//draw button on screen
 }
 //=====cGame methods
 cGame::cGame() //default constructor
-	:bricks(BRICKS_LARGE_X, std::vector<cTile>(BRICKS_LARGE_Y))
+	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
 {
 	score_count = 0;
 	game_state = REFRESH_GAME;
 	score = 0;
 	selection = false;
 	destroy_brick = false;
-	brick_size = BRICKS_LARGE;
-	//BRICKS_LARGE_X=BRICKS_LARGE_X;
-	//BRICKS_LARGE_Y=BRICKS_LARGE_Y;
-	bricks_on_screen = BRICKS_LARGE_X * BRICKS_LARGE_Y;
-	area_width = brick_size * BRICKS_LARGE_X;
-	area_height = brick_size * BRICKS_LARGE_Y;
+	brick_size = BRICKS_SIZE;
+	bricks_on_screen = BRICKS_MAP_X * BRICKS_MAP_Y;
+	area_width = brick_size * BRICKS_MAP_X;
+	area_height = brick_size * BRICKS_MAP_Y;
 	screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
 	screen_height = TOP_MARGIN + area_height + DOWN_MARGIN;
 	left_game_area_margin = (screen_width - area_width) / 2;
@@ -250,9 +248,9 @@ void cGame::clickButtons(int mouseButton, int mouseX, int mouseY)
 }
 void cGame::updatePositions()
 {
-		bricks_on_screen = BRICKS_LARGE_X * BRICKS_LARGE_Y;
-		area_width = brick_size * BRICKS_LARGE_X;
-		area_height = brick_size * BRICKS_LARGE_Y;
+		bricks_on_screen = BRICKS_MAP_X * BRICKS_MAP_Y;
+		area_width = brick_size * BRICKS_MAP_X;
+		area_height = brick_size * BRICKS_MAP_Y;
 		screen_width = LEFT_MARGIN + area_width + RIGHT_MARGIN;
 		if (screen_width < MIN_SCREEN_X) screen_width = MIN_SCREEN_X;
 
@@ -389,8 +387,8 @@ void cGame::changeBrickSize(int x)//changes brick size
 void cGame::updateNumberOfSelected() //checks and update number of selected bricks
 {
 	number_of_selected = 0;
-	for (int i = 0; i<BRICKS_LARGE_Y; i++)
-		for (int t = 0; t < BRICKS_LARGE_X; t++)
+	for (int i = 0; i<BRICKS_MAP_Y; i++)
+		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
 			if (bricks[t][i].state == SELECTED || bricks[t][i].state == EXPLODING)
 			{
@@ -412,36 +410,29 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	left_game_area_margin = (screen_width - area_width) / 2;
 	al_draw_tinted_bitmap_region(shadowBMP, TINT3, 0, 0, button[GAME_AREA_BUTTON].width, button[GAME_AREA_BUTTON].height, left_game_area_margin, TOP_MARGIN, NULL);
 	al_draw_rectangle(left_game_area_margin, TOP_MARGIN, button[GAME_AREA_BUTTON].width + left_game_area_margin + 1, button[GAME_AREA_BUTTON].height + TOP_MARGIN + 1, BLACK, 1);
-	for (int i = 0; i < BRICKS_LARGE_Y; i++)
-		for (int t = 0; t < BRICKS_LARGE_X; t++)
+	for (int i = 0; i < BRICKS_MAP_Y; i++)
+		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
 			//BAD CODE needs fixing
 			
 			if (bricks[t][i].state == FULL || bricks[t][i].state == SELECTED)
 			{
-				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP,bricks[t][i].color*brick_size, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
-				//if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP,bricks[t][i].color*brick_size, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
-				//if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, 504 + ((bricks[t][i].color)*brick_size), 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
+				al_draw_bitmap_region(bricksBMP,bricks[t][i].color*brick_size, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
 			}
 			
 			if (bricks[t][i].state == SELECTED)
 			{
-				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(bricksBMP, 0, brick_size, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL); //needs fixing
-				//if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(bricksBMP, brick_size, brick_size, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
-				//if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(bricksBMP, brick_size*2, brick_size, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
+				al_draw_bitmap_region(bricksBMP, 0, brick_size, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL); //needs fixing
 			}	
 		}
-	for (int i = 0; i<BRICKS_LARGE_Y; i++)
-		for (int t = 0; t < BRICKS_LARGE_X; t++)
+	for (int i = 0; i<BRICKS_MAP_Y; i++)
+		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
 
 			al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i);
 			if (bricks[t][i].state == EXPLODING)
 			{
-				//instead 240  (brick_size * 5)
-				if (brick_size == BRICKS_LARGE)		al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 2)*brick_size + left_game_area_margin, (i - 2)*brick_size + TOP_MARGIN, NULL);
-				//if (brick_size == BRICKS_MEDIUM)	al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 3)*brick_size + left_game_area_margin, (i - 3)*brick_size + TOP_MARGIN, NULL);
-				//if (brick_size == BRICKS_SMALL)		al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 4)*brick_size + left_game_area_margin-20, (i - 4)*brick_size + TOP_MARGIN-20, NULL);
+				al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 2)*brick_size + left_game_area_margin, (i - 2)*brick_size + TOP_MARGIN, NULL);
 			}
 		}
 	
@@ -464,8 +455,8 @@ void cGame::newGame(bool debug) // restart game
 {
 	int i = 0;
 	int t = 0;
-	for (i = 0; i<BRICKS_LARGE_Y; i++)
-		for (t = 0; t < BRICKS_LARGE_X; t++)
+	for (i = 0; i<BRICKS_MAP_Y; i++)
+		for (t = 0; t < BRICKS_MAP_X; t++)
 		{
 			bricks[t][i].color =  rand() % BRICK_COLORS;  
 			if (debug) bricks[t][i].color=1;//DEBUG
@@ -487,8 +478,8 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 	int x = 0;
 	int y = 0;
 	
-		for (x = BRICKS_LARGE_X - 1; x >= 0; x--)
-			for (y = BRICKS_LARGE_Y - 1; y >= 0; y--)
+		for (x = BRICKS_MAP_X - 1; x >= 0; x--)
+			for (y = BRICKS_MAP_Y - 1; y >= 0; y--)
 			{
 				if (bricks[x][y].state!=EMPTY)
 				{
@@ -497,7 +488,7 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 					{
 					if (bricks[x][y].color == bricks[x - 1][y].color && bricks[x - 1][y].state != EMPTY)		{ selected++; }
 					}
-					if (x + 1 < BRICKS_LARGE_X) //avoids going outside of vector
+					if (x + 1 < BRICKS_MAP_X) //avoids going outside of vector
 					{
 					if (bricks[x][y].color == bricks[x + 1][y].color && bricks[x + 1][y].state != EMPTY)		{ selected++; }
 					}
@@ -505,7 +496,7 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 					{
 					if (bricks[x][y].color == bricks[x][y - 1].color && bricks[x][y - 1].state != EMPTY) 	{ selected++; }
 					}
-					if (y + 1 < BRICKS_LARGE_Y) //avoids going outside of vector
+					if (y + 1 < BRICKS_MAP_Y) //avoids going outside of vector
 					{
 					if (bricks[x][y].color == bricks[x][y + 1].color && bricks[x][y + 1].state != EMPTY)		{ selected++; }
 					}
@@ -578,9 +569,9 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 				int x = selectionList[i].x;
 				int y = selectionList[i].y;
 				if (y - 1 >= 0	     &&
-					y + 1 < BRICKS_LARGE_Y &&
+					y + 1 < BRICKS_MAP_Y &&
 					x - 1 >= 0		 &&
-					x + 1 < BRICKS_LARGE_X)
+					x + 1 < BRICKS_MAP_X)
 				{
 					if (bricks[x][y].color == bricks[x][y - 1].color &&	bricks[x][y - 1].state == FULL)// && bricks[x][y - 1].select == false) //if north brick is same color
 					{
@@ -645,8 +636,8 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 	{
 		destroy_brick = true;
 
-		for (int i = 0; i < BRICKS_LARGE_X; i++)
-			for (int t = 0; t < BRICKS_LARGE_Y; t++)
+		for (int i = 0; i < BRICKS_MAP_X; i++)
+			for (int t = 0; t < BRICKS_MAP_Y; t++)
 			{
 				if (bricks[i][t].state == SELECTED) bricks[i][t].state = EXPLODING;//change selected to explosion status
 			}
@@ -664,8 +655,8 @@ void cGame::deselectBrick() // clears selection of bricks
 {
 	int i = 0;
 	int t = 0;
-	for (i = 0; i<BRICKS_LARGE_Y; i++)
-		for (t = 0; t < BRICKS_LARGE_X; t++)
+	for (i = 0; i<BRICKS_MAP_Y; i++)
+		for (t = 0; t < BRICKS_MAP_X; t++)
 		{
 			if (bricks[t][i].state == SELECTED)
 			{ 
@@ -697,8 +688,8 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 
 	if (start_destroy)
 	{
-		for (int i = 0; i < BRICKS_LARGE_Y; i++)
-			for (int t = 0; t < BRICKS_LARGE_X; t++)
+		for (int i = 0; i < BRICKS_MAP_Y; i++)
+			for (int t = 0; t < BRICKS_MAP_X; t++)
 			{
 				if (bricks[t][i].state == EXPLODING)
 				{
@@ -725,10 +716,10 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 {
 	int refresh = 0;
 	bool check_column = true;
-	for (refresh = BRICKS_LARGE_Y -1; refresh > 0; refresh--) // do this BRICKS_LARGE_Y times to drop bricks if there are bigger gaps 
+	for (refresh = BRICKS_MAP_Y -1; refresh > 0; refresh--) // do this BRICKS_LARGE_Y times to drop bricks if there are bigger gaps 
 	{
-		for (int xx = BRICKS_LARGE_X-1; xx >= 0; xx--)//scans for empty bricks and drops them by one
-		for (int yy = BRICKS_LARGE_Y-1; yy >0; yy--)
+		for (int xx = BRICKS_MAP_X-1; xx >= 0; xx--)//scans for empty bricks and drops them by one
+		for (int yy = BRICKS_MAP_Y-1; yy >0; yy--)
 		{
 			if (bricks[xx][yy].state == EMPTY)
 			{
@@ -743,22 +734,22 @@ void cGame::dropBrick() //after destroying bricks fill holes by dropping them (c
 void cGame::moveBrickLeft()
 {
 	
-	for (int x = 0; x < BRICKS_LARGE_X; x++)
+	for (int x = 0; x < BRICKS_MAP_X; x++)
 	{
 		int empty = 0;
-		for (int y = 0; y < BRICKS_LARGE_Y; y++)
+		for (int y = 0; y < BRICKS_MAP_Y; y++)
 		{
 			if (bricks[x][y].state == EMPTY)
 			{
 				empty++;
 				//TODO
 			}
-			if (empty == BRICKS_LARGE_Y)
+			if (empty == BRICKS_MAP_Y)
 			{
-					for (int xx = x; xx < BRICKS_LARGE_X; xx++)
-					for (int yy = 0; yy < BRICKS_LARGE_Y; yy++)
+					for (int xx = x; xx < BRICKS_MAP_X; xx++)
+					for (int yy = 0; yy < BRICKS_MAP_Y; yy++)
 					{
-						if (xx + 1 < BRICKS_LARGE_X) //avoids going outside of vector
+						if (xx + 1 < BRICKS_MAP_X) //avoids going outside of vector
 						{
 							bricks[xx][yy].color =bricks[xx + 1][yy].color;
 							bricks[xx][yy].state = bricks[xx + 1][yy].state;
@@ -873,11 +864,11 @@ void cGame::saveGame()
 		ALLEGRO_FILE* save_game = al_fopen("save.bri", "wb");
 		al_fwrite(save_game, &score, sizeof(int));
 		//al_fwrite(save_game, &brick_size, sizeof(int));
-		//al_fwrite(save_game, &BRICKS_LARGE_X, sizeof(int));
-		//al_fwrite(save_game, &BRICKS_LARGE_Y, sizeof(int));
+		//al_fwrite(save_game, &BRICKS_MAP_X, sizeof(int));
+		//al_fwrite(save_game, &BRICKS_MAP_Y, sizeof(int));
 
-		for (int i = 0; i < BRICKS_LARGE_X; i++)
-			for (int t = 0; t < BRICKS_LARGE_Y; t++)
+		for (int i = 0; i < BRICKS_MAP_X; i++)
+			for (int t = 0; t < BRICKS_MAP_Y; t++)
 			{
 				int color = bricks[i][t].color;
 				int state = bricks[i][t].state;
@@ -898,11 +889,11 @@ void cGame::loadGame()
 		on_screen_score = score;
 		//buffer = &brick_size;
 		//al_fread(save_game, &brick_size, sizeof(int));
-		//al_fread(save_game, &BRICKS_LARGE_X, sizeof(int));
-		//al_fread(save_game, &BRICKS_LARGE_Y, sizeof(int));
+		//al_fread(save_game, &BRICKS_MAP_X, sizeof(int));
+		//al_fread(save_game, &BRICKS_MAP_Y, sizeof(int));
 
-		for (int i = 0; i < BRICKS_LARGE_X; i++)
-			for (int t = 0; t < BRICKS_LARGE_Y; t++)
+		for (int i = 0; i < BRICKS_MAP_X; i++)
+			for (int t = 0; t < BRICKS_MAP_Y; t++)
 			{
 				int color;
 				int state;

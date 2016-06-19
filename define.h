@@ -24,15 +24,10 @@ const int MAX_USERNAME_LENGTH = 21;
 const int MIN_SCREEN_X = 1030;
 const int MIN_SCREEN_Y = 400;
 // predefined sizes of game
-const int BRICKS_SMALL_X = 22;
-const int BRICKS_SMALL_Y = 13;
-
-const int BRICKS_LARGE_X = 45;
-const int BRICKS_LARGE_Y = 18;
+const int BRICKS_MAP_X = 45;// number of bricks in X axis
+const int BRICKS_MAP_Y = 18;// number of bricks in Y axis
 //sizes of bricks
-const int BRICKS_LARGE = 40;
-//const int BRICKS_MEDIUM = 36;
-//const int BRICKS_SMALL = 24;
+const int BRICK_SIZE = 40;//brick size in pixels
 //margins
 const int TOP_MARGIN = 42;
 const int LEFT_MARGIN = 9;
