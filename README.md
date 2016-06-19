@@ -18,40 +18,41 @@ It`s my first project to make a Bejeweled, Same, Candy Crush like game using c++
 
 **INGAME BUTTONS:**
 
-**"New Game"**
+**New Game**
 
  * [x] Left Click creates new game and resets your current score.
- * [x] Right Click is for debug (creates new map with one colored bricks).<br>
+ * [x] Right Click is for debug (creates new map with one colored bricks).
 
-**"High Scores"**
+**High Scores**
 
-* [ ] List of 10 best scores and usernames. (needs some work)
-* [x] Close button(done)
-* [x] Reset Score(done)
+* [x] List of 10 best scores and usernames. (needs some work)
+* [x] Close button
+* [x] Reset Score
 * [x] High Scores are kept in a binary file called high.bri
-* 
-**"Score"** - Shows current Score
 
-**"Options"**
+**Score**
+* [x] Shows current Score (needs some work)
 
- * [ ] Volume Slider - slide between 0% and 100% of volume (not done)
- * [ ] Mute Button - disable sound (not done)
- * [ ] Restart Game - restart map (not done)
- * [x] Game saves automatically. (done)
- * [ ] There are two files story_save.bri random_save.bri. (not done)
+**Options**
+
+ * [ ] Volume Slider - slide between 0% and 100% of volume 
+ * [ ] Mute Button - disable sound 
+ * [ ] Restart Game - restart map 
+ * [x] Game saves automatically. 
+ * [ ] There are two files story_save.bri random_save.bri. 
 
 **SPECIAL BLOCKS:**
 
-* [ ] anti-gravity block (not done)
-* [ ] undestructable block (not done)
-* [ ] exploding block (not done)
-* [ ] paint block (not done)
-* [ ] line clear block (not done)
-* [ ] column clear block (not done)
+* [ ] anti-gravity block 
+* [ ] undestructable block 
+* [ ] exploding block 
+* [ ] paint block 
+* [ ] line clear block 
+* [ ] column clear block 
 
 **FEATURES TODO:**
-* [ ] level editor (not done)
-* [ ] 20 predefined levels (not done)
+* [ ] level editor
+* [ ] 20 predefined levels
 
 
 
