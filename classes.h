@@ -25,7 +25,7 @@ struct cTile
 {
 	int color;
 	int state;
-	//bool select=false;
+	bool select=false;
 };
 
 class cButton
@@ -53,7 +53,8 @@ class cGame
 {
 	friend class cButton;
 private:
-	//int xx, yy;
+	std::vector<cList> selectionList;
+	int currently_selected;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
@@ -61,8 +62,6 @@ private:
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
-	//int BRICKS_LARGE_X;//bricks in x axis
-	//int BRICKS_LARGE_Y;//bricks in y axis
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
@@ -121,7 +120,7 @@ public:
 	void options(); // draw options screen;
 	void endGame(); //draw end game screen
 	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
+	//int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
 	void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks

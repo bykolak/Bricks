@@ -18,14 +18,14 @@ extern int BRICK_COLORS;
 
 const int SCORE_DELAY = 4;
 //high scores 
-const int MAX_HIGH_SCORE = 10;
-const int MAX_USERNAME_LENGTH = 21;
+const int MAX_HIGH_SCORE = 10;//maximum high score entries
+const int MAX_USERNAME_LENGTH = 21;//defines maximum username length 
 //minimum size of screen
-const int MIN_SCREEN_X = 1030;
-const int MIN_SCREEN_Y = 400;
+const int MIN_SCREEN_X = 1030;//minimum X size of window
+const int MIN_SCREEN_Y = 400; //minimum Y size of window
 // predefined sizes of game
-const int BRICKS_MAP_X = 45;// number of bricks in X axis
-const int BRICKS_MAP_Y = 18;// number of bricks in Y axis
+const int BRICKS_MAP_X = 23;// number of bricks in X axis
+const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
 //sizes of bricks
 const int BRICK_SIZE = 40;//brick size in pixels
 //margins
@@ -35,9 +35,9 @@ const int RIGHT_MARGIN = 9;
 const int DOWN_MARGIN = 119;
 
 // size of buttons //NEEDS EVALUATION (needs to be scalable)
-const int BUTTON_WIDTH = 250;
+const int BUTTON_WIDTH = 250; 
 const int BUTTON_HEIGHT = 31;
-const int MAX_CHARS = 25;//length of text on button
+
 const int SMALL_BUTTON_WIDTH = 70;
 const int SMALL_BUTTON_HEIGHT = 31;
 

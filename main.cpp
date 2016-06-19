@@ -33,14 +33,18 @@ int main(int argc, char **argv)
 	game.loadButton();
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
+	ALLEGRO_TIMER *timer2 = NULL;
+
 	event_queue = al_create_event_queue();
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_mouse_event_source());
 	timer = al_create_timer(1.0 / FPS);
+	timer2 = al_create_timer(1.0 / 100);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
+	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
 	al_start_timer(timer);
-	
+	al_start_timer(timer2);
 	//===========MAIN LOOP
 	while (!done)
 	{
@@ -78,7 +82,7 @@ int main(int argc, char **argv)
 			if (game.checkGameState(REFRESH_GAME))	{ game.newGame(false); } //if "new game" or "map size" button pressed
 			if (game.checkGameState(CHEAT))			{ game.newGame(true); }
 			if (game.checkGameState(PLAY_GAME) )	{ game.checkEndGame(); }
-			game.updateNumberOfSelected();
+			if (ev.timer.source == timer2) game.updateNumberOfSelected();
 			render = true;
 		}
 		//=========RENDERER
