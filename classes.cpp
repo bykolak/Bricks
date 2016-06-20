@@ -562,91 +562,52 @@ void cGame::selectBrick(int _mouse_x, int _mouse_y) // takes mouse input and sel
 	int refresh = 0; 
 	if (!selection && bricks[x][y].state == FULL) //if not selected and full
 	{
-		
 		selectionList.clear();
 		cList currentList(x,y,false);
 		selectionList.push_back(currentList);
-	//	bricks[x][y].state = SELECTED;
-		
-		for (int i =0; i < selectionList.size(); i++)
+
+		for (int i = 0; i < selectionList.size(); i++)
 		{
+			int x = selectionList[i].x;
+			int y = selectionList[i].y;
 
-			//selectionList[i].state = false;
-			//if (selectionList[i].state == false)
-		//	{
+			if (y - 1 >= 0)	if (bricks[x][y].color == bricks[x][y - 1].color &&	!bricks[x][y - 1].select && bricks[x][y - 1].state != EMPTY) //if north brick is same color
+			{
+				currentList.set(x, y - 1, false);
+				bricks[x][y - 1].select = true;
+				selectionList.push_back(currentList);
+				bricks[x][y].select = true;
+			}
 
-				int x = selectionList[i].x;
-				int y = selectionList[i].y;
-				if (y - 1 >= 0	     &&
-					y + 1 < BRICKS_MAP_Y &&
-					x - 1 >= 0		 &&
-					x + 1 < BRICKS_MAP_X)
-				{
-					if (bricks[x][y].color == bricks[x][y - 1].color &&	!bricks[x][y - 1].select)// && bricks[x][y - 1].select == false) //if north brick is same color
-					{
-						currentList.set(x, y - 1, false);
-						//bricks[x][y - 1].state= SELECTED;
-						bricks[x][y - 1].select = true;
-					//	selectionList[i].state = true;
-						selectionList.push_back(currentList);
-						//bricks[x][y].state = SELECTED;
-						bricks[x][y].select = true;
-						
-					}
+			if (y + 1 < BRICKS_MAP_Y)if (bricks[x][y].color == bricks[x][y + 1].color && !bricks[x][y + 1].select && bricks[x][y + 1].state != EMPTY) //if south brick is same color
+			{
+				currentList.set(x, y + 1, false);
+				bricks[x][y + 1].select = true;
+				selectionList.push_back(currentList);
+				bricks[x][y].select = true;
+			}
 
-					if (bricks[x][y].color == bricks[x][y + 1].color && !bricks[x][y + 1].select)// && bricks[x][y + 1].select == false) //if south brick is same color
-					{
-						currentList.set(x, y + 1, false);
-						//bricks[x][y + 1].state = SELECTED;
-						bricks[x][y + 1].select = true;
-					//	selectionList[i].state = true;
-						selectionList.push_back(currentList);
-						//bricks[x][y].state = SELECTED;
-						bricks[x][y].select = true;
-					}
+			if (x - 1 >= 0)	if (bricks[x][y].color == bricks[x - 1][y].color && !bricks[x - 1][y].select && bricks[x - 1][y].state != EMPTY) //if west brick is same color
+			{
+				currentList.set(x - 1, y, false);
+				bricks[x - 1][y].select = true;
+				selectionList.push_back(currentList);
+				bricks[x][y].select = true;
+			}
 
-					if (bricks[x][y].color == bricks[x - 1][y].color && !bricks[x - 1][y].select)// && bricks[x - 1][y].select == false) //if west brick is same color
-					{
-						currentList.set(x - 1, y, false);
-						//bricks[x - 1][y].state = SELECTED;
-						bricks[x - 1][y].select = true;
-					//	selectionList[i].state = true;
-						selectionList.push_back(currentList);
-						//bricks[x][y].state = SELECTED;
-						bricks[x][y].select = true;
-					}
-
-					if (bricks[x][y].color == bricks[x + 1][y].color && !bricks[x + 1][y].select)// && bricks[x + 1][y].select == false) //if east brick is same color
-					{
-						currentList.set(x + 1, y, false);
-						//bricks[x + 1][y].state = SELECTED;
-						bricks[x + 1][y].select = true;
-						//selectionList[i].state = true;
-						selectionList.push_back(currentList);
-						//bricks[x][y].state = SELECTED;
-						bricks[x][y].select = true;
-						
-					}
-					int xx = currentList.x;
-					int yy = currentList.y;
-				}
-				
-				
-				selectionList[i].state = true;
-
-
+			if (x + 1 < BRICKS_MAP_X)	if (bricks[x][y].color == bricks[x + 1][y].color && !bricks[x + 1][y].select && bricks[x + 1][y].state != EMPTY) //if east brick is same color
+			{
+				currentList.set(x + 1, y, false);
+				bricks[x + 1][y].select = true;
+				selectionList.push_back(currentList);
+				bricks[x][y].select = true;
+			}
+			selectionList[i].state = true;
 		}
-		if (selectionList.size() >=2)
-		{
-			selection = true;
-		}
-		else
-		{
-			selectionList.clear();
-		}
+		if (selectionList.size() >=2)		{	selection = true;	}
+		else		{	selectionList.clear();		}
 		
 		currently_selected = 0;
-		
 	}else 
 	if (selection && bricks[x][y].state == SELECTED) // else if selected
 	{
@@ -709,6 +670,7 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 		for (int i = 0; i < BRICKS_MAP_Y; i++)
 			for (int t = 0; t < BRICKS_MAP_X; t++)
 			{
+				bricks[t][i].select = false;
 				if (bricks[t][i].state == EXPLODING)
 				{
 					bricks[t][i].state = EMPTY;
