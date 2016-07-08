@@ -27,38 +27,57 @@ struct cTile
 	int state;
 	bool select=false;
 };
-
+struct sPoint 
+{
+	int x;
+	int y;
+};
+class cTriangle
+{
+private:
+	sPoint vertex[3];
+public:
+	float sign(sPoint p1, sPoint p2, sPoint p3);
+	bool pointInTriangle(sPoint mouse);
+	void set(int x0, int y0, int x1, int y1, int x2, int y2);
+};
 class cButton
 {
 	friend class cGame;
 private:
-	int width;
-	int height;
-	bool flags;
+	sPoint xy0;
+	sPoint xy1;
+	//int width;
+	//int height;
+	//bool flags;
+	cTriangle upTriangle;
+	cTriangle downTriangle;
 	ALLEGRO_BITMAP *buttonBMP;
 	ALLEGRO_BITMAP *buttonPressedBMP;
 public:
-	int x;
-	int y;
+	//int x;
+//	int y;
 	int type;
 	int state;
-	const char* text;
+	bool mouseOver;
 	cButton();//constructor
-	bool overButton(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
-	void changeButtonSize(int _x, int _y, int _width, int _height); //sets all button parameters
-	void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
-	void drawButton();//draw button on screen
+	
+	bool update(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
+	void create(int type); //sets all button presets
+	//void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
+	void draw();//draw button on screen
 	};
 class cGame
 {
 	friend class cButton;
 private:
+	sPoint mouse;// contains postion of mouse on screen
 	std::vector<cList> selectionList;
 	int currently_selected;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
-	int number_of_selected; //how many selected 
+	//int number_of_selected; //how many selected 
 	bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
@@ -71,11 +90,15 @@ private:
 	int frameCount;
 	const int frameDelay = 0;
 	int curFrame;
+	ALLEGRO_EVENT ev;
 	const int maxFrame=40;
 	int last_score; //holds value of last destroyed bricks
 	int last_clicked_x ;
 	int last_clicked_y ;
+	int mouseX;
+	int mouseY;
 public:
+	float opacity;
 	ALLEGRO_SAMPLE *explosionOGG;
 	ALLEGRO_SAMPLE *clickWAV;
 	ALLEGRO_SAMPLE_INSTANCE *instance;
@@ -89,7 +112,7 @@ public:
 	int screen_height;//screen size y in pixels	
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
 	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
-	cButton button[NUMBER_OF_BUTTONS];
+	cButton button[MAX_BUTTONS];
 	ALLEGRO_USTR* player_name = al_ustr_new("_");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
 	ALLEGRO_BITMAP *scoreBMP = NULL;
@@ -99,18 +122,25 @@ public:
 	ALLEGRO_BITMAP *buttonsBMP = NULL;
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	ALLEGRO_BITMAP *explosionBMP = NULL;
+	ALLEGRO_BITMAP * mainPNG = NULL;
+	ALLEGRO_BITMAP * optionsPNG = NULL;
+	ALLEGRO_BITMAP * highscorePNG = NULL;
+	ALLEGRO_BITMAP * newgamePNG = NULL;
+	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+	ALLEGRO_TIMER *timer = NULL;
+	ALLEGRO_TIMER *timer2 = NULL;
 	std::vector< std::vector<cTile> > bricks;
 	cGame(); //default constructor
 	void updateScore();//updates on_screen score
 	void drawScore();//draws score to the screen
-	void checkButtons(int mouseX, int mouseY);//checks if mouse over button
-	void clickButtons(int mouseButton, int mouseX, int mouseY);
-	void updatePositions();
+	void checkButtons();//checks if mouse over button
+	void clickButtons(int mouseButton);
+	void update();
 	void loadButton(); //loads button locations from file
-	bool checkGameState(int state);//returns true if state=game_state
+	//bool checkGameState(int state);//returns true if state=game_state
 	void resetHighScores();//resets and saves new high score file
 	//void changeBricksXY(int _x, int _y); //changes map size
-	void changeBrickSize(int x);//changes brick size
+	//void changeBrickSize(int x);//changes brick size
 	void changeTile(int x, int y, int color); //changes color of x,y tile
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(); // draw all bricks on screen
@@ -133,6 +163,7 @@ public:
 	void loadHighScore();
 	void saveGame();
 	void loadGame();
+	void drawMenu();
 };
 
 
