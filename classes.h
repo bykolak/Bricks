@@ -45,26 +45,24 @@ class cButton
 {
 	friend class cGame;
 private:
-	sPoint xy0;
-	sPoint xy1;
-	//int width;
-	//int height;
-	//bool flags;
+	float opacity;
+	sPoint point0;
+	sPoint point1;
 	cTriangle upTriangle;
 	cTriangle downTriangle;
-	ALLEGRO_BITMAP *buttonBMP;
-	ALLEGRO_BITMAP *buttonPressedBMP;
-public:
-	//int x;
-//	int y;
+	cTriangle subMenuTriangleArea;
+	sPoint subMenuSquareArea0;
+	sPoint subMenuSquareArea1;
+	ALLEGRO_BITMAP * buttonPNG;
+	//ALLEGRO_BITMAP *buttonBMP;
+	//ALLEGRO_BITMAP *buttonPressedBMP;
 	int type;
-	int state;
+	//int state;
 	bool mouseOver;
+public:
 	cButton();//constructor
-	
-	bool update(int _mouse_x, int _mouse_y); //if inside button then change flags to true else make it false
+	bool update(sPoint m); //if inside button then change flags to true else make it false
 	void create(int type); //sets all button presets
-	//void createButton(ALLEGRO_BITMAP *temp);//creates bitmap for button
 	void draw();//draw button on screen
 	};
 class cGame
@@ -98,7 +96,7 @@ private:
 	int mouseX;
 	int mouseY;
 public:
-	float opacity;
+//	float opacity;
 	ALLEGRO_SAMPLE *explosionOGG;
 	ALLEGRO_SAMPLE *clickWAV;
 	ALLEGRO_SAMPLE_INSTANCE *instance;
@@ -115,11 +113,11 @@ public:
 	cButton button[MAX_BUTTONS];
 	ALLEGRO_USTR* player_name = al_ustr_new("_");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
-	ALLEGRO_BITMAP *scoreBMP = NULL;
-	ALLEGRO_BITMAP *bricksBMP = NULL;
-	ALLEGRO_BITMAP *optionsBMP = NULL;
+	//ALLEGRO_BITMAP *scoreBMP = NULL;
+	ALLEGRO_BITMAP *bricksPNG = NULL;
+	//ALLEGRO_BITMAP *optionsBMP = NULL;
 	ALLEGRO_BITMAP *shadowBMP = NULL;
-	ALLEGRO_BITMAP *buttonsBMP = NULL;
+	//ALLEGRO_BITMAP *buttonsBMP = NULL;
 	ALLEGRO_BITMAP *backgroundBMP = NULL;
 	ALLEGRO_BITMAP *explosionBMP = NULL;
 	ALLEGRO_BITMAP * mainPNG = NULL;
@@ -146,8 +144,8 @@ public:
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
-	void highScores(); // draw high scores;
-	void options(); // draw options screen;
+	//void highScores(); // draw high scores;
+	//void options(); // draw options screen;
 	void endGame(); //draw end game screen
 	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	//int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
