@@ -8,6 +8,10 @@
 #include <allegro5\allegro_acodec.h>
 #include "classes.h"
 
+cTriangle::cTriangle()
+{
+	exist = false;
+}
 float cTriangle::sign(sPoint p1, sPoint p2, sPoint p3)
 {
 	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
@@ -15,9 +19,15 @@ float cTriangle::sign(sPoint p1, sPoint p2, sPoint p3)
 
 void cTriangle::set(int x0, int y0, int x1, int y1, int x2, int y2)
 {
+	exist = true;
 	vertex[0].x = x0;	vertex[0].y = y0;
 	vertex[1].x = x1;	vertex[1].y = y1;
 	vertex[2].x = x2;	vertex[2].y = y2;
+}
+void cTriangle::draw(ALLEGRO_COLOR color)
+{
+	if (exist)
+	al_draw_triangle(vertex[0].x, vertex[0].y, vertex[1].x, vertex[1].y, vertex[2].x, vertex[2].y,color,2);
 }
 bool cTriangle::pointInTriangle(sPoint mouse)
 {
@@ -26,48 +36,37 @@ bool cTriangle::pointInTriangle(sPoint mouse)
 	b1 = sign(mouse, vertex[0], vertex[1]) < 0.0f;
 	b2 = sign(mouse, vertex[1], vertex[2]) < 0.0f;
 	b3 = sign(mouse, vertex[2], vertex[0]) < 0.0f;
-
-	return ((b1 == b2) && (b2 == b3));
+	if (exist)
+	{
+		return ((b1 == b2) && (b2 == b3));
+	}
+	else if (!exist)
+	{
+		return false;
+	}
 }
 //=====cButton methods
 cButton::cButton()//constructor
 {
-	point0.x = 0;
-	point0.y = 0;
-	point1.x = 0;
-	point1.y = 0;
-	type = 0;
+	mouseOver = false;
 	opacity = 0.0;
+	scale = 0.0;
 	buttonPNG = NULL;
-//	text = "default";
-	//buttonBMP = NULL;
-	//buttonPressedBMP = NULL;
-	
 }
 bool cButton::update(sPoint m) //if inside button then change flags to true else make it false
 {
-	if (type == SQUARE)
-	{		
-		if (m.x >= point0.x && m.x <= point0.x + point1.x && m.y >= point0.y && m.y <= point0.y + point1.y)		{	mouseOver = true;	}
-		else																				{	mouseOver = false;	}
+	int counter = 0;
+	if (upTriangle.pointInTriangle(m) || downTriangle.pointInTriangle(m)) { mouseOver = true; }
+	for (int i = 0; i < MAX_MOUSEOVER; i++)
+	{
+		if (mouseOver && subMenuTriangleArea[i].pointInTriangle(m))		{	counter++;	}	
 	}
+	if (counter == 0)		{ mouseOver = false; }
+	if (mouseOver)			{ opacity += 0.009;	}
+	else					{ opacity -= 0.009;	}
 
-	if (type==DIAMOND)
-	{
-		if (!subMenuTriangleArea.pointInTriangle(m) && mouseOver )					{	mouseOver = false;	}
-		if (upTriangle.pointInTriangle(m) || downTriangle.pointInTriangle(m) )		{	mouseOver = true;	}
-	}
-	if (mouseOver)
-	{
-
-		opacity += 0.009;
-	}
-	else
-	{
-		opacity -= 0.009;
-	}
-	if (opacity > 1.0) opacity = 1.0;
-	if (opacity < 0.0) opacity = 0.0;
+	if (opacity > 1.0) { opacity = 1.0; }
+	if (opacity < 0.0) { opacity = 0.0; }
 	return mouseOver;
 }
 void cButton::create(int button) //sets all button parameters
@@ -76,42 +75,58 @@ void cButton::create(int button) //sets all button parameters
 	{
 		upTriangle.set(821, 393, 959, 255, 1097, 393);
 		downTriangle.set(821, 393, 959, 531, 1097, 393);
-		subMenuTriangleArea.set(427, 0, 959, 531, 1491, 0);
-		type = DIAMOND;
-
-		//x = 0; y = 0; width = 0; height = 0; type = _type;
+		subMenuTriangleArea[0].set(427, 0, 959, 531, 1491, 0);
 	}
+
 	else if (button == OPTIONS_BUTTON)
 	{
 		upTriangle.set(674, 539, 812, 401, 950, 539);
 		downTriangle.set(674, 538, 812, 677, 950, 539);
-		subMenuTriangleArea.set(412, 0, 950, 539, 0, 1080);
-		type = DIAMOND;
+		subMenuTriangleArea[0].set(412, 0, 950, 539, 412, MIN_SCREEN_Y);
+		subMenuTriangleArea[1].set(0, 0, 412, 0, 0, MIN_SCREEN_Y);
+		subMenuTriangleArea[2].set(0,MIN_SCREEN_Y,412,0,412, MIN_SCREEN_Y);
 	}
 	else if (button == HIGHSCORES_BUTTON)
 	{
 		upTriangle.set(969, 539, 1107, 401, 1245, 539);
 		downTriangle.set(969, 539, 1107, 677, 1245, 539);
-		subMenuTriangleArea.set(969, 539, 1508, 0,  1508, 1080);
-		subMenuSquareArea0.x = 1508;
-		subMenuSquareArea0.y = 0;
-		subMenuSquareArea1.x = 1920;
-		subMenuSquareArea1.y = 1080;
-		type = DIAMOND;
+		subMenuTriangleArea[0].set(969, 539, 1508, 0,  1508, MIN_SCREEN_Y);
+		subMenuTriangleArea[1].set(1508, 0, 1508, MIN_SCREEN_Y, MIN_SCREEN_X, 0);
+		subMenuTriangleArea[2].set(1508, MIN_SCREEN_Y,MIN_SCREEN_X, MIN_SCREEN_Y, MIN_SCREEN_X,0);
 	}
-
-
-	else
+	else if (button == EXIT_BUTTON)
 	{
-		upTriangle.set(0, 0, 0, 0, 0, 0);
-		downTriangle.set(0, 0, 0, 0, 0, 0);
-		type = SQUARE;
+		upTriangle.set(821, 685, 959, 547, 1097, 685);
+		downTriangle.set(821, 685, 1097, 685, 959, 823);
+		subMenuTriangleArea[0].set(821, 685, 959, 547, 1097, 685);
+		subMenuTriangleArea[1].set(821, 685, 1097, 685, 959, 823);
 	}
+
 }
 
-void cButton::draw()//draw button on screen
+void cButton::draw(bool debug)//draw button on screen 
 {
 	al_draw_tinted_bitmap(buttonPNG, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, 0);
+	
+	if (debug) //if debug overlay is active
+	{
+		for (int i = 0; i < MAX_MOUSEOVER; i++)
+		{
+			subMenuTriangleArea[i].draw(YELLOW);
+		}
+		if (mouseOver)
+		{
+			upTriangle.draw(GREEN);
+			downTriangle.draw(GREEN);
+		}
+		if (!mouseOver)
+		{
+			upTriangle.draw(RED);
+			downTriangle.draw(RED);
+		}
+		
+	}
+	
 }
 //=====cGame methods
 cGame::cGame() //default constructor
@@ -195,7 +210,8 @@ cGame::cGame() //default constructor
 	for (int i = 0; i < MAX_BUTTONS; i++)
 	{
 		button[i].create(i);
-		button[i].buttonPNG = newgamePNG;
+		button[i].buttonPNG = al_create_bitmap(0,0);
+		button[PLAY_BUTTON].buttonPNG = newgamePNG;
 		button[OPTIONS_BUTTON].buttonPNG = optionsPNG;
 		button[HIGHSCORES_BUTTON].buttonPNG = highscorePNG;
 	}
@@ -913,7 +929,7 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw();	}
+	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(true);	}
 }
 
 cList::cList()

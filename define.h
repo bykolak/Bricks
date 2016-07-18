@@ -8,6 +8,8 @@
 //#define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
 #define YELLOW al_map_rgb(255,255,0)
+#define RED al_map_rgb(255,0,0)
+#define GREEN al_map_rgb(0,255,0)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
 //#define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
@@ -51,6 +53,9 @@ const int END_GAME_NEW_GAME_X = 3;
 const int END_GAME_NEW_GAME_Y = 333;
 const int END_GAME_SAVE_SCORE_X = 390;
 const int END_GAME_SAVE_SCORE_Y = 333;
+
+const int MAX_MOUSEOVER = 3;
+
 //ENUMS
 //enum BUTTON_XY{
 //	NEW_GAME_BUTTON, HIGH_SCORES_BUTTON, OPTIONS_BUTTON,SCORE_BUTTON,GAME_AREA_BUTTON,//main screen buttons

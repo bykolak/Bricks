@@ -36,34 +36,38 @@ class cTriangle
 {
 private:
 	sPoint vertex[3];
+	bool exist;
 public:
+	cTriangle();
 	float sign(sPoint p1, sPoint p2, sPoint p3);
 	bool pointInTriangle(sPoint mouse);
 	void set(int x0, int y0, int x1, int y1, int x2, int y2);
+	void draw(ALLEGRO_COLOR  color);
 };
 class cButton
 {
 	friend class cGame;
 private:
 	float opacity;
-	sPoint point0;
-	sPoint point1;
+	float scale;
+	//sPoint point0;
+	//sPoint point1;
 	cTriangle upTriangle;
 	cTriangle downTriangle;
-	cTriangle subMenuTriangleArea;
-	sPoint subMenuSquareArea0;
-	sPoint subMenuSquareArea1;
+	cTriangle subMenuTriangleArea[MAX_MOUSEOVER];
+	//sPoint subMenuSquareArea0;
+	//sPoint subMenuSquareArea1;
 	ALLEGRO_BITMAP * buttonPNG;
 	//ALLEGRO_BITMAP *buttonBMP;
 	//ALLEGRO_BITMAP *buttonPressedBMP;
-	int type;
+	//int type;
 	//int state;
 	bool mouseOver;
 public:
 	cButton();//constructor
 	bool update(sPoint m); //if inside button then change flags to true else make it false
 	void create(int type); //sets all button presets
-	void draw();//draw button on screen
+	void draw(bool debug);//draw button on screen
 	};
 class cGame
 {
