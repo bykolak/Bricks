@@ -40,10 +40,8 @@ bool cTriangle::pointInTriangle(sPoint mouse)
 	{
 		return ((b1 == b2) && (b2 == b3));
 	}
-	else if (!exist)
-	{
-		return false;
-	}
+
+	return false;
 }
 //=====cButton methods
 cButton::cButton()//constructor
@@ -71,6 +69,15 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 }
 void cButton::create(int button) //sets all button parameters
 {	
+	if (button == GAME_AREA_BUTTON)
+	{
+		upTriangle.set(0, TOP_MARGIN, MIN_SCREEN_X, TOP_MARGIN, 0, MIN_SCREEN_Y - DOWN_MARGIN);
+		downTriangle.set(MIN_SCREEN_X, TOP_MARGIN, MIN_SCREEN_X, MIN_SCREEN_Y - DOWN_MARGIN, 0, MIN_SCREEN_Y - DOWN_MARGIN);
+		subMenuTriangleArea[0].set(0, TOP_MARGIN, MIN_SCREEN_X, TOP_MARGIN, 0, MIN_SCREEN_Y - DOWN_MARGIN);
+		subMenuTriangleArea[1].set(MIN_SCREEN_X, TOP_MARGIN, MIN_SCREEN_X, MIN_SCREEN_Y - DOWN_MARGIN, 0, MIN_SCREEN_Y - DOWN_MARGIN);
+	}
+
+	//button[GAME_AREA_BUTTON].create(left_game_area_margin, TOP_MARGIN, area_width, area_height, FAKE_BUTTON);
 	if (button == PLAY_BUTTON)
 	{
 		upTriangle.set(821, 393, 959, 255, 1097, 393);
@@ -82,7 +89,7 @@ void cButton::create(int button) //sets all button parameters
 	{
 		upTriangle.set(674, 539, 812, 401, 950, 539);
 		downTriangle.set(674, 538, 812, 677, 950, 539);
-		subMenuTriangleArea[0].set(412, 0, 950, 539, 412, MIN_SCREEN_Y);
+		subMenuTriangleArea[0].set(412, 0, 950, 539, 412, 1080);
 		subMenuTriangleArea[1].set(0, 0, 412, 0, 0, MIN_SCREEN_Y);
 		subMenuTriangleArea[2].set(0,MIN_SCREEN_Y,412,0,412, MIN_SCREEN_Y);
 	}
@@ -90,7 +97,7 @@ void cButton::create(int button) //sets all button parameters
 	{
 		upTriangle.set(969, 539, 1107, 401, 1245, 539);
 		downTriangle.set(969, 539, 1107, 677, 1245, 539);
-		subMenuTriangleArea[0].set(969, 539, 1508, 0,  1508, MIN_SCREEN_Y);
+		subMenuTriangleArea[0].set(969, 539, 1508, 0,  1508, 1080);
 		subMenuTriangleArea[1].set(1508, 0, 1508, MIN_SCREEN_Y, MIN_SCREEN_X, 0);
 		subMenuTriangleArea[2].set(1508, MIN_SCREEN_Y,MIN_SCREEN_X, MIN_SCREEN_Y, MIN_SCREEN_X,0);
 	}
@@ -132,7 +139,7 @@ void cButton::draw(bool debug)//draw button on screen
 cGame::cGame() //default constructor
 	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
 {
-	
+	done = false;
 //	opacity = 0;
 	currently_selected = 0;
 	score_count = 0;
@@ -152,7 +159,8 @@ cGame::cGame() //default constructor
 	player_name = NULL;
 	al_init();
 	display = al_create_display(screen_width, screen_height);
-	al_set_window_position(display, 20, 20);
+	al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+	//al_set_window_position(display, 20, 20);
 	al_init_font_addon();
 	al_init_ttf_addon();
 	al_init_primitives_addon();
@@ -161,9 +169,6 @@ cGame::cGame() //default constructor
 	// LOADING GRAPHICS
 	al_init_image_addon();
 	bricksPNG = al_load_bitmap("bricks.png");
-	//optionsBMP = al_load_bitmap("options.png");
-	//buttonsBMP = al_load_bitmap("buttons.png");
-	//scoreBMP = al_load_bitmap("score.bmp");
 	explosionBMP = al_load_bitmap("explosion.png");
 	shadowBMP = al_create_bitmap(screen_width, screen_height);
 	backgroundBMP = al_load_bitmap("background.png");
@@ -282,13 +287,19 @@ void cGame::clickButtons(int mouseButton)
 {
 	if (mouseButton==1) //if left mouse button pressed
 	{
+		if (game_state == MAIN_MENU)
+		{
+			
+			if (button[PLAY_BUTTON].mouseOver) { game_state = REFRESH_GAME; }
+			if (button[EXIT_BUTTON].mouseOver) { done = true; }
+		}
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
 
 			//if (button[NEW_GAME_BUTTON].flags)		{ al_play_sample_instance(instanceClick); game_state = REFRESH_GAME; }
 			//if (button[HIGH_SCORES_BUTTON].flags)		{ al_play_sample_instance(instanceClick); game_state = HIGH_SCORE; }
 			//if (button[OPTIONS_BUTTON].flags)			{ al_play_sample_instance(instanceClick); game_state = OPTIONS; }
-			//if (button[GAME_AREA_BUTTON].flags && !destroy_brick)		{ al_play_sample_instance(instanceClick2); selectBrick(mouseX, mouseY); }
+			if (button[GAME_AREA_BUTTON].mouseOver)		{ al_play_sample_instance(instanceClick2); selectBrick(); }
 		}
 		if (game_state == OPTIONS) //if in options check these events
 		{
@@ -321,10 +332,8 @@ void cGame::clickButtons(int mouseButton)
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
 //			if (button[NEW_GAME_BUTTON].flags)		{ game_state = CHEAT; }
-//			if (button[GAME_AREA_BUTTON].flags)		
-			{
-				changeTile((mouseX - left_game_area_margin ) / brick_size, (mouseY - TOP_MARGIN) / brick_size, 0);
-			} //debug		
+			if (button[GAME_AREA_BUTTON].mouseOver)			{	changeTile((mouse.x - left_game_area_margin ) / brick_size, (mouse.y - TOP_MARGIN) / brick_size, 0);	} //debug	
+			else game_state = MAIN_MENU;
 		}
 		if (game_state == OPTIONS)		{ game_state = PLAY_GAME; }
 		if (game_state == HIGH_SCORE)	{ game_state = PLAY_GAME; }
@@ -332,8 +341,8 @@ void cGame::clickButtons(int mouseButton)
 }
 void cGame::update()
 {
-	bool render=true;
-	bool done = false;
+	bool render = true;
+
 	al_start_timer(timer);
 	al_start_timer(timer2);
 	while (!done)
@@ -456,10 +465,12 @@ void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 }
 void cGame::drawGameArea() // draw all bricks on screen;
 {
-	int  x_times = screen_width / al_get_bitmap_width(backgroundBMP) + 1;
+	/*int  x_times = screen_width / al_get_bitmap_width(backgroundBMP) + 1;
 	int  y_times = screen_height / al_get_bitmap_height(backgroundBMP) + 1;
 	for (int i = 0; i < x_times; i++)
-		for (int t = 0; t < y_times; t++)	al_draw_bitmap(backgroundBMP, i * 128, t * 128, NULL);
+		for (int t = 0; t < y_times; t++)	*/
+			
+			al_draw_bitmap(backgroundBMP,0, 0, NULL);
 
 	left_game_area_margin = (screen_width - area_width) / 2;
 //	al_draw_tinted_bitmap_region(shadowBMP, TINT3, 0, 0, button[GAME_AREA_BUTTON].width, button[GAME_AREA_BUTTON].height, left_game_area_margin, TOP_MARGIN, NULL);
@@ -593,10 +604,10 @@ void cGame::endGame()
 	}
 	al_draw_textf(font24, WHITE, screen_width / 2, screen_height / 2 + 75, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen_score);
 }
-void cGame::selectBrick(int mx, int my) // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
+void cGame::selectBrick() // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
-	int x = (mx - left_game_area_margin) / brick_size;
-	int y = (my - TOP_MARGIN) / brick_size;
+	int x = (mouse.x - left_game_area_margin) / brick_size;
+	int y = (mouse.y - TOP_MARGIN) / brick_size;
 	last_clicked_x = x;
 	last_clicked_y = y;
 	int refresh = 0; 
@@ -662,7 +673,7 @@ void cGame::selectBrick(int mx, int my) // takes mouse input and selects all sam
 	if (selection && bricks[x][y].state != SELECTED)
 	{
 		deselectBrick();	
-		selectBrick(mx, my);
+		selectBrick();
 	}
 
 }

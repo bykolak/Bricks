@@ -73,6 +73,7 @@ class cGame
 {
 	friend class cButton;
 private:
+	bool done;
 	sPoint mouse;// contains postion of mouse on screen
 	std::vector<cList> selectionList;
 	int currently_selected;
@@ -97,10 +98,6 @@ private:
 	int last_score; //holds value of last destroyed bricks
 	int last_clicked_x ;
 	int last_clicked_y ;
-	int mouseX;
-	int mouseY;
-public:
-//	float opacity;
 	ALLEGRO_SAMPLE *explosionOGG;
 	ALLEGRO_SAMPLE *clickWAV;
 	ALLEGRO_SAMPLE_INSTANCE *instance;
@@ -108,7 +105,7 @@ public:
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick;
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick2;
 	int brick_size; //size of bricks
-	int game_state; // using enum GAME_STATE to tell program in what state game is
+	
 	bool destroy_brick;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
@@ -132,6 +129,8 @@ public:
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;
 	std::vector< std::vector<cTile> > bricks;
+public:
+	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
 	void updateScore();//updates on_screen score
 	void drawScore();//draws score to the screen
@@ -151,7 +150,7 @@ public:
 	//void highScores(); // draw high scores;
 	//void options(); // draw options screen;
 	void endGame(); //draw end game screen
-	void selectBrick(int _mouse_x, int _mouse_y); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
+	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	//int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
 	void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them

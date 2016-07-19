@@ -24,17 +24,17 @@ const int MAX_HIGH_SCORE = 10;//maximum high score entries
 const int MAX_USERNAME_LENGTH = 21;//defines maximum username length 
 //minimum size of screen
 const int MIN_SCREEN_X = 1920;//minimum X size of window
-const int MIN_SCREEN_Y = 1000; //minimum Y size of window
+const int MIN_SCREEN_Y = 1080; //minimum Y size of window
 // predefined sizes of game
-const int BRICKS_MAP_X = 40;// number of bricks in X axis
-const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
+const int BRICKS_MAP_X = 48;// number of bricks in X axis
+const int BRICKS_MAP_Y = 22;// number of bricks in Y axis
 //sizes of bricks
 const int BRICK_SIZE = 40;//brick size in pixels
 //margins
-const int TOP_MARGIN = 42;
-const int LEFT_MARGIN = 9;
-const int RIGHT_MARGIN = 9;
-const int DOWN_MARGIN = 119;
+const int TOP_MARGIN = 64;
+//const int LEFT_MARGIN = 9;
+//const int RIGHT_MARGIN = 9;
+const int DOWN_MARGIN = 100;
 
 // size of buttons //NEEDS EVALUATION (needs to be scalable)
 const int BUTTON_WIDTH = 250; 
@@ -65,7 +65,7 @@ const int MAX_MOUSEOVER = 3;
 //	NUMBER_OF_BUTTONS //array index of game.button[NUMBER_OF_BUTTONS]
 //};
 
-enum BUTTONS { PLAY_BUTTON, OPTIONS_BUTTON, HIGHSCORES_BUTTON, EXIT_BUTTON, NEW_STORY_BUTTON, LOAD_GAME, NEW_RANDOM_BUTTON, MUSIC_VOLUME_BUTTON, SOUND_VOLUME_BUTTON, MAX_BUTTONS };
+enum BUTTONS { PLAY_BUTTON, OPTIONS_BUTTON, HIGHSCORES_BUTTON, EXIT_BUTTON, NEW_STORY_BUTTON, LOAD_GAME, NEW_RANDOM_BUTTON, MUSIC_VOLUME_BUTTON, SOUND_VOLUME_BUTTON, GAME_AREA_BUTTON, MAX_BUTTONS };
 enum BUTTON_TYPE{DIAMOND,SQUARE,MAX_TYPE};
 enum TILE_STATE{ EMPTY, FULL, SELECTED, EXPLODING };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME, SAVING_SCORE, CHEAT,MAIN_MENU};
