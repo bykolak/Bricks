@@ -115,24 +115,24 @@ void cButton::draw(bool debug)//draw button on screen
 {
 	al_draw_tinted_bitmap(buttonPNG, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, 0);
 	
-	if (debug) //if debug overlay is active
-	{
-		for (int i = 0; i < MAX_MOUSEOVER; i++)
-		{
-			subMenuTriangleArea[i].draw(YELLOW);
-		}
-		if (mouseOver)
-		{
-			upTriangle.draw(GREEN);
-			downTriangle.draw(GREEN);
-		}
-		if (!mouseOver)
-		{
-			upTriangle.draw(RED);
-			downTriangle.draw(RED);
-		}
-		
-	}
+	//if (debug) //if debug overlay is active
+	//{
+	//	for (int i = 0; i < MAX_MOUSEOVER; i++)
+	//	{
+	//		subMenuTriangleArea[i].draw(YELLOW);
+	//	}
+	//	if (mouseOver)
+	//	{
+	//		upTriangle.draw(GREEN);
+	//		downTriangle.draw(GREEN);
+	//	}
+	//	if (!mouseOver)
+	//	{
+	//		upTriangle.draw(RED);
+	//		downTriangle.draw(RED);
+	//	}
+	//	
+	//}
 	
 }
 //=====cGame methods
@@ -465,16 +465,8 @@ void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 }
 void cGame::drawGameArea() // draw all bricks on screen;
 {
-	/*int  x_times = screen_width / al_get_bitmap_width(backgroundBMP) + 1;
-	int  y_times = screen_height / al_get_bitmap_height(backgroundBMP) + 1;
-	for (int i = 0; i < x_times; i++)
-		for (int t = 0; t < y_times; t++)	*/
-			
-			al_draw_bitmap(backgroundBMP,0, 0, NULL);
-
+	al_draw_bitmap(backgroundBMP,0, 0, NULL);
 	left_game_area_margin = (screen_width - area_width) / 2;
-//	al_draw_tinted_bitmap_region(shadowBMP, TINT3, 0, 0, button[GAME_AREA_BUTTON].width, button[GAME_AREA_BUTTON].height, left_game_area_margin, TOP_MARGIN, NULL);
-//	al_draw_rectangle(left_game_area_margin, TOP_MARGIN, button[GAME_AREA_BUTTON].width + left_game_area_margin + 1, button[GAME_AREA_BUTTON].height + TOP_MARGIN + 1, BLACK, 1);
 	for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
@@ -490,7 +482,7 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	for (int i = 0; i<BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i);
+		//	al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i); //debug: shows
 			if (bricks[t][i].state == EXPLODING)
 			{
 				al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 2)*brick_size + left_game_area_margin, (i - 2)*brick_size + TOP_MARGIN, NULL);

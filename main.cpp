@@ -17,11 +17,12 @@ ALLEGRO_FONT *font36 = NULL;
 int main(int argc, char **argv)
 {
 	//======INIT
-	cGame game;
-	game.game_state = MAIN_MENU; //debug
-	game.update();//main loop
-	game.saveGame();//save game if main loop is broken
+	cGame *game = new cGame();
+	game->game_state = MAIN_MENU; //debug
+	game->update();//main loop
+	game->saveGame();//save game if main loop is broken
 	//TODO game.destructor //destroying game object
 	al_destroy_display(display); // closing window
+	delete game;
 	return 0;
 }
