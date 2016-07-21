@@ -50,18 +50,10 @@ class cButton
 private:
 	float opacity;
 	float scale;
-	//sPoint point0;
-	//sPoint point1;
 	cTriangle upTriangle;
 	cTriangle downTriangle;
 	cTriangle subMenuTriangleArea[MAX_MOUSEOVER];
-	//sPoint subMenuSquareArea0;
-	//sPoint subMenuSquareArea1;
 	ALLEGRO_BITMAP * buttonPNG;
-	//ALLEGRO_BITMAP *buttonBMP;
-	//ALLEGRO_BITMAP *buttonPressedBMP;
-	//int type;
-	//int state;
 	bool mouseOver;
 public:
 	cButton();//constructor
