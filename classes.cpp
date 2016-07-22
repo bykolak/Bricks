@@ -115,24 +115,24 @@ void cButton::draw(bool debug)//draw button on screen
 {
 	al_draw_tinted_bitmap(buttonPNG, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, 0);
 	
-	//if (debug) //if debug overlay is active
-	//{
-	//	for (int i = 0; i < MAX_MOUSEOVER; i++)
-	//	{
-	//		subMenuTriangleArea[i].draw(YELLOW);
-	//	}
-	//	if (mouseOver)
-	//	{
-	//		upTriangle.draw(GREEN);
-	//		downTriangle.draw(GREEN);
-	//	}
-	//	if (!mouseOver)
-	//	{
-	//		upTriangle.draw(RED);
-	//		downTriangle.draw(RED);
-	//	}
-	//	
-	//}
+	if (debug) //if debug overlay is active
+	{
+		for (int i = 0; i < MAX_MOUSEOVER; i++)
+		{
+			subMenuTriangleArea[i].draw(YELLOW);
+		}
+		if (mouseOver)
+		{
+			upTriangle.draw(GREEN);
+			downTriangle.draw(GREEN);
+		}
+		if (!mouseOver)
+		{
+			upTriangle.draw(RED);
+			downTriangle.draw(RED);
+		}
+		
+	}
 	
 }
 //=====cGame methods
@@ -199,9 +199,9 @@ cGame::cGame() //default constructor
 	al_attach_sample_instance_to_mixer(instanceClick, al_get_default_mixer());
 	al_attach_sample_instance_to_mixer(instanceClick2, al_get_default_mixer());
 	
-	font24 = al_load_font("luculent.ttf", 24, 0);
-	font18 = al_load_font("luculent.ttf", 12, 0);
-	font36 = al_load_font("luculent.ttf", 36, 0);
+	font24 = al_load_font("bebas.ttf", 24, 0);
+	font18 = al_load_font("bebas.ttf", 20, 0);
+	font36 = al_load_font("bebas.ttf", 36, 0);
 	float FPS = 60.0;
 	srand(time(NULL));
 	event_queue = al_create_event_queue();
@@ -243,11 +243,11 @@ void cGame::updateScore()//updates on_screen score
 void cGame::drawScore()//draws score to the screen
 {
 	int f = 1;
-	al_draw_textf(font18, BLACK, left_button_margin + BUTTON_WIDTH + 240-f, 8, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
-	al_draw_textf(font18, BLACK, left_button_margin + BUTTON_WIDTH + 240+f, 8, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
-	al_draw_textf(font18, WHITE, left_button_margin + BUTTON_WIDTH + 240,8, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
-	al_draw_textf(font18, WHITE, left_button_margin + BUTTON_WIDTH + 250, 8, ALLEGRO_ALIGN_RIGHT, " %i", selectionList.size());
-	al_draw_textf(font18, WHITE, left_button_margin + BUTTON_WIDTH + 300, 8, ALLEGRO_ALIGN_RIGHT, " %i", score);
+	//al_draw_textf(font36, BLACK, left_button_margin + BUTTON_WIDTH + 240-f, 8, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
+	//al_draw_textf(font36, BLACK, left_button_margin + BUTTON_WIDTH + 240+f, 8, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
+	al_draw_textf(font36, WHITE, left_button_margin + BUTTON_WIDTH + 750, 1010, ALLEGRO_ALIGN_RIGHT, " %i", on_screen_score);
+	al_draw_textf(font36, WHITE, left_button_margin + BUTTON_WIDTH + 200, 8, ALLEGRO_ALIGN_RIGHT, " selectionList.size:%i", selectionList.size());
+	al_draw_textf(font36, WHITE, left_button_margin + BUTTON_WIDTH + 600, 8, ALLEGRO_ALIGN_RIGHT, " score:%i", score);
 }
 void cGame::checkButtons()
 {
@@ -331,6 +331,10 @@ void cGame::clickButtons(int mouseButton)
 
 	if (mouseButton == 2) //if right mouse button pressed
 	{
+		if (game_state == MAIN_MENU)
+		{
+			resetHighScores();//debug
+		}
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
 //			if (button[NEW_GAME_BUTTON].flags)		{ game_state = CHEAT; }
@@ -404,9 +408,9 @@ void cGame::update()
 			if (game_state == END_GAME || game_state == SAVING_SCORE) { endGame(); }
 			if (game_state == SAVING_SCORE)
 			{
-				al_draw_textf(font18, WHITE, screen_width / 2 - 100, screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
-				al_draw_text(font18, WHITE, screen_width / 2, screen_height / 2 + 100, NULL, "_____________________");
-				al_draw_ustr(font18, YELLOW, screen_width / 2, screen_height / 2 + 100, NULL, edited_text);
+//				al_draw_textf(font18, WHITE, screen_width / 2 - 100, screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
+//				al_draw_text(font18, WHITE, screen_width / 2, screen_height / 2 + 100, NULL, "_____________________");
+//				al_draw_ustr(font18, YELLOW, screen_width / 2, screen_height / 2 + 100, NULL, edited_text);
 			}
 			if (game_state == MAIN_MENU)
 			{
@@ -452,7 +456,8 @@ void cGame::resetHighScores() //resets all saved highscores TODO
 
 		high_score[i] = 0;
 		al_ustr_free(high_score_name[i]);
-		high_score_name[i] = al_ustr_new(".....");
+		high_score_name[i] = al_ustr_new("MaximumNameSize");
+		high_score[i] = 1234567;
 	}
 	saveHighScore();
 }
@@ -490,7 +495,7 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	for (int i = 0; i<BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i); //debug: shows
+			//al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i); //debug: shows brick position in bricks[t][i] array
 			if (bricks[t][i].state == EXPLODING)
 			{
 				al_draw_bitmap_region(explosionBMP, 240 * curFrame, 0, 240, 240, (t - 2)*brick_size + left_game_area_margin, (i - 2)*brick_size + TOP_MARGIN, NULL);
@@ -561,19 +566,19 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 		if (selected == 0 && !destroy_brick) game_state = END_GAME;
 		
 }
-//void cGame::highScores() // open high scores;
-//{
-//	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-	//al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), (screen_height / 2) - (al_get_bitmap_height(scoreBMP) / 2), 0);
-
-	//button[HIGH_SCORES_RESET_BUTTON].draw();
-	//button[HIGH_SCORES_CLOSE_BUTTON].draw();
-//	for (int i = 0; i < MAX_HIGH_SCORE; i++)
-//	{
-//		al_draw_ustr(font24, WHITE, screen_width / 2 - 300, screen_height / 2 -  + (25 * i) + 6, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-//		al_draw_textf(font24, WHITE, screen_width / 2 + 250, screen_height / 2 -  + (25 * i) + 6, ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
-//	}
-//}
+ALLEGRO_BITMAP* cGame::highScores() // open high scores;
+{
+	ALLEGRO_BITMAP* temp = NULL;
+	temp = al_create_bitmap(500, 500);
+	al_set_target_bitmap(temp);
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		al_draw_text(font18, WHITE, 0,(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "1.");
+		al_draw_ustr(font18, WHITE, 10, screen_height / 2 - +(28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_textf(font18, WHITE, 265, screen_height / 2 - +(28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	}
+	return temp;
+}
 //void cGame::options()// open options screen;
 //{
 //	al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
@@ -650,15 +655,15 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 			}
 			selectionList[i].state = true;
 		}
-		if (selectionList.size() >=2)		{	selection = true;	}
-		else		{	selectionList.clear();		}
+		if (selectionList.size() > 1)		{	selection = true;	}
+		//else		{	selectionList.clear();		}
 		
 		currently_selected = 0;
 	}else 
 	if (selection && bricks[x][y].state == SELECTED) // else if selected
 	{
 		destroy_brick = true;
-		selectionList.clear();
+		//selectionList.clear();
 		for (int i = 0; i < BRICKS_MAP_X; i++)
 			for (int t = 0; t < BRICKS_MAP_Y; t++)
 			{
@@ -732,7 +737,7 @@ int  cGame::calculateScore() //calculates score for destroyed bricks
 {
 
 	int score_earned = 0;
-	int iterator = 4;//selectionList.size();
+	int iterator = selectionList.size();
 	for (int i = 0; i<iterator; i++)
 	{
 		score_earned+= i*2; //NEEDS EVALUATION
@@ -937,7 +942,19 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(true);	}
+	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(false);	}
+	if (button[HIGHSCORES_BUTTON].mouseOver)
+	{
+		for (int i = 0; i < MAX_HIGH_SCORE; i++)
+		{
+			//ALLEGRO_BITMAP *temp = highScores();
+			//al_draw_tinted_bitmap(temp, al_map_rgb(button[HIGHSCORES_BUTTON].opacity, button[HIGHSCORES_BUTTON].opacity, button[HIGHSCORES_BUTTON].opacity), 0, 0, NULL);
+			al_draw_textf(font18, WHITE, screen_width / 2 + 465, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "1.");
+			al_draw_ustr(font18, WHITE, screen_width / 2 + 475, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+			al_draw_textf(font18, WHITE, screen_width / 2 + 730, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+		}
+		al_set_target_bitmap(al_get_backbuffer(display));
+	}
 }
 
 cList::cList()

@@ -139,6 +139,7 @@ public:
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
+	ALLEGRO_BITMAP* highScores();
 	//void highScores(); // draw high scores;
 	//void options(); // draw options screen;
 	void endGame(); //draw end game screen
