@@ -29,8 +29,8 @@ struct cTile
 };
 struct sPoint 
 {
-	int x;
-	int y;
+	float x;
+	float y;
 };
 class cTriangle
 {
@@ -41,7 +41,7 @@ public:
 	cTriangle();
 	float sign(sPoint p1, sPoint p2, sPoint p3);
 	bool pointInTriangle(sPoint mouse);
-	void set(int x0, int y0, int x1, int y1, int x2, int y2);
+	void set(sPoint p1, sPoint p2, sPoint p3);
 	void draw(ALLEGRO_COLOR  color);
 };
 class cButton
@@ -50,15 +50,16 @@ class cButton
 private:
 	float opacity;
 	float scale;
+	float x;
+	float y;
 	cTriangle upTriangle;
 	cTriangle downTriangle;
-	cTriangle subMenuTriangleArea[MAX_MOUSEOVER];
 	ALLEGRO_BITMAP * buttonPNG;
 	bool mouseOver;
 public:
 	cButton();//constructor
 	bool update(sPoint m); //if inside button then change flags to true else make it false
-	void create(int type); //sets all button presets
+	void create(float posX, float posY, float width, float height, int type, const char* text); //sets all button presets
 	void draw(bool debug);//draw button on screen
 	};
 class cGame
@@ -109,10 +110,10 @@ private:
 	//ALLEGRO_BITMAP *scoreBMP = NULL;
 	ALLEGRO_BITMAP *bricksPNG = NULL;
 	//ALLEGRO_BITMAP *optionsBMP = NULL;
-	ALLEGRO_BITMAP *shadowBMP = NULL;
-	//ALLEGRO_BITMAP *buttonsBMP = NULL;
-	ALLEGRO_BITMAP *backgroundBMP = NULL;
-	ALLEGRO_BITMAP *explosionBMP = NULL;
+//	ALLEGRO_BITMAP *shadowBMP = NULL;
+//	ALLEGRO_BITMAP *buttonsPNG= NULL;
+	ALLEGRO_BITMAP *backgroundPNG = NULL;
+	ALLEGRO_BITMAP *explosionPNG = NULL;
 	ALLEGRO_BITMAP * mainPNG = NULL;
 	ALLEGRO_BITMAP * optionsPNG = NULL;
 	ALLEGRO_BITMAP * highscorePNG = NULL;
@@ -139,7 +140,7 @@ public:
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
-	ALLEGRO_BITMAP* highScores();
+	//ALLEGRO_BITMAP* highScores();
 	//void highScores(); // draw high scores;
 	//void options(); // draw options screen;
 	void endGame(); //draw end game screen

@@ -16,6 +16,10 @@
 #define TINT3 al_map_rgba_f(0.3, 0.3, 0.3, 0.3)
 #define MASK_COLOR al_map_rgb(255,0,255)
 
+//DEBUGS AND OVERLAYS FLAGS
+const bool BUTTON_OVERLAY = true;
+
+
 extern int BRICK_COLORS;
 const int SELECTION_SPEED = 100; //how many bricks selected per second
 const int SCORE_DELAY = 4;
@@ -23,11 +27,14 @@ const int SCORE_DELAY = 4;
 const int MAX_HIGH_SCORE = 10;//maximum high score entries
 const int MAX_USERNAME_LENGTH = 21;//defines maximum username length 
 //minimum size of screen
-const int MIN_SCREEN_X = 1920;//minimum X size of window
-const int MIN_SCREEN_Y = 1080; //minimum Y size of window
+const float SCREEN_X = 1920.0;//minimum X size of window
+const float SCREEN_Y = 1080.0; //minimum Y size of window
+const float AWAY_FROM_CENTER = 10.0; 
+const float BUTTON_SIZE = 277.0;
+const float SUBMENU_CORNERS = 532;
 // predefined sizes of game
 const int BRICKS_MAP_X = 48;// number of bricks in X axis
-const int BRICKS_MAP_Y = 22;// number of bricks in Y axis
+const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
 //sizes of bricks
 const int BRICK_SIZE = 40;//brick size in pixels
 //margins
@@ -37,8 +44,8 @@ const int TOP_MARGIN = 64;
 const int DOWN_MARGIN = 100;
 
 // size of buttons //NEEDS EVALUATION (needs to be scalable)
-const int BUTTON_WIDTH = 250; 
-const int BUTTON_HEIGHT = 31;
+//const int BUTTON_WIDTH = 250; 
+//const int BUTTON_HEIGHT = 31;
 
 const int SMALL_BUTTON_WIDTH = 70;
 const int SMALL_BUTTON_HEIGHT = 31;
@@ -55,7 +62,7 @@ const int END_GAME_SAVE_SCORE_X = 390;
 const int END_GAME_SAVE_SCORE_Y = 333;
 
 const int MAX_MOUSEOVER = 3;
-
+const int TRIANGLE_FACE_LENGTH = 277;
 //ENUMS
 //enum BUTTON_XY{
 //	NEW_GAME_BUTTON, HIGH_SCORES_BUTTON, OPTIONS_BUTTON,SCORE_BUTTON,GAME_AREA_BUTTON,//main screen buttons
@@ -65,8 +72,8 @@ const int MAX_MOUSEOVER = 3;
 //	NUMBER_OF_BUTTONS //array index of game.button[NUMBER_OF_BUTTONS]
 //};
 
-enum BUTTONS { PLAY_BUTTON, OPTIONS_BUTTON, HIGHSCORES_BUTTON, EXIT_BUTTON, NEW_STORY_BUTTON, LOAD_GAME, NEW_RANDOM_BUTTON, MUSIC_VOLUME_BUTTON, SOUND_VOLUME_BUTTON, GAME_AREA_BUTTON, MAX_BUTTONS };
-enum BUTTON_TYPE{DIAMOND,SQUARE,MAX_TYPE};
+enum BUTTONS { PLAY_BUTTON, OPTIONS_BUTTON, HIGHSCORES_BUTTON, EXIT_BUTTON, NEW_STORY_BUTTON, LOAD_GAME_BUTTON, NEW_RANDOM_BUTTON, MUSIC_VOLUME_BUTTON, SOUND_VOLUME_BUTTON, GAME_AREA_BUTTON, MAX_BUTTONS };
+enum BUTTON_TYPE{RECTANGLE,RHOMB,TRIANGLE,GAME_AREA,MAX_TYPE};
 enum TILE_STATE{ EMPTY, FULL, SELECTED, EXPLODING };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME, SAVING_SCORE, CHEAT,MAIN_MENU};
 enum KEYS { UP, DOWN, LEFT, RIGHT };
