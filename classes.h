@@ -107,11 +107,7 @@ private:
 	cButton button[MAX_BUTTONS];
 	ALLEGRO_USTR* player_name = al_ustr_new("_");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
-	//ALLEGRO_BITMAP *scoreBMP = NULL;
 	ALLEGRO_BITMAP *bricksPNG = NULL;
-	//ALLEGRO_BITMAP *optionsBMP = NULL;
-//	ALLEGRO_BITMAP *shadowBMP = NULL;
-//	ALLEGRO_BITMAP *buttonsPNG= NULL;
 	ALLEGRO_BITMAP *backgroundPNG = NULL;
 	ALLEGRO_BITMAP *explosionPNG = NULL;
 	ALLEGRO_BITMAP * mainPNG = NULL;
@@ -127,25 +123,16 @@ public:
 	cGame(); //default constructor
 	void updateScore();//updates on_screen score
 	void drawScore();//draws score to the screen
-	void checkButtons();//checks if mouse over button
 	void clickButtons(int mouseButton);
 	void update();
-	void loadButton(); //loads button locations from file
-	//bool checkGameState(int state);//returns true if state=game_state
 	void resetHighScores();//resets and saves new high score file
-	//void changeBricksXY(int _x, int _y); //changes map size
-	//void changeBrickSize(int x);//changes brick size
 	void changeTile(int x, int y, int color); //changes color of x,y tile
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
-	//ALLEGRO_BITMAP* highScores();
-	//void highScores(); // draw high scores;
-	//void options(); // draw options screen;
 	void endGame(); //draw end game screen
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	//int checkNeighbourBrick(int x, int y);  //selects neighbouring bricks
 	void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks

@@ -29,7 +29,7 @@ const int MAX_USERNAME_LENGTH = 21;//defines maximum username length
 //minimum size of screen
 const float SCREEN_X = 1920.0;//minimum X size of window
 const float SCREEN_Y = 1080.0; //minimum Y size of window
-const float AWAY_FROM_CENTER = 10.0; 
+const float AWAY_FROM_CENTER = 20.0; 
 const float BUTTON_SIZE = 277.0;
 const float SUBMENU_CORNERS = 532;
 // predefined sizes of game
