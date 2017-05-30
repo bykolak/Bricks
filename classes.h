@@ -56,6 +56,7 @@ private:
 	cTriangle downTriangle;
 	ALLEGRO_BITMAP * buttonPNG;
 	bool mouseOver;
+	bool clicked;
 public:
 	cButton();//constructor
 	bool update(sPoint m); //if inside button then change flags to true else make it false
@@ -118,6 +119,7 @@ private:
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;
 	std::vector< std::vector<cTile> > bricks;
+	
 public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor

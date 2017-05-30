@@ -27,7 +27,7 @@ void cTriangle::set(sPoint p1, sPoint p2, sPoint p3)
 void cTriangle::draw(ALLEGRO_COLOR color)
 {
 	if (exist)
-	al_draw_triangle(vertex[0].x, vertex[0].y, vertex[1].x, vertex[1].y, vertex[2].x, vertex[2].y,color,1);
+	al_draw_triangle(vertex[0].x, vertex[0].y, vertex[1].x, vertex[1].y, vertex[2].x, vertex[2].y,color,2);
 }
 bool cTriangle::pointInTriangle(sPoint mouse)
 {
@@ -47,6 +47,7 @@ bool cTriangle::pointInTriangle(sPoint mouse)
 cButton::cButton()//constructor
 {
 	mouseOver = false;
+	clicked = false;
 	opacity = 1.0;
 	scale = 1.0;
 	buttonPNG = NULL;
@@ -55,24 +56,13 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 {
 	int counter = 0;
 
-	if (upTriangle.pointInTriangle(m) || downTriangle.pointInTriangle(m)) {
-		
+	if (upTriangle.pointInTriangle(m) || downTriangle.pointInTriangle(m)) 
+	{
 		mouseOver = true; 
-	
 	}
 	else mouseOver = false;
-	//for (int i = 0; i < MAX_MOUSEOVER; i++)
-	//{
-		//if (mouseOver && subMenuTriangleArea[i].pointInTriangle(m))		{	counter++;	}	
-	//}
-//	if (counter == 0)		{ mouseOver = false; }
-	/*if (mouseOver)			{ opacity += 0.009;	}
-	else					{ opacity -= 0.009;	}
 
-	if (opacity > 1.0) { opacity = 1.0; }
-	if (opacity < 0.0) { opacity = 0.0; }*/
-	if (mouseOver) { scale += 0.009; }
-	else { scale -= 0.009; }
+	if (mouseOver) { scale += 0.019; }	else { scale -= 0.019; }
 
 	if (scale > 1.2) { scale = 1.2; }
 	if (scale < 1.0) { scale = 1.0; }
@@ -97,7 +87,10 @@ void cButton::create(float posX, float posY, float width, float height, int type
 		}
 		if (type == TRIANGLE)//triangle
 		{
-			//todo
+			sPoint point[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
+			sPoint point2[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
+			upTriangle.set(point[0], point[1], point[2]);
+			downTriangle.set(point2[0], point2[1], point2[2]);
 		}
 		buttonPNG = al_load_bitmap("buttons.png");
 		al_set_target_bitmap(buttonPNG);//draw on button sprite
@@ -119,17 +112,10 @@ void cButton::create(float posX, float posY, float width, float height, int type
 void cButton::draw(bool debug)//draw button on screen 
 {
 	al_draw_tinted_scaled_bitmap(buttonPNG, al_map_rgba_f(opacity, opacity, opacity, opacity),0,0,BUTTON_SIZE,BUTTON_SIZE, x-(((BUTTON_SIZE*scale)- BUTTON_SIZE)/2), y-(((BUTTON_SIZE*scale)- BUTTON_SIZE)/2),BUTTON_SIZE*scale,BUTTON_SIZE*scale, 0);
-	
 	if (debug) //if debug overlay is active
 	{
-		for (int i = 0; i < MAX_MOUSEOVER; i++)
-		{
-			//subMenuTriangleArea[i].draw(YELLOW);
-		}
-
 		if (mouseOver)
 		{
-
 			upTriangle.draw(GREEN);
 			downTriangle.draw(GREEN);
 		}
@@ -137,10 +123,8 @@ void cButton::draw(bool debug)//draw button on screen
 		{
 			upTriangle.draw(RED);
 			downTriangle.draw(RED);
-		}
-		
-	}
-	
+		}		
+	}	
 }
 //=====cGame methods
 cGame::cGame() //default constructor
@@ -167,7 +151,6 @@ cGame::cGame() //default constructor
 	al_init();
 	display = al_create_display(screen_width, screen_height);
 	al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-	//al_set_window_position(display, 20, 20);
 	al_init_font_addon();
 	al_init_ttf_addon();
 	al_init_primitives_addon();
@@ -179,13 +162,9 @@ cGame::cGame() //default constructor
 	explosionPNG = al_load_bitmap("explosion.png");
 	backgroundPNG = al_load_bitmap("background.png");
 	mainPNG = al_load_bitmap("main.png");
-	optionsPNG = al_load_bitmap("option.png");
+	optionsPNG = al_load_bitmap("options.png");
 	highscorePNG = al_load_bitmap("highscore.png");
 	newgamePNG = al_load_bitmap("newgame.png");
-	
-//	al_set_target_bitmap(shadowBMP);
-	//al_clear_to_color(BLACK);
-	//al_set_target_bitmap(al_get_backbuffer(display));
 	loadHighScore();
 	loadGame();
 	game_state = PLAY_GAME;
@@ -224,11 +203,12 @@ cGame::cGame() //default constructor
 	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "OPTIONS");
 	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, RHOMB,"HIGH SCORES");
 	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, BUTTON_SIZE , BUTTON_SIZE, RHOMB,"EXIT");
-	button[NEW_STORY_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2 - 500, screen_height / 2 - 500, BUTTON_SIZE, BUTTON_SIZE, RECTANGLE, "PLACEHOLDER");
-	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2 - 500, screen_height / 2 - 500, BUTTON_SIZE, BUTTON_SIZE, RECTANGLE, "PLACEHOLDER");
-	button[NEW_RANDOM_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2 - 500, screen_height / 2 - 500, BUTTON_SIZE, BUTTON_SIZE, RECTANGLE, "PLACEHOLDER");
-	button[MUSIC_VOLUME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2 - 500, screen_height / 2 - 500, BUTTON_SIZE, BUTTON_SIZE, RECTANGLE, "PLACEHOLDER");
-	button[SOUND_VOLUME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2 - 500, screen_height / 2 - 500, BUTTON_SIZE, BUTTON_SIZE, RECTANGLE, "PLACEHOLDER");
+	button[NEW_STORY_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER , screen_height / 2 - BUTTON_SIZE - AWAY_FROM_CENTER - BUTTON_SIZE / 2-20, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW STORY");
+	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 - 2*BUTTON_SIZE - 3*AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, TRIANGLE, "LOAD");
+	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE - 2*AWAY_FROM_CENTER - BUTTON_SIZE / 2 , BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW RANDOM");
+	button[MUSIC_VOLUME_BUTTON].create(414,580 , 24, 24, GAME_AREA, ""); //remove magic numbers
+	button[SOUND_VOLUME_BUTTON].create(414,615  , 24,24, GAME_AREA, "");//remove magic numbers
+	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(left_game_area_margin, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
 	
 } 
@@ -266,8 +246,12 @@ void cGame::clickButtons(int mouseButton)
 	{
 		if (game_state == MAIN_MENU)
 		{
-			
-			if (button[PLAY_BUTTON].mouseOver) { game_state = REFRESH_GAME; }
+			//for (int i = 0; i < MAX_BUTTONS; i++)
+			//{
+				//if (button[])
+		//	}
+			//if (button[PLAY_BUTTON].mouseOver) { button[PLAY_BUTTON].clicked = true; }
+			if (button[PLAY_BUTTON].mouseOver) { game_state = REFRESH_GAME; } 
 			if (button[EXIT_BUTTON].mouseOver) { done = true; }
 		}
 		if (game_state == PLAY_GAME) //if playing game check these clicks
@@ -867,15 +851,20 @@ void cGame::drawMenu()
 	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(BUTTON_OVERLAY);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].mouseOver)
 	{
+		al_draw_bitmap(highscorePNG, 0, 0, NULL);// file highscore.png needs update
 		for (int i = 0; i < MAX_HIGH_SCORE; i++)
 		{
-			//ALLEGRO_BITMAP *temp = highScores();
-			//al_draw_tinted_bitmap(temp, al_map_rgb(button[HIGHSCORES_BUTTON].opacity, button[HIGHSCORES_BUTTON].opacity, button[HIGHSCORES_BUTTON].opacity), 0, 0, NULL);
+			
 			al_draw_textf(font18, WHITE, screen_width / 2 + 465, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "1.");
 			al_draw_ustr(font18, WHITE, screen_width / 2 + 475, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
 			al_draw_textf(font18, WHITE, screen_width / 2 + 730, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
 		}
 		al_set_target_bitmap(al_get_backbuffer(display));
+	}
+	if (button[OPTIONS_BUTTON].mouseOver)
+	{
+		//al_play_sample_instance(instanceClick);
+		al_draw_bitmap(optionsPNG, screen_width /16, screen_height/4, NULL);//magic numbers
 	}
 }
 //=====cList methods
