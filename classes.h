@@ -55,8 +55,11 @@ private:
 	cTriangle upTriangle;
 	cTriangle downTriangle;
 	ALLEGRO_BITMAP * buttonPNG;
+	ALLEGRO_BITMAP * buttonClicked;
+	ALLEGRO_BITMAP * buttonNotClicked;
 	bool mouseOver;
 	bool clicked;
+	bool fadeIn;
 public:
 	cButton();//constructor
 	bool update(sPoint m); //if inside button then change flags to true else make it false

@@ -51,6 +51,7 @@ cButton::cButton()//constructor
 	opacity = 1.0;
 	scale = 1.0;
 	buttonPNG = NULL;
+	fadeIn = true;
 }
 bool cButton::update(sPoint m) //if inside button then change flags to true else make it false
 {
@@ -66,6 +67,17 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 
 	if (scale > 1.2) { scale = 1.2; }
 	if (scale < 1.0) { scale = 1.0; }
+
+	if (fadeIn)
+	{
+		opacity += OPACITY_INCREASE;
+	}
+	else
+	{
+		opacity -= OPACITY_INCREASE;
+	}
+	if (opacity > 1.0) { opacity = 1.0; }
+	if (opacity < 0.0) { opacity = 0.0; }
 	return mouseOver;
 }
 void cButton::create(float posX, float posY, float width, float height, int type, const char* text) //sets all button parameters
@@ -93,13 +105,31 @@ void cButton::create(float posX, float posY, float width, float height, int type
 			downTriangle.set(point2[0], point2[1], point2[2]);
 		}
 		buttonPNG = al_load_bitmap("buttons.png");
-		al_set_target_bitmap(buttonPNG);//draw on button sprite
-		al_draw_textf(font36, WHITE, al_get_bitmap_width(buttonPNG) / 2, al_get_bitmap_height(buttonPNG) / 2-18, ALLEGRO_ALIGN_CENTRE, text);
-		al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
+		buttonNotClicked = al_create_bitmap(BUTTON_SIZE, BUTTON_SIZE);
+		buttonClicked = al_create_bitmap(BUTTON_SIZE, BUTTON_SIZE);
+
+		//al_set_target_bitmap(buttonPNG);//draw on button sprite
+		
+		if (type != GAME_AREA) //if not game area create button bitmaps 
+		{
+			al_set_target_bitmap(buttonNotClicked);//draw on button sprite
+			int horizontal_position = 0;
+			if (type == TRIANGLE) { horizontal_position = -18; }
+			else horizontal_position = 27;
+			al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
+			al_draw_textf(font36, WHITE, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); //font size is 36 / 2 = 18 + (1/2 *18)=27 <---magic number
+
+			al_set_target_bitmap(buttonClicked);//draw on button sprite
+			al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
+			al_draw_textf(font36, RED, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - 27, ALLEGRO_ALIGN_CENTRE, text); //font size is 36 / 2 = 18 + (1/2 *18)=27 <---magic number
+			al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
+		}
+
 		if (type == GAME_AREA)
 		{
-			al_destroy_bitmap(buttonPNG);//destroy bitmap
-			buttonPNG = al_create_bitmap(0, 0);//create empty bitmap
+			//al_destroy_bitmap(buttonPNG);//destroy bitmap
+			//buttonPNG = al_create_bitmap(0, 0);//create empty bitmap
+			
 			sPoint point[3] = { { posX, posY}, {posX + width, posY}, {posX, height + posY } };
 			sPoint point2[3] = { { posX + width, posY}, {posX, posY + height}, {posX + width, posY + height } };
 			upTriangle.set(point[0], point[1], point[2]);
@@ -111,7 +141,12 @@ void cButton::create(float posX, float posY, float width, float height, int type
 
 void cButton::draw(bool debug)//draw button on screen 
 {
-	al_draw_tinted_scaled_bitmap(buttonPNG, al_map_rgba_f(opacity, opacity, opacity, opacity),0,0,BUTTON_SIZE,BUTTON_SIZE, x-(((BUTTON_SIZE*scale)- BUTTON_SIZE)/2), y-(((BUTTON_SIZE*scale)- BUTTON_SIZE)/2),BUTTON_SIZE*scale,BUTTON_SIZE*scale, 0);
+
+	if (clicked)
+	{
+		al_draw_tinted_scaled_bitmap(buttonClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, BUTTON_SIZE, BUTTON_SIZE, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), BUTTON_SIZE*scale, BUTTON_SIZE*scale, 0);
+	}else al_draw_tinted_scaled_bitmap(buttonNotClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, BUTTON_SIZE, BUTTON_SIZE, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), BUTTON_SIZE*scale, BUTTON_SIZE*scale, 0);
+	
 	if (debug) //if debug overlay is active
 	{
 		if (mouseOver)
@@ -211,6 +246,12 @@ cGame::cGame() //default constructor
 	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(left_game_area_margin, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
 	
+	button[NEW_STORY_BUTTON].opacity = 0.0;
+	button[LOAD_GAME_BUTTON].opacity = 0.0;
+	button[NEW_RANDOM_BUTTON].opacity = 0.0;
+	button[NEW_STORY_BUTTON].fadeIn = false;
+	button[LOAD_GAME_BUTTON].fadeIn = false;
+	button[NEW_RANDOM_BUTTON].fadeIn = false;
 } 
 void cGame::updateScore()//updates on_screen score
 {
@@ -246,45 +287,38 @@ void cGame::clickButtons(int mouseButton)
 	{
 		if (game_state == MAIN_MENU)
 		{
-			//for (int i = 0; i < MAX_BUTTONS; i++)
-			//{
-				//if (button[])
-		//	}
-			//if (button[PLAY_BUTTON].mouseOver) { button[PLAY_BUTTON].clicked = true; }
-			if (button[PLAY_BUTTON].mouseOver) { game_state = REFRESH_GAME; } 
-			if (button[EXIT_BUTTON].mouseOver) { done = true; }
+			int click = -1;
+			if (button[PLAY_BUTTON].mouseOver) { click = PLAY_BUTTON; }
+			if (button[OPTIONS_BUTTON].mouseOver){ click = OPTIONS_BUTTON; }
+			if (button[HIGHSCORES_BUTTON].mouseOver) { click = HIGHSCORES_BUTTON; }
+			if (button[EXIT_BUTTON].mouseOver) { click = EXIT_BUTTON; }
+			
+			
+			if (click != -1) //if button was pressed
+			{
+				for (int i = 0; i < MAX_BUTTONS; i++) 
+				{
+					button[i].clicked = false;//unclick all buttons
+				}
+				button[click].clicked = true;//click button
+			}
+			if (button[PLAY_BUTTON].clicked)
+			{
+				button[NEW_STORY_BUTTON].fadeIn = true;
+				button[LOAD_GAME_BUTTON].fadeIn = true;
+				button[NEW_RANDOM_BUTTON].fadeIn = true;
+			}
+			else
+			{
+				button[NEW_STORY_BUTTON].fadeIn = false;
+				button[LOAD_GAME_BUTTON].fadeIn = false;
+				button[NEW_RANDOM_BUTTON].fadeIn = false;
+			}
+
 		}
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-
-			//if (button[NEW_GAME_BUTTON].flags)		{ al_play_sample_instance(instanceClick); game_state = REFRESH_GAME; }
-			//if (button[HIGH_SCORES_BUTTON].flags)		{ al_play_sample_instance(instanceClick); game_state = HIGH_SCORE; }
-			//if (button[OPTIONS_BUTTON].flags)			{ al_play_sample_instance(instanceClick); game_state = OPTIONS; }
 			if (button[GAME_AREA_BUTTON].mouseOver)		{ al_play_sample_instance(instanceClick2); selectBrick(); }
-		}
-		if (game_state == OPTIONS) //if in options check these events
-		{
-		//	if (button[OPTIONS_SMALL_BUTTON].flags)		{ al_play_sample_instance(instanceClick); changeBricksXY(BRICKS_SMALL_X, BRICKS_SMALL_Y); game_state = REFRESH_GAME; }
-		//	if (button[OPTIONS_LARGE_BUTTON].flags)		{ al_play_sample_instance(instanceClick); changeBricksXY(BRICKS_LARGE_X, BRICKS_LARGE_Y); game_state = REFRESH_GAME; }
-//			if (button[OPTIONS_CAMPAIGN_BUTTON].flags)	{ al_play_sample_instance(instanceClick); }
-//			if (button[OPTIONS_24_BUTTON].flags)			{ al_play_sample_instance(instanceClick); changeBrickSize(BRICKS_SMALL); }
-//			if (button[OPTIONS_36_BUTTON].flags)			{ al_play_sample_instance(instanceClick); changeBrickSize(BRICKS_MEDIUM); }
-//			if (button[OPTIONS_48_BUTTON].flags)			{ al_play_sample_instance(instanceClick); changeBrickSize(BRICKS_LARGE); }
-		}
-		if (game_state == HIGH_SCORE) //if in high scores check these events
-		{
-//			if (button[HIGH_SCORES_RESET_BUTTON].flags)	{ al_play_sample_instance(instanceClick); resetHighScores(); }
-//			if (button[HIGH_SCORES_CLOSE_BUTTON].flags)	{ al_play_sample_instance(instanceClick); game_state = PLAY_GAME; 	button[HIGH_SCORES_CLOSE_BUTTON].flags = false; }
-		}
-		if (game_state == END_GAME) //if game ended
-		{
-//			if (button[END_GAME_NEW_GAME_BUTTON].flags) { al_play_sample_instance(instanceClick); game_state = REFRESH_GAME; }
-//			if (button[END_GAME_SAVE_SCORE_BUTTON].flags && checkSaveScores()) { al_play_sample_instance(instanceClick); game_state = SAVING_SCORE; }
-		}
-		if (game_state == SAVING_SCORE) //if game ended
-		{
-//			if (button[END_GAME_NEW_GAME_BUTTON].flags) { al_play_sample_instance(instanceClick); game_state = REFRESH_GAME; }
-		//	if (button[END_GAME_SAVE_SCORE_BUTTON].flags && !saved_scores) {  saveScores(); }
 		}
 	}
 
@@ -300,8 +334,7 @@ void cGame::clickButtons(int mouseButton)
 			if (button[GAME_AREA_BUTTON].mouseOver)			{	changeTile((mouse.x - left_game_area_margin ) / brick_size, (mouse.y - TOP_MARGIN) / brick_size, 0);	} //debug	
 			else game_state = MAIN_MENU;
 		}
-		if (game_state == OPTIONS)		{ game_state = PLAY_GAME; }
-		if (game_state == HIGH_SCORE)	{ game_state = PLAY_GAME; }
+		
 	}
 }
 void cGame::update()
@@ -848,13 +881,12 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(BUTTON_OVERLAY);	}//if flags set to true
+	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(0);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].mouseOver)
 	{
 		al_draw_bitmap(highscorePNG, 0, 0, NULL);// file highscore.png needs update
 		for (int i = 0; i < MAX_HIGH_SCORE; i++)
-		{
-			
+		{			
 			al_draw_textf(font18, WHITE, screen_width / 2 + 465, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "1.");
 			al_draw_ustr(font18, WHITE, screen_width / 2 + 475, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
 			al_draw_textf(font18, WHITE, screen_width / 2 + 730, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
