@@ -4,7 +4,7 @@
 #include <allegro5\allegro_image.h>
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
-#include "classes.h"
+#include "game.h"
 #include "define.h"
 
 //GLOBAL VARIABLES

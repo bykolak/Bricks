@@ -76,12 +76,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="classes.cpp" />
+    <ClCompile Include="button.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="define.h" />
+    <ClInclude Include="button.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="background.bmp" />
