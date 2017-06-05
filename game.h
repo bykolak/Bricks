@@ -36,7 +36,7 @@ private:
 	bool done;
 	sPoint mouse;// contains postion of mouse on screen
 	std::vector<cList> selectionList;
-	int currently_selected;
+	unsigned int currently_selected;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
@@ -80,6 +80,7 @@ private:
 	ALLEGRO_BITMAP * mainPNG = NULL;
 	ALLEGRO_BITMAP * optionsPNG = NULL;
 	ALLEGRO_BITMAP * highscorePNG = NULL;
+	ALLEGRO_BITMAP * high_scoresTMP = NULL;
 	ALLEGRO_BITMAP * newgamePNG = NULL;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;

@@ -92,13 +92,18 @@ cGame::cGame() //default constructor
 	button[SOUND_VOLUME_BUTTON].create(414,615  , 24,24, GAME_AREA, "");//remove magic numbers
 	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(left_game_area_margin, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	
+	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), RECTANGLE, "");//temp shit
+	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), RECTANGLE, "");//temp shit
 	button[NEW_STORY_BUTTON].opacity = 0.0;
 	button[LOAD_GAME_BUTTON].opacity = 0.0;
+	button[OPTIONS_POPUP].opacity = 0.0;
+	button[HIGHSCORES_POPUP].opacity = 0.0;
 	button[NEW_RANDOM_BUTTON].opacity = 0.0;
 	button[NEW_STORY_BUTTON].fadeIn = false;
 	button[LOAD_GAME_BUTTON].fadeIn = false;
 	button[NEW_RANDOM_BUTTON].fadeIn = false;
+	button[OPTIONS_POPUP].fadeIn = false;
+	button[HIGHSCORES_POPUP].fadeIn = false;
 } 
 void cGame::updateScore()//updates on_screen score
 {
@@ -130,20 +135,21 @@ void cGame::drawScore()//draws score to the screen
 }
 void cGame::clickButtons(int mouseButton)
 {
-	if (mouseButton==1) //if left mouse button pressed
+	if (mouseButton == 1) //if left mouse button pressed
 	{
+		al_play_sample_instance(instanceClick2);
 		if (game_state == MAIN_MENU)
 		{
 			int click = -1;
 			if (button[PLAY_BUTTON].mouseOver) { click = PLAY_BUTTON; }
-			if (button[OPTIONS_BUTTON].mouseOver){ click = OPTIONS_BUTTON; }
+			if (button[OPTIONS_BUTTON].mouseOver) { click = OPTIONS_BUTTON; }
 			if (button[HIGHSCORES_BUTTON].mouseOver) { click = HIGHSCORES_BUTTON; }
 			if (button[EXIT_BUTTON].mouseOver) { click = EXIT_BUTTON; }
-			
-			
+
+
 			if (click != -1) //if button was pressed
 			{
-				for (int i = 0; i < MAX_BUTTONS; i++) 
+				for (int i = 0; i < MAX_BUTTONS; i++)
 				{
 					button[i].clicked = false;//unclick all buttons
 				}
@@ -162,13 +168,31 @@ void cGame::clickButtons(int mouseButton)
 				button[NEW_RANDOM_BUTTON].fadeIn = false;
 			}
 
+			if (button[OPTIONS_BUTTON].clicked)
+			{
+				button[OPTIONS_POPUP].fadeIn = true;
+			}
+			else
+			{
+				button[OPTIONS_POPUP].fadeIn = false;
+			}
+
+			if (button[HIGHSCORES_BUTTON].clicked)
+			{
+				button[HIGHSCORES_POPUP].fadeIn = true;
+			}
+			else
+			{
+				button[HIGHSCORES_POPUP].fadeIn = false;
+			}
+
 		}
+
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			if (button[GAME_AREA_BUTTON].mouseOver)		{ al_play_sample_instance(instanceClick2); selectBrick(); }
+			if (button[GAME_AREA_BUTTON].mouseOver) { al_play_sample_instance(instanceClick2); selectBrick(); }
 		}
 	}
-
 	if (mouseButton == 2) //if right mouse button pressed
 	{
 		if (game_state == MAIN_MENU)
@@ -404,7 +428,7 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 		cList currentList(x,y,false);
 		selectionList.push_back(currentList);
 
-		for (int i = 0; i < selectionList.size(); i++)
+		for (unsigned int i = 0; i < selectionList.size(); i++)
 		{
 			int x = selectionList[i].x;
 			int y = selectionList[i].y;
@@ -728,22 +752,32 @@ void cGame::drawMenu()
 {
 	al_draw_bitmap(mainPNG, 0, 0, 0);
 	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(0);	}//if flags set to true
-	if (button[HIGHSCORES_BUTTON].mouseOver)
+	if (button[HIGHSCORES_BUTTON].clicked)
 	{
-		al_draw_bitmap(highscorePNG, 0, 0, NULL);// file highscore.png needs update
+		float highX = al_get_bitmap_width(highscorePNG);
+		float highY = al_get_bitmap_height(highscorePNG);
+		 high_scoresTMP= al_create_bitmap(highX,highY); //creates empty bitmap of highscoresPNG size
+		al_set_target_bitmap(high_scoresTMP);
+		al_draw_bitmap(highscorePNG, 0, 0, NULL);
 		for (int i = 0; i < MAX_HIGH_SCORE; i++)
 		{			
-			al_draw_textf(font18, WHITE, screen_width / 2 + 465, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "1.");
-			al_draw_ustr(font18, WHITE, screen_width / 2 + 475, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-			al_draw_textf(font18, WHITE, screen_width / 2 + 730, screen_height / 2 - +(28 * i) + 114, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+			al_draw_textf(font18, WHITE, 70 ,(28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "1.");
+			al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+			al_draw_textf(font18, WHITE, 360,(28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
 		}
 		al_set_target_bitmap(al_get_backbuffer(display));
+		al_draw_tinted_scaled_bitmap(high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
+			0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
+		al_destroy_bitmap(high_scoresTMP);//always destroy temp bitmaps
 	}
-	if (button[OPTIONS_BUTTON].mouseOver)
+	if (button[OPTIONS_BUTTON].clicked)
 	{
+
+		al_draw_tinted_scaled_bitmap(optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
+			0, 0, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), 0);
 		//al_play_sample_instance(instanceClick);
-		al_draw_bitmap(optionsPNG, screen_width /16, screen_height/4, NULL);//magic numbers
-	}
+		//al_draw_bitmap(optionsPNG, screen_width /16, screen_height/4, NULL);//magic numbers
+	} 
 }
 //=====cList methods
 cList::cList()
