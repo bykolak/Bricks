@@ -22,11 +22,22 @@ public:
 	void setState(bool _state);
 	void set(int _x, int _y, bool _state);
 };
-struct cTile
+class cTile
 {
+private:
+	float x;
+	float y;
+	float height;
+	float width;
+	int curFrame;
+	int frameCount;
+	int frameDelay;
+	int maxFrame;
+public:
 	int color;
 	int state;
 	bool select=false;
+
 };
 
 class cGame

@@ -88,8 +88,8 @@ cGame::cGame() //default constructor
 	button[NEW_STORY_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER , screen_height / 2 - BUTTON_SIZE - AWAY_FROM_CENTER - BUTTON_SIZE / 2-20, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW STORY");
 	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 - 2*BUTTON_SIZE - 3*AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, TRIANGLE, "LOAD");
 	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE - 2*AWAY_FROM_CENTER - BUTTON_SIZE / 2 , BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW RANDOM");
-	button[MUSIC_VOLUME_BUTTON].create(414,580 , 24, 24, GAME_AREA, ""); //remove magic numbers
-	button[SOUND_VOLUME_BUTTON].create(414,615  , 24,24, GAME_AREA, "");//remove magic numbers
+	button[MUSIC_MUTE_BUTTON].create(screen_width / 16+MUSIC_MUTE_X, screen_height / 4+MUSIC_MUTE_Y , 24, 24, GAME_AREA, ""); //remove magic numbers 414,580
+	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, GAME_AREA, "");//remove magic numbers 414,615
 	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(left_game_area_margin, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
 	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), RECTANGLE, "");//temp shit
@@ -160,6 +160,11 @@ void cGame::clickButtons(int mouseButton)
 				button[NEW_STORY_BUTTON].fadeIn = true;
 				button[LOAD_GAME_BUTTON].fadeIn = true;
 				button[NEW_RANDOM_BUTTON].fadeIn = true;
+				click = -1;
+				if (button[NEW_STORY_BUTTON].mouseOver) { click = NEW_STORY_BUTTON; }
+				if (button[LOAD_GAME_BUTTON].mouseOver) { click = LOAD_GAME_BUTTON; }
+				if (button[NEW_RANDOM_BUTTON].mouseOver) { click = NEW_RANDOM_BUTTON; }
+				if (click > -1) { button[click].clicked = true; }
 			}
 			else
 			{
@@ -244,7 +249,9 @@ void cGame::update()
 			{
 				for (int i = 0; i < MAX_BUTTONS; i++) { button[i].update(mouse); } //updates all buttons
 				// 60 times per second
-				
+				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
+				if (button[NEW_STORY_BUTTON].clicked) { button[NEW_STORY_BUTTON].clicked = false; newGame(true); }
+				if (button[EXIT_BUTTON].clicked) { done = true; }
 				if (destroy_brick)
 				{
 					destroyBrick();
@@ -751,9 +758,20 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(0);	}//if flags set to true
+	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(!BUTTON_OVERLAY);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].clicked)
 	{
+		button[HIGHSCORES_POPUP].clicked = true;
+	}
+	if (button[HIGHSCORES_POPUP].opacity == 0) { button[HIGHSCORES_POPUP].clicked = false; }
+	
+	if (button[OPTIONS_BUTTON].clicked)
+	{
+		button[OPTIONS_POPUP].clicked = true;
+	}
+	if (button[OPTIONS_POPUP].opacity == 0) { button[OPTIONS_POPUP].clicked = false; }
+
+//draw highscores
 		float highX = al_get_bitmap_width(highscorePNG);
 		float highY = al_get_bitmap_height(highscorePNG);
 		 high_scoresTMP= al_create_bitmap(highX,highY); //creates empty bitmap of highscoresPNG size
@@ -769,15 +787,11 @@ void cGame::drawMenu()
 		al_draw_tinted_scaled_bitmap(high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
 			0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
 		al_destroy_bitmap(high_scoresTMP);//always destroy temp bitmaps
-	}
-	if (button[OPTIONS_BUTTON].clicked)
-	{
-
+	
+//draw options	
 		al_draw_tinted_scaled_bitmap(optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
 			0, 0, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), 0);
-		//al_play_sample_instance(instanceClick);
-		//al_draw_bitmap(optionsPNG, screen_width /16, screen_height/4, NULL);//magic numbers
-	} 
+	
 }
 //=====cList methods
 cList::cList()

@@ -22,7 +22,7 @@ void cTriangle::set(sPoint p1, sPoint p2, sPoint p3)
 void cTriangle::draw(ALLEGRO_COLOR color)
 {
 	if (exist)
-		al_draw_triangle(vertex[0].x, vertex[0].y, vertex[1].x, vertex[1].y, vertex[2].x, vertex[2].y, color, 2);
+		al_draw_triangle(vertex[0].x, vertex[0].y, vertex[1].x, vertex[1].y, vertex[2].x, vertex[2].y, color, 1);
 }
 bool cTriangle::pointInTriangle(sPoint mouse)
 {
@@ -117,7 +117,7 @@ void cButton::create(float posX, float posY, float width, float height, int type
 
 		al_set_target_bitmap(buttonClicked);//draw on button sprite
 		al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
-		al_draw_textf(font36, RED, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - 27, ALLEGRO_ALIGN_CENTRE, text); //font size is 36 / 2 = 18 + (1/2 *18)=27 <---magic number
+		al_draw_textf(font36, RED, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number
 		al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
 	}
 
