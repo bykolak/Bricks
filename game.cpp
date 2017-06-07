@@ -20,10 +20,10 @@ cGame::cGame() //default constructor
 	score = 0;
 	selection = false;
 	destroy_brick = false;
-	brick_size = BRICK_SIZE;
+//	brick_size = BRICK_SIZE;
 	bricks_on_screen = BRICKS_MAP_X * BRICKS_MAP_Y;
-	area_width = brick_size * BRICKS_MAP_X;
-	area_height = brick_size * BRICKS_MAP_Y;
+	area_width = BRICK_SIZE * BRICKS_MAP_X;
+	area_height = BRICK_SIZE * BRICKS_MAP_Y;
 	screen_width = SCREEN_X;//LEFT_MARGIN + area_width + RIGHT_MARGIN;
 	screen_height = SCREEN_Y;//TOP_MARGIN + area_height + DOWN_MARGIN;
 	left_game_area_margin = (screen_width - area_width) / 2;
@@ -207,7 +207,7 @@ void cGame::clickButtons(int mouseButton)
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
 			//if (button[PLAY_BUTTON].mouseOver) { game_state = CHEAT; }
-			if (button[GAME_AREA_BUTTON].mouseOver)			{	changeTile((mouse.x - left_game_area_margin ) / brick_size, (mouse.y - TOP_MARGIN) / brick_size, 0);	} //debug	
+			if (button[GAME_AREA_BUTTON].mouseOver)			{	changeTile((mouse.x - left_game_area_margin ) / BRICK_SIZE, (mouse.y - TOP_MARGIN) / BRICK_SIZE, 0);	} //debug	
 			else game_state = MAIN_MENU;
 		}
 		
@@ -226,7 +226,7 @@ void cGame::update()
 		//==========INPUT
 		if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) // checks for window Xed
 		{
-			done= true;
+			done = true;
 		}
 		else if (event.type == ALLEGRO_EVENT_MOUSE_AXES) //checks if mouse moved 
 		{
@@ -257,8 +257,6 @@ void cGame::update()
 					destroyBrick();
 				}
 				updateScore();
-				if (game_state == REFRESH_GAME) { newGame(false); } //if "new game" or "map size" button pressed
-				if (game_state == CHEAT) { newGame(true); }
 				if (game_state == PLAY_GAME) { checkEndGame(); }
 				render = true;
 			}
@@ -299,7 +297,7 @@ void cGame::resetHighScores() //resets all saved highscores TODO
 
 		high_score[i] = 0;
 		al_ustr_free(high_score_name[i]);
-		high_score_name[i] = al_ustr_new("MaximumNameSize");
+		high_score_name[i] = al_ustr_new("WWWWWWWWWWWWWWW");
 		high_score[i] = 1234567;
 	}
 	saveHighScore();
@@ -325,14 +323,7 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			if (bricks[t][i].state == FULL || bricks[t][i].state == SELECTED)
-			{
-				al_draw_bitmap_region(bricksPNG,bricks[t][i].color*brick_size, 0, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL);
-			}
-			if (bricks[t][i].state == SELECTED)
-			{
-				al_draw_bitmap_region(bricksPNG, 0, brick_size, brick_size, brick_size, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL); //needs fixing
-			}	
+			bricks[t][i].draw(bricksPNG);
 		}
 	for (int i = 0; i<BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
@@ -340,7 +331,7 @@ void cGame::drawGameArea() // draw all bricks on screen;
 			//al_draw_textf(font18, BLACK, t*brick_size + left_game_area_margin, i*brick_size + TOP_MARGIN + screen_shake, NULL, "%i,%i", t,i); //debug: shows brick position in bricks[t][i] array
 			if (bricks[t][i].state == EXPLODING)
 			{
-				al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, (t - 2)*brick_size + left_game_area_margin, (i - 2)*brick_size + TOP_MARGIN, NULL);
+				al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, (t - 2)*BRICK_SIZE + left_game_area_margin, (i - 2)*BRICK_SIZE + TOP_MARGIN, NULL);
 			}
 		}
 	
@@ -348,22 +339,21 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	{
 		int f = 2;
 		//al_play_sample(explosionOGG, 1, 0, 1.3, ALLEGRO_PLAYMODE_ONCE, NULL);
-		al_draw_textf(font36, BLACK, (last_clicked_x *brick_size) + left_game_area_margin + (brick_size / 2)-f, (last_clicked_y *brick_size) + TOP_MARGIN - (curFrame * 4)-f, NULL, "%i", last_score);
-		al_draw_textf(font36, BLACK, (last_clicked_x *brick_size) + left_game_area_margin + (brick_size / 2) + f, (last_clicked_y *brick_size) + TOP_MARGIN - (curFrame * 4) + f, NULL, "%i", last_score);
-		al_draw_textf(font36, WHITE, (last_clicked_x *brick_size) + left_game_area_margin + (brick_size / 2), (last_clicked_y *brick_size) + TOP_MARGIN - (curFrame * 4), NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE) + left_game_area_margin + (BRICK_SIZE / 2)-f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN - (curFrame * 4)-f, NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE) + left_game_area_margin + (BRICK_SIZE / 2) + f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN - (curFrame * 4) + f, NULL, "%i", last_score);
+		al_draw_textf(font36, WHITE, (last_clicked_x *BRICK_SIZE) + left_game_area_margin + (BRICK_SIZE / 2), (last_clicked_y *BRICK_SIZE) + TOP_MARGIN - (curFrame * 4), NULL, "%i", last_score);
 	}
 	drawScore();
 }
 void cGame::newGame(bool debug) // restart game
 {
-	int i = 0;
-	int t = 0;
-	for (i = 0; i<BRICKS_MAP_Y; i++)
-		for (t = 0; t < BRICKS_MAP_X; t++)
+	for (int i = 0; i<BRICKS_MAP_Y; i++)
+		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			bricks[t][i].color =  rand() % BRICK_COLORS;  
-			if (debug) bricks[t][i].color=1;//DEBUG
-			bricks[t][i].state = FULL;
+			sPoint position = { t,i };
+			int color = rand() % BRICK_COLORS;
+			if (debug) color = 1;//DEBUG
+			bricks[t][i].create(position,color);
 		}
 	
 	for (i = 0; i < MAX_BUTTONS; i++)
@@ -424,8 +414,8 @@ void cGame::endGame()
 }
 void cGame::selectBrick() // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
-	int x = (mouse.x - left_game_area_margin) / brick_size;
-	int y = (mouse.y - TOP_MARGIN) / brick_size;
+	int x = (mouse.x - left_game_area_margin) / BRICK_SIZE;
+	int y = (mouse.y - TOP_MARGIN) / BRICK_SIZE;
 	last_clicked_x = x;
 	last_clicked_y = y;
 	int refresh = 0; 
@@ -815,4 +805,29 @@ void cList::set(int _x, int _y, bool _state)
 	x = _x;
 	y = _y;
 	state = _state;
+}
+
+void cTile::create(sPoint position, int _color)
+{
+	x = position.x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2;
+	y = position.y*BRICK_SIZE + (SCREEN_Y - AREA_HEIGHT) / 2;
+	state = FULL;
+	color = _color;
+}
+
+void cTile::update()
+{
+	//t*BRICK_SIZE + left_game_area_margin, i*BRICK_SIZE + TOP_MARGIN + screen_shake            (x,y)
+}
+
+void cTile::draw(ALLEGRO_BITMAP * bricksPNG)
+{
+	if (state == FULL || state == SELECTED)
+	{
+		al_draw_bitmap_region(bricksPNG, color*BRICK_SIZE, 0, BRICK_SIZE, BRICK_SIZE, x,y, NULL);
+	}
+	if (state == SELECTED)
+	{
+		al_draw_bitmap_region(bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, x,y, NULL);
+	}
 }

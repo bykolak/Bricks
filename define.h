@@ -35,9 +35,13 @@ const float OPACITY_INCREASE = 0.032;
 // predefined sizes of game
 const int BRICKS_MAP_X = 48;// number of bricks in X axis
 const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
+
 //sizes of bricks
 const int BRICK_SIZE = 40;//brick size in pixels
-//margins
+const int AREA_WIDTH = BRICK_SIZE * BRICKS_MAP_X;
+const int AREA_HEIGHT = BRICK_SIZE * BRICKS_MAP_Y;
+
+ //margins
 const int TOP_MARGIN = 64;
 //const int LEFT_MARGIN = 9;
 //const int RIGHT_MARGIN = 9;

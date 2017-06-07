@@ -37,7 +37,9 @@ public:
 	int color;
 	int state;
 	bool select=false;
-
+	void create(sPoint position, int color);
+	void update();
+	void draw(ALLEGRO_BITMAP * bricksPNG);
 };
 
 class cGame
@@ -75,7 +77,7 @@ private:
 	ALLEGRO_SAMPLE_INSTANCE *instance2;
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick;
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick2;
-	int brick_size; //size of bricks
+	//int brick_size; //size of bricks
 	
 	bool destroy_brick;
 	int screen_width;//screen size x in pixels
