@@ -7,6 +7,8 @@ struct sPoint
 {
 	float x;
 	float y;
+	int bricksX;
+	int bricksY;
 };
 class cTriangle
 {

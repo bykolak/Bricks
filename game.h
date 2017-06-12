@@ -29,17 +29,20 @@ private:
 	float y;
 	float height;
 	float width;
+	float screen_shake;
+	
 	int curFrame;
 	int frameCount;
 	int frameDelay;
 	int maxFrame;
 public:
+	bool updated;
 	int color;
 	int state;
 	bool select=false;
 	void create(sPoint position, int color);
 	void update();
-	void draw(ALLEGRO_BITMAP * bricksPNG);
+	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
 };
 
 class cGame
@@ -78,8 +81,8 @@ private:
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick;
 	ALLEGRO_SAMPLE_INSTANCE *instanceClick2;
 	//int brick_size; //size of bricks
-	
-	bool destroy_brick;
+	bool explosion_finish_flag;
+	bool destroy_brick_flag;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
@@ -103,7 +106,7 @@ private:
 public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
-	void updateScore();//updates on_screen score
+	void updateBrick();//updates on_screen score
 	void drawScore();//draws score to the screen
 	void clickButtons(int mouseButton);
 	void update();
@@ -115,7 +118,7 @@ public:
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void endGame(); //draw end game screen
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	void deselectBrick(); // clears selection of bricks 
+	//void deselectBrick(); // clears selection of bricks 
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
