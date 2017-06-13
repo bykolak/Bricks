@@ -79,15 +79,13 @@
     <ClCompile Include="button.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="button.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="background.bmp" />
-    <Image Include="bricks.bmp" />
+    <ClInclude Include="tile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

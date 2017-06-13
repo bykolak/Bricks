@@ -6,6 +6,7 @@
 #include <allegro5\allegro_acodec.h>
 #include "game.h"
 #include "define.h"
+//#include "tile.h"
 
 //GLOBAL VARIABLES
 int BRICK_COLORS = 6;

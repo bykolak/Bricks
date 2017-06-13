@@ -6,44 +6,13 @@
 #include <string>
 #include "button.h"
 #include <allegro5\allegro_audio.h>
+#include "tile.h"
+#include <allegro5\allegro_font.h>
+
 extern ALLEGRO_DISPLAY *display;
 extern ALLEGRO_FONT *font18;
 extern ALLEGRO_FONT *font24;
 extern ALLEGRO_FONT *font36;
-
-class cList
-{	
-public:
-	bool state;
-	int x;
-	int y;
-	cList();
-	cList(int _x, int _y, bool _state);//constructor
-	void setState(bool _state);
-	void set(int _x, int _y, bool _state);
-};
-class cTile
-{
-private:
-	float x;
-	float y;
-	float height;
-	float width;
-	float screen_shake;
-	
-	int curFrame;
-	int frameCount;
-	int frameDelay;
-	int maxFrame;
-public:
-	bool updated;
-	int color;
-	int state;
-	bool select=false;
-	void create(sPoint position, int color);
-	void update();
-	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
-};
 
 class cGame
 {
@@ -51,7 +20,8 @@ class cGame
 private:
 	bool done;
 	sPoint mouse;// contains postion of mouse on screen
-	std::vector<cList> selectionList;
+	std::vector<cTile> selectionList;
+	std::vector< std::vector<cTile> > bricks;
 	unsigned int currently_selected;
 	int score; // players score
 	int on_screen_score;//shown score
@@ -66,11 +36,11 @@ private:
 	int left_button_margin;//where to start draw top buttons
 	int left_game_area_margin;// where to start draw game area
 	int screen_shake;// move everything on screen (in pixels)
-	int frameCount;
-	const int frameDelay = 0;
-	int curFrame;
+	//int frameCount;
+	//const int frameDelay = 0;
+	//int curFrame;
 	ALLEGRO_EVENT ev;
-	const int maxFrame=40;
+	//const int maxFrame=40;
 	int last_score; //holds value of last destroyed bricks
 	int last_clicked_x ;
 	int last_clicked_y ;
@@ -101,7 +71,7 @@ private:
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;
-	std::vector< std::vector<cTile> > bricks;
+	
 	
 public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
