@@ -21,12 +21,12 @@ private:
 	float height;
 	float width;
 	float screen_shake;
-
 	int curFrame;
 	int frameCount;
 	int frameDelay;
 	int maxFrame;
 public:
+	bool resetCurFrame;
 	bool updated;
 	int color;
 	int state;

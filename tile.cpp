@@ -13,9 +13,11 @@ void cTile::create(sPoint position, int _color)
 	frameCount = 0;
 	curFrame = 0;
 	maxFrame = 60;
+	resetCurFrame = false;
 }
 void cTile::update()
 {
+	if (resetCurFrame) { resetCurFrame = false;curFrame=0; }
 	if (++frameCount >= frameDelay)
 	{
 		if (++curFrame >= maxFrame)
@@ -23,19 +25,16 @@ void cTile::update()
 			curFrame = 0;
 			if (state == EXPLODING)
 			{
-				curFrame = maxFrame;
+				//curFrame = maxFrame;
 				state = EMPTY;
-
 			}
 		}
 		frameCount = 0;
 	}
 	if (state == EXPLODING)
 	{
-		screen_shake = (rand() % 6) - 3; // -3 to 3 pixels in Y direction
-
+		screen_shake = (rand() % 4) - 2; // -3 to 3 pixels in both directions
 	}
-	//t*BRICK_SIZE + left_game_area_margin, i*BRICK_SIZE + TOP_MARGIN + screen_shake            (x,y)
 }
 void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 {
@@ -49,7 +48,8 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 	}
 	if (state == EXPLODING)
 	{
-		al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, (posX - 2)*BRICK_SIZE + screen_shake, (posY - 2)*BRICK_SIZE + TOP_MARGIN + screen_shake, NULL); //
+		al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE*2+BRICK_SIZE/2)+screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL); //
+		al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame);
 	}
 }
 //=====cList methods

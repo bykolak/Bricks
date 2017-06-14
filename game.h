@@ -27,14 +27,14 @@ private:
 	int on_screen_score;//shown score
 	int score_count;
 	//int number_of_selected; //how many selected 
-	bool selection; //if something selected
+	//bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
-	int left_button_margin;//where to start draw top buttons
-	int left_game_area_margin;// where to start draw game area
+	//int left_button_margin;//where to start draw top buttons
+	//int left_game_area_margin;// where to start draw game area
 	int screen_shake;// move everything on screen (in pixels)
 	//int frameCount;
 	//const int frameDelay = 0;
@@ -77,11 +77,11 @@ public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
 	void updateBrick();//updates on_screen score
-	void drawScore();//draws score to the screen
+	//void drawScore();//draws score to the screen
 	void clickButtons(int mouseButton);
 	void update();
 	void resetHighScores();//resets and saves new high score file
-	void changeTile(int x, int y, int color); //changes color of x,y tile
+	void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
 	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
