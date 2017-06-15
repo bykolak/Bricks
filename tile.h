@@ -25,6 +25,8 @@ private:
 	int frameCount;
 	int frameDelay;
 	int maxFrame;
+	int animationDelay;
+	bool isAnimating;
 public:
 	bool resetCurFrame;
 	bool updated;
@@ -32,7 +34,7 @@ public:
 	int state;
 	bool select = false;
 	void create(sPoint position, int color);
-	void update();
+	int update();
 	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
 };
 

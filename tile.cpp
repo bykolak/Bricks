@@ -13,31 +13,55 @@ void cTile::create(sPoint position, int _color)
 	frameCount = 0;
 	curFrame = 0;
 	maxFrame = 60;
-	resetCurFrame = false;
+	resetCurFrame = true;
+	isAnimating = false;
+	animationDelay = 15;
 }
-void cTile::update()
+int cTile::update()
 {
-	if (resetCurFrame) { resetCurFrame = false;curFrame=0; }
-	if (++frameCount >= frameDelay)
+	int exit_code = 0;
+	if (resetCurFrame) 
+	{ 
+		resetCurFrame = false; 
+		curFrame = 0; isAnimating = true;
+		
+	}
+	if (animationDelay>0 && isAnimating)
 	{
-		if (++curFrame >= maxFrame)
+		animationDelay--;
+		if (animationDelay < 0) animationDelay = 0;
+	}
+	if (isAnimating && animationDelay==0)
+	{
+		if (++frameCount >= frameDelay)
 		{
-			curFrame = 0;
-			if (state == EXPLODING)
+			if (++curFrame >= maxFrame)
 			{
-				//curFrame = maxFrame;
-				state = EMPTY;
+				curFrame = 0;
+				if (state == EXPLODING)
+				{
+					//curFrame = maxFrame;
+					state = EMPTY;
+					isAnimating = false;
+				}
 			}
+			frameCount = 0;
 		}
-		frameCount = 0;
+		
+	
+	
 	}
 	if (state == EXPLODING)
 	{
 		screen_shake = (rand() % 4) - 2; // -3 to 3 pixels in both directions
 	}
+	if (animationDelay>0)exit_code = DELAYED;
+	if (animationDelay==0)exit_code = ANIMATING;
+	return exit_code;
 }
 void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 {
+	
 	if (state == FULL || state == SELECTED)
 	{
 		al_draw_bitmap_region(bricksPNG, color*BRICK_SIZE, 0, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);
@@ -46,10 +70,14 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 	{
 		al_draw_bitmap_region(bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);
 	}
-	if (state == EXPLODING)
-	{
-		al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE*2+BRICK_SIZE/2)+screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL); //
-		al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame);
+
+	if (animationDelay == 0)
+		{
+		if (state == EXPLODING)
+		{
+			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL); //
+			al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame);
+		}
 	}
 }
 //=====cList methods

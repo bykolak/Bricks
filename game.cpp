@@ -122,12 +122,22 @@ void cGame::updateBrick()
 		score_count = 0;
 	}
 	//updates every brick on screen
-	for (int i = 0; i < BRICKS_MAP_Y; i++)
+	/*for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
 			
 				bricks[t][i].update();
-		}
+		}*/
+
+	//updates only selected bricks
+	for (unsigned int i = 0; i < selectionList.size(); i++)
+	{
+		int x = selectionList[i].x;
+		int y = selectionList[i].y;
+	//	if (bricks[x][y].update()==DELAYED)	break;
+		bricks[x][y].update();
+		
+	}
 }
 void cGame::clickButtons(int mouseButton)
 {
