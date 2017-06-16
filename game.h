@@ -22,25 +22,17 @@ private:
 	sPoint mouse;// contains postion of mouse on screen
 	std::vector<cTile> selectionList;
 	std::vector< std::vector<cTile> > bricks;
-	unsigned int currently_selected;
+	//unsigned int currently_selected;
 	int score; // players score
 	int on_screen_score;//shown score
 	int score_count;
-	//int number_of_selected; //how many selected 
-	//bool selection; //if something selected
 	bool saved_scores; //if high scores already saved
 	bool update_position;
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
-	//int left_button_margin;//where to start draw top buttons
-	//int left_game_area_margin;// where to start draw game area
 	int screen_shake;// move everything on screen (in pixels)
-	//int frameCount;
-	//const int frameDelay = 0;
-	//int curFrame;
 	ALLEGRO_EVENT ev;
-	//const int maxFrame=40;
 	int last_score; //holds value of last destroyed bricks
 	int last_clicked_x ;
 	int last_clicked_y ;
@@ -77,18 +69,16 @@ public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
 	void updateBrick();//updates on_screen score
-	//void drawScore();//draws score to the screen
 	void clickButtons(int mouseButton);
 	void update();
 	void resetHighScores();//resets and saves new high score file
 	void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
-	void updateNumberOfSelected(); //checks and update number of selected brcisk
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void endGame(); //draw end game screen
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	//void deselectBrick(); // clears selection of bricks 
+	bool checkDuplicates(cTile tile);//checks if brick was already added to selectionList
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)

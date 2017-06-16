@@ -7,7 +7,6 @@
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
 #include "game.h"
-//#include "tile.h"
 
 
 //=====cGame methods
@@ -15,7 +14,7 @@ cGame::cGame() //default constructor
 	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
 {
 	done = false;
-	currently_selected = 0;
+//	currently_selected = 0;
 	score_count = 0;
 	game_state = REFRESH_GAME;
 	score = 0;
@@ -121,22 +120,12 @@ void cGame::updateBrick()
 		if (on_screen_score > score) on_screen_score = score;
 		score_count = 0;
 	}
-	//updates every brick on screen
-	/*for (int i = 0; i < BRICKS_MAP_Y; i++)
-		for (int t = 0; t < BRICKS_MAP_X; t++)
-		{
-			
-				bricks[t][i].update();
-		}*/
-
 	//updates only selected bricks
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		int x = selectionList[i].x;
 		int y = selectionList[i].y;
-	//	if (bricks[x][y].update()==DELAYED)	break;
 		bricks[x][y].update();
-		
 	}
 }
 void cGame::clickButtons(int mouseButton)
@@ -272,7 +261,7 @@ void cGame::update()
 				render = true;
 			}
 
-			if (event.timer.source == timer2)	updateNumberOfSelected();
+//			if (event.timer.source == timer2)	updateNumberOfSelected();
 		
 		}
 		//=========RENDERER
@@ -313,16 +302,16 @@ void cGame::resetHighScores() //resets all saved highscores TODO
 	}
 	saveHighScore();
 }
-void cGame::updateNumberOfSelected() //checks and update number of selected bricks
-{
-	if (currently_selected < selectionList.size())
-	{
-		int x = selectionList[currently_selected].x;
-		int y = selectionList[currently_selected].y;
-		bricks[x][y].state = SELECTED;
-		currently_selected++;
-	}
-}
+//void cGame::updateNumberOfSelected() //checks and update number of selected bricks
+//{
+//	if (currently_selected < selectionList.size())
+//	{
+//		int x = selectionList[currently_selected].x;
+//		int y = selectionList[currently_selected].y;
+//		bricks[x][y].state = SELECTED;
+//		currently_selected++;
+//	}
+//}
 void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 {
 	bricks[x][y].color = color;
@@ -363,7 +352,7 @@ void cGame::newGame(bool debug) // restart game
 			sPoint position = { t,i };
 			int color = rand() % BRICK_COLORS;
 			if (debug) color = 1;//DEBUG
-			bricks[t][i].create(position,color);
+			bricks[t][i].create(position,color,FULL);
 		}
 	
 	for (int i = 0; i < MAX_BUTTONS; i++)
@@ -424,50 +413,44 @@ void cGame::endGame()
 }
 void cGame::selectBrick() // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
-	int x = mouse.bricksX;//(mouse.x - left_game_area_margin) / BRICK_SIZE;
-	int y = mouse.bricksY;//(mouse.y - TOP_MARGIN) / BRICK_SIZE;
+	int xx = mouse.bricksX;//(mouse.x - left_game_area_margin) / BRICK_SIZE;
+	int yy = mouse.bricksY;//(mouse.y - TOP_MARGIN) / BRICK_SIZE;
 	last_clicked_x = mouse.bricksX;
 	last_clicked_y = mouse.bricksY;
 	int refresh = 0; 
-	if (selectionList.size()==0 && bricks[x][y].state == FULL) //if not selected and full
+	if (selectionList.size()==0 && bricks[xx][yy].state == FULL) //if not selected and full
 	{
 		selectionList.clear();
 		cTile currentList;
-		currentList.set(x, y, bricks[x][y].state);
+		sPoint position{ xx,yy };
+		currentList.create(position, bricks[xx][yy].color,bricks[xx][yy].state);
 		selectionList.push_back(currentList);
+		bool validVector = false;
+
 		for (unsigned int i = 0; i < selectionList.size(); i++)
 		{
 			int x = selectionList[i].x;
 			int y = selectionList[i].y;
-			if (y - 1 >= 0)	if (bricks[x][y].color == bricks[x][y - 1].color &&	!bricks[x][y - 1].select && bricks[x][y - 1].state != EMPTY) //if north brick is same color
-			{
-				currentList.set(x, y - 1, false);
-				bricks[x][y - 1].select = true;
-				selectionList.push_back(currentList);
-				bricks[x][y].select = true;
-			}
-			if (y + 1 < BRICKS_MAP_Y)if (bricks[x][y].color == bricks[x][y + 1].color && !bricks[x][y + 1].select && bricks[x][y + 1].state != EMPTY) //if south brick is same color
-			{
-				currentList.set(x, y + 1, false);
-				bricks[x][y + 1].select = true;
-				selectionList.push_back(currentList);
-				bricks[x][y].select = true;
-			}
-			if (x - 1 >= 0)	if (bricks[x][y].color == bricks[x - 1][y].color && !bricks[x - 1][y].select && bricks[x - 1][y].state != EMPTY) //if west brick is same color
-			{
-				currentList.set(x - 1, y, false);
-				bricks[x - 1][y].select = true;
-				selectionList.push_back(currentList);
-				bricks[x][y].select = true;
-			}
-			if (x + 1 < BRICKS_MAP_X)	if (bricks[x][y].color == bricks[x + 1][y].color && !bricks[x + 1][y].select && bricks[x + 1][y].state != EMPTY) //if east brick is same color
-			{
-				currentList.set(x + 1, y, false);
-				bricks[x + 1][y].select = true;
-				selectionList.push_back(currentList);
-				bricks[x][y].select = true;
-			}
-			selectionList[i].state = true;
+			if (y - 1 >= 0)
+				if (bricks[x][y].compare(bricks[x][y - 1]))
+				{
+					if (!checkDuplicates(bricks[x][y - 1])) selectionList.push_back(bricks[x][y - 1]);
+				}
+			if (y + 1 < BRICKS_MAP_Y)
+				if (bricks[x][y].compare(bricks[x][y + 1]))
+				{
+					if (!checkDuplicates(bricks[x][y + 1])) selectionList.push_back(bricks[x][y + 1]);
+				}
+					if (x - 1 >= 0)
+			if (bricks[x][y].compare(bricks[x - 1][y]))
+				{
+					if (!checkDuplicates(bricks[x - 1][y])) selectionList.push_back(bricks[x - 1][y]);
+				}
+			if (x + 1 <BRICKS_MAP_X) 
+				if (bricks[x][y].compare(bricks[x + 1][y]))
+				{
+					if (!checkDuplicates(bricks[x + 1][y])) selectionList.push_back(bricks[x + 1][y]);
+				}
 		}
 		if (selectionList.size() < 2) selectionList.clear();
 		else
@@ -478,77 +461,65 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 				int y = selectionList[i].y;
 				int color = bricks[x][y].color;
 				sPoint pos{ x,y };
-				bricks[x][y].create(pos, color);
+				bricks[x][y].create(pos, color,SELECTED);
 			}
 		}
-		currently_selected = 0;
+		//currently_selected = 0;
 	}else 
-	if (selectionList.size()>0 && bricks[x][y].select) // else if selected
+	if (selectionList.size()>0 && bricks[xx][yy].state == SELECTED)// else if selected
 	{
 		destroy_brick_flag = true;
-		//selectionList.clear();
 		for (unsigned int i = 0; i < selectionList.size(); i++)
 		{
-			bricks[selectionList[i].x][selectionList[i].y].state = EXPLODING;
+			int x = selectionList[i].x;
+			int y = selectionList[i].y;
+			sPoint pos{ x,y };
+			bricks[x][y].create( pos, selectionList[i].color, EXPLODING);
+			bricks[x][y].setAnimationDelay(EXPLOSION_DELAY * i);
 		}
 		score += calculateScore();
 		last_score = calculateScore();
-		//for (int i = 0; i < BRICKS_MAP_X; i++)
-		//	for (int t = 0; t < BRICKS_MAP_Y; t++)
-		//	{
-		//		if (bricks[i][t].state == SELECTED) bricks[i][t].state = EXPLODING;//change selected to explosion status
-		//	}	
 	}else 
-		if (selectionList.size()>0 && bricks[x][y].state != SELECTED)
+	if (selectionList.size()>0 && bricks[xx][yy].state != SELECTED)//selcted other bricks
 		{
 			for (unsigned int i = 0; i < selectionList.size(); i++)
 			{
-				bricks[selectionList[i].x][selectionList[i].y].state = FULL;
-				bricks[selectionList[i].x][selectionList[i].y].select = false;
+				int x = selectionList[i].x;
+				int y = selectionList[i].y;
+				sPoint pos{ x,y };
+				bricks[x][y].create(pos, selectionList[i].color, FULL);
 			}
 			selectionList.clear();
 		selectBrick();
 		}
-	/*	deselectBrick();
-
-		for (int i = 0; i<BRICKS_MAP_Y; i++)
-			for (int t = 0; t < BRICKS_MAP_X; t++)
-			{
-				if (bricks[t][i].state == SELECTED)
-				{
-					bricks[t][i].state = FULL;
-				}
-				bricks[t][i].select = false;
-			}
-				
-	}
-
 }
-void cGame::deselectBrick() // clears selection of bricks 
+bool cGame::checkDuplicates(cTile tile)
 {
-	*/
+	bool duplicate = false;
+	for (unsigned int i = 0; i < selectionList.size(); i++)
+	{
+		if (tile.x == selectionList[i].x && tile.y == selectionList[i].y)
+		{	duplicate = true; break;	}
+		else
+		{
+			duplicate = false;
+		}
+	}
+	return duplicate;
 }
 void cGame::destroyBrick() // after clicking selected bricks destroys them
 {
-
+	bool animationEnds=false;
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		int x = selectionList[i].x;
 		int y = selectionList[i].y;
-
-		sPoint pos{ x,y };
-		if (bricks[x][y].resetCurFrame) { bricks[x][y].resetCurFrame = false;  bricks[x][y].create(pos, bricks[x][y].color); }
+		if (bricks[x][y].state == EMPTY) { animationEnds = true; }
+		else animationEnds = false;
 	}
-	int x = selectionList[0].x;
-	int y = selectionList[0].y;
-	if (bricks[x][y].state == EMPTY) //if empty remove first item from selectionList
-	{
-			selectionList.erase(selectionList.begin());
-	}
-	if (selectionList.size() ==0)		{	explosion_finish_flag = true; 	}
-
+	if (selectionList.size() ==0|| animationEnds)		{	explosion_finish_flag = true; 	}
 	float explosion_volume = 0.3 + 0.05 * selectionList.size(); //more bricks, louder explosion
-	if (explosion_volume>1.5) explosion_volume = 1.5; // up to 150% volume
+	if (explosion_volume>1.2) explosion_volume = 1.2; // up to 150% volume
 	al_set_sample_instance_gain(instance, explosion_volume);
 	al_play_sample_instance(instance);
 	
@@ -557,13 +528,8 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 		for (int i = 0; i < BRICKS_MAP_Y; i++)
 			for (int t = 0; t < BRICKS_MAP_X; t++)
 			{
-				bricks[t][i].select = false;
-				if (bricks[t][i].state == EXPLODING)
-				{
-					bricks[t][i].state = EMPTY;
-				}
+				if (bricks[t][i].state == EXPLODING)	{	bricks[t][i].state = EMPTY;	}
 			}
-		
 		dropBrick();
 		destroy_brick_flag = false;
 		screen_shake = 0.0;
@@ -573,16 +539,13 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 }
 int  cGame::calculateScore() //calculates score for destroyed bricks
 {
-
 	int score_earned = 0;
 	int iterator = selectionList.size();
 	for (int i = 0; i<iterator; i++)
 	{
 		score_earned+= i*2; //NEEDS EVALUATION
 	}
-
 	return score_earned;
-
 }
 void cGame::dropBrick() //after destroying bricks fill holes by dropping them (checks from bottom)
 {

@@ -3,30 +3,35 @@
 #include "game.h"
 
 //=====cTile methods
-void cTile::create(sPoint position, int _color)
+void cTile::create(sPoint position, int _color,int _state)
+//void cTile::create(cTile brick)
 {
+//	posX = brick.posX;
+	x = position.x;
+	y = position.y;
 	posX = position.x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2;
 	posY = position.y*BRICK_SIZE + (SCREEN_Y - AREA_HEIGHT) / 2;
-	state = FULL;
+	state = _state;
 	color = _color;
 	frameDelay = 0;
 	frameCount = 0;
 	curFrame = 0;
-	maxFrame = 60;
-	resetCurFrame = true;
-	isAnimating = false;
-	animationDelay = 15;
+	maxFrame = 30;
+	animationDelay = 0;
+	if (state == EXPLODING)
+	{
+		curFrame = 0;
+		isAnimating = true;
+		animationDelay = 2;
+	}
+	
 }
 int cTile::update()
 {
 	int exit_code = 0;
-	if (resetCurFrame) 
-	{ 
-		resetCurFrame = false; 
-		curFrame = 0; isAnimating = true;
-		
-	}
-	if (animationDelay>0 && isAnimating)
+	
+	//if (animationDelay>0 && isAnimating)
+	if(isAnimating)
 	{
 		animationDelay--;
 		if (animationDelay < 0) animationDelay = 0;
@@ -59,6 +64,14 @@ int cTile::update()
 	if (animationDelay==0)exit_code = ANIMATING;
 	return exit_code;
 }
+bool cTile::compare(cTile brickToComapre)
+{
+	if (brickToComapre.color == color && brickToComapre.state == state)
+	{
+		return true;
+	}
+	else return false;
+}
 void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 {
 	
@@ -79,6 +92,10 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 			al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame);
 		}
 	}
+}
+void cTile::setAnimationDelay(int delay)
+{
+	animationDelay = delay;
 }
 //=====cList methods
 cList::cList()

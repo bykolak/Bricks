@@ -28,14 +28,17 @@ private:
 	int animationDelay;
 	bool isAnimating;
 public:
-	bool resetCurFrame;
-	bool updated;
+	//bool resetCurFrame;
+	//bool updated;
 	int color;
 	int state;
-	bool select = false;
-	void create(sPoint position, int color);
+	//bool select = false;
+	void create(sPoint position, int color, int _state);
+//	void create(cTile brick);
 	int update();
+	bool compare(cTile brickToComapre); //if color and state matches return true
 	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
+	void setAnimationDelay(int delay);
 };
 
 

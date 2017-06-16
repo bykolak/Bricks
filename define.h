@@ -19,7 +19,7 @@
 //DEBUGS AND OVERLAYS FLAGS
 const bool BUTTON_OVERLAY = true;
 
-
+const int EXPLOSION_DELAY = 1;
 extern int BRICK_COLORS;
 const int SELECTION_SPEED = 100; //how many bricks selected per second
 const int SCORE_DELAY = 4;
@@ -43,8 +43,7 @@ const int AREA_HEIGHT = BRICK_SIZE * BRICKS_MAP_Y;
 
  //margins
 const int TOP_MARGIN = 64;
-//const int LEFT_MARGIN = 9;
-//const int RIGHT_MARGIN = 9;
+
 const int DOWN_MARGIN = 100;
 
 const int MUSIC_MUTE_X = 295;
@@ -57,5 +56,4 @@ enum TILE_STATE{ EMPTY, FULL, SELECTED, EXPLODING };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME, SAVING_SCORE, CHEAT,MAIN_MENU};
 enum KEYS { UP, DOWN, LEFT, RIGHT };
 enum EXIT_CODES{DELAYED,ANIMATING};
-//enum BUTTON_TYPE{ LARGE_BUTTON, SMALL_BUTTON, SHOW_ONLY_BUTTON,FAKE_BUTTON };
 #endif
