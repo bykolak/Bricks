@@ -101,7 +101,7 @@ cGame::cGame() //default constructor
 void cGame::updateBrick()
 {
 	//updates on_screen score (needs rework)
-	int score_delay = 0;
+	/*int score_delay = 0;
 	if (score - on_screen_score < 60) score_delay = 4;
 	if (score - on_screen_score > 60) score_delay = 3;
 	if (score - on_screen_score > 500) score_delay = 2;
@@ -116,7 +116,33 @@ void cGame::updateBrick()
 		if (score_delay == 1)	on_screen_score += 111;
 		if (on_screen_score > score) on_screen_score = score;
 		score_count = 0;
-	}
+	}*/
+	//int temp = 0;
+	//temp = score - on_screen_score;
+	
+	
+	//if(on_screen_score!=score)
+	//	for (int i = 1; i < 1000; i * 10)
+	//{
+	//	if (score / i > 0) on_screen_score += i;
+	//	if (on_screen_score > score)
+	//	{
+	//		on_screen_score = score;
+	//		break;
+	//	}
+	//}
+	//TODO
+	if (score / 1000 > 0)on_screen_score += 1000;
+	if (score / 100 > 0)on_screen_score += 100;
+	if (score / 10 > 0)on_screen_score += 10;
+	if (score / 1 > 0)on_screen_score += 1;
+	if (on_screen_score > score) on_screen_score = score;
+	//if (score - on_screen_score > 10) on_screen_score++;
+	//if (score - on_screen_score > 100) on_screen_score+=10;
+	//if (score - on_screen_score > 1000) on_screen_score += 1000;
+	//if (score - on_screen_score > 10000) on_screen_score += 10000;
+	//if (score - on_screen_score > 100000) on_screen_score += 100000;
+	
 	//updates only selected bricks
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
@@ -253,7 +279,10 @@ void cGame::update()
 				if (destroy_brick_flag)
 				{
 					destroyBrick();
+					//if (!destroy_brick_flag)
 				}
+				dropColumn();
+				//
 				if (game_state == PLAY_GAME) { checkEndGame(); }
 				if (game_state == END_GAME)
 				{
@@ -298,25 +327,25 @@ void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 void cGame::drawGameArea() // draw all bricks on screen;
 {
 	al_draw_bitmap(backgroundPNG,0, 0, NULL);
-	
 	for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
 			bricks[t][i].draw(bricksPNG,explosionPNG);
 		}
-
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		bricks[selectionList[i].x][selectionList[i].y].draw(bricksPNG, explosionPNG);
 	}
-	
 	if (destroy_brick_flag)
 	{
-		int f = 2;
+		int shake = selectionList.size() / 5;
+		if (selectionList.size()>100) shake=20;
+		if (shake == 0) shake = 1;
+		int f = rand() % shake;
 		//al_play_sample(explosionOGG, 1, 0, 1.3, ALLEGRO_PLAYMODE_ONCE, NULL);
-		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE)  + (BRICK_SIZE / 2)-f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN -f, NULL, "%i", last_score);
-		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
-		al_draw_textf(font36, WHITE, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2), (last_clicked_y *BRICK_SIZE) + TOP_MARGIN , NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE)  + (BRICK_SIZE / 2)-2+f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2)+2+ f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
+		al_draw_textf(font36, WHITE, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2)+f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
 	}
 	int f = 1;
 	al_draw_textf(font36, WHITE, 818, 1004, ALLEGRO_ALIGN_LEFT, " %i", on_screen_score);
@@ -381,6 +410,7 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 }
 void cGame::endGame()
 {
+	
 	al_draw_bitmap(highscorePNG, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2), screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), 0);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
@@ -393,7 +423,7 @@ void cGame::endGame()
 		int x = screen_width / 2;
 		int y = screen_height / 2 + 300;
 		al_draw_textf(font18, WHITE, x, y, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
-		al_draw_ustr(font18, WHITE, x+100, y, ALLEGRO_ALIGN_LEFT, edited_text);
+		al_draw_ustr(font18, WHITE, x, y+25, ALLEGRO_ALIGN_CENTRE, edited_text);
 	}
 	al_draw_textf(font36, WHITE, screen_width / 2, screen_height / 2 + 200, ALLEGRO_ALIGN_CENTRE, "HIGH SCORE");
 	al_draw_textf(font24, WHITE, screen_width / 2, screen_height / 2 + 250, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen_score);
@@ -518,8 +548,9 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 			{
 				sPoint position{ t,i };
 				if (bricks[t][i].state == EXPLODING) { bricks[t][i].create(position, bricks[t][i].color, EMPTY); }
+				
 			}
-		dropBrick();
+		moveBrickLeft();
 		destroy_brick_flag = false;
 		screen_shake = 0.0;
 		selectionList.clear();
@@ -536,28 +567,22 @@ int  cGame::calculateScore() //calculates score for destroyed bricks
 	}
 	return score_earned;
 }
-void cGame::dropBrick() //after destroying bricks fill holes by dropping them (checks from bottom)
+void cGame::dropColumn()
 {
-	int refresh = 0;
-	bool check_column = true;
-	for (refresh = BRICKS_MAP_Y -1; refresh > 0; refresh--) // do this BRICKS_LARGE_Y times to drop bricks if there are bigger gaps 
+	for (int x = 0; x < BRICKS_MAP_X; x++)
+	for (int y = BRICKS_MAP_Y - 1; y > 0; y--)
 	{
-		for (int xx = BRICKS_MAP_X-1; xx >= 0; xx--)//scans for empty bricks and drops them by one
-		for (int yy = BRICKS_MAP_Y-1; yy >0; yy--)
+		if (bricks[x][y].state == EMPTY && bricks[x][y-1].state!=EXPLODING)
 		{
-			if (bricks[xx][yy].state == EMPTY)
-			{
-				bricks[xx][yy].color = bricks[xx][yy-1].color;
-				bricks[xx][yy].state = bricks[xx][yy-1].state;
-				bricks[xx][yy-1].state = EMPTY;
-			}
+			sPoint position{ x,y };
+			bricks[x][y].create(position, bricks[x][y - 1].color, bricks[x][y - 1].state);
+			bricks[x][y - 1].state = EMPTY;
 		}
 	}
-	moveBrickLeft();
 }
+
 void cGame::moveBrickLeft()
-{
-	
+{	
 	for (int x = 0; x < BRICKS_MAP_X; x++)
 	{
 		int empty = 0;
@@ -566,7 +591,6 @@ void cGame::moveBrickLeft()
 			if (bricks[x][y].state == EMPTY)
 			{
 				empty++;
-				//TODO
 			}
 			if (empty == BRICKS_MAP_Y)
 			{
@@ -575,8 +599,8 @@ void cGame::moveBrickLeft()
 					{
 						if (xx + 1 < BRICKS_MAP_X) //avoids going outside of vector
 						{
-							bricks[xx][yy].color =bricks[xx + 1][yy].color;
-							bricks[xx][yy].state = bricks[xx + 1][yy].state;
+							sPoint position{ xx ,yy };
+							if (bricks[xx+1][yy].state != EXPLODING)bricks[xx][yy].create(position, bricks[xx + 1][yy].color, bricks[xx + 1][yy].state);
 							bricks[xx + 1][yy].color = 0;
 							bricks[xx + 1][yy].state = EMPTY;
 						}
@@ -675,7 +699,6 @@ void cGame::loadHighScore()
 
 			int *buffer2 = &high_score[i];
 			al_fread(high_score_file, buffer2, sizeof(high_score[i]));
-		//	high_score[i] = 0; //DEBUG: clearing high scores
 			al_free(buffer);
 		}
 	}

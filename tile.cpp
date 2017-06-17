@@ -85,7 +85,7 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 		if (state == EXPLODING)
 		{
 			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL);
-		//	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
+			//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 		}
 	}
 	//al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", animationDelay);//DEBUG: shows animationDelay on every brick
