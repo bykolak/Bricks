@@ -21,6 +21,7 @@ private:
 	float height;
 	float width;
 	float screen_shake;
+	
 	int curFrame;
 	int frameCount;
 	int frameDelay;
@@ -28,8 +29,7 @@ private:
 	int animationDelay;
 	bool isAnimating;
 public:
-	//bool resetCurFrame;
-	//bool updated;
+	bool selected;
 	int color;
 	int state;
 	//bool select = false;
@@ -39,7 +39,6 @@ public:
 	bool compare(cTile brickToComapre); //if color and state matches return true
 	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
 	void setAnimationDelay(int delay);
-	void duplicateLocation(cTile brickToCompare);
 };
 
 

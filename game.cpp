@@ -8,13 +8,12 @@
 #include <allegro5\allegro_acodec.h>
 #include "game.h"
 
-
 //=====cGame methods
 cGame::cGame() //default constructor
 	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
 {
+//	resetHighScores();//DEBUG: clears high scores from names and points
 	done = false;
-//	currently_selected = 0;
 	score_count = 0;
 	game_state = REFRESH_GAME;
 	score = 0;
@@ -22,9 +21,8 @@ cGame::cGame() //default constructor
 	bricks_on_screen = BRICKS_MAP_X * BRICKS_MAP_Y;
 	area_width = BRICK_SIZE * BRICKS_MAP_X;
 	area_height = BRICK_SIZE * BRICKS_MAP_Y;
-	screen_width = SCREEN_X;//LEFT_MARGIN + area_width + RIGHT_MARGIN;
-	screen_height = SCREEN_Y;//TOP_MARGIN + area_height + DOWN_MARGIN;
-	//left_game_area_margin = (screen_width - area_width) / 2;
+	screen_width = SCREEN_X;
+	screen_height = SCREEN_Y;
 	player_name = NULL;
 	al_init();
 	display = al_create_display(screen_width, screen_height);
@@ -42,7 +40,6 @@ cGame::cGame() //default constructor
 	mainPNG = al_load_bitmap("main.png");
 	optionsPNG = al_load_bitmap("options.png");
 	highscorePNG = al_load_bitmap("highscore.png");
-//	newgamePNG = al_load_bitmap("newgame.png");
 	loadHighScore();
 	loadGame();
 	game_state = PLAY_GAME;
@@ -258,6 +255,13 @@ void cGame::update()
 					destroyBrick();
 				}
 				if (game_state == PLAY_GAME) { checkEndGame(); }
+				if (game_state == END_GAME)
+				{
+					if (checkSaveScores())
+					{
+						game_state = SAVING_SCORE;
+					}
+				}
 				render = true;
 			}
 
@@ -269,49 +273,24 @@ void cGame::update()
 		{
 			render = false;
 			drawGameArea();
-		//	if (game_state == OPTIONS) { options(); }
-		//	if (game_state == HIGH_SCORE) { highScores(); }
 			if (game_state == END_GAME || game_state == SAVING_SCORE) { endGame(); }
-			if (game_state == SAVING_SCORE)
-			{
-//				al_draw_textf(font18, WHITE, screen_width / 2 - 100, screen_height / 2 + 100, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
-//				al_draw_text(font18, WHITE, screen_width / 2, screen_height / 2 + 100, NULL, "_____________________");
-//				al_draw_ustr(font18, YELLOW, screen_width / 2, screen_height / 2 + 100, NULL, edited_text);
-			}
-			if (game_state == MAIN_MENU)
-			{
-				drawMenu();
-				
-				//highScores();
-			}
+
+			if (game_state == MAIN_MENU)		{	drawMenu();	}
 			al_flip_display();
-			
-		}
-		
+		}	
 	}
 }
 void cGame::resetHighScores() //resets all saved highscores TODO
 {
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-
 		high_score[i] = 0;
 		al_ustr_free(high_score_name[i]);
-		high_score_name[i] = al_ustr_new("WWWWWWWWWWWWWWW");
-		high_score[i] = 1234567;
+		high_score_name[i] = al_ustr_new(" ");
+		high_score[i] = 0;
 	}
 	saveHighScore();
 }
-//void cGame::updateNumberOfSelected() //checks and update number of selected bricks
-//{
-//	if (currently_selected < selectionList.size())
-//	{
-//		int x = selectionList[currently_selected].x;
-//		int y = selectionList[currently_selected].y;
-//		bricks[x][y].state = SELECTED;
-//		currently_selected++;
-//	}
-//}
 void cGame::changeTile(int x, int y, int color) //changes color of x,y tile
 {
 	bricks[x][y].color = color;
@@ -353,8 +332,7 @@ void cGame::newGame(bool debug) // restart game
 			int color = rand() % BRICK_COLORS;
 			if (debug)
 			{
-				if (t % 2 && i % 2)	bricks[t][i].create(position, 3, FULL); else bricks[t][i].create(position, 3, FULL);
-
+				if (t % 2 && i % 2)	bricks[t][i].create(position, 1, FULL); else bricks[t][i].create(position, 3, FULL);
 			}else 
 			bricks[t][i].create(position,color,FULL);
 		}
@@ -403,17 +381,22 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 }
 void cGame::endGame()
 {
-	//al_draw_tinted_bitmap(shadowBMP, TINT, 0, 0, 0);
-//	al_draw_bitmap(scoreBMP, screen_width / 2 - (al_get_bitmap_width(scoreBMP) / 2), screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2), 0);
-//	button[END_GAME_NEW_GAME_BUTTON].draw();
-//	if (checkSaveScores()) button[END_GAME_SAVE_SCORE_BUTTON].draw();
+	al_draw_bitmap(highscorePNG, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2), screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), 0);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		int f = 26;
-	//	al_draw_ustr(font24, WHITE, screen_width / 2 - 300, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + f * i , ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-	//	al_draw_textf(font24, WHITE, screen_width / 2 + 250, screen_height / 2 - (al_get_bitmap_height(scoreBMP) / 2) + f * i , ALLEGRO_ALIGN_CENTRE, "%i ", high_score[i]);
+		al_draw_textf(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+70, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_CENTRE, "1.");
+		al_draw_ustr(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+80, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_textf(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+360, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
 	}
-	al_draw_textf(font24, WHITE, screen_width / 2, screen_height / 2 + 75, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen_score);
+	if (checkSaveScores())
+	{
+		int x = screen_width / 2;
+		int y = screen_height / 2 + 300;
+		al_draw_textf(font18, WHITE, x, y, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
+		al_draw_ustr(font18, WHITE, x+100, y, ALLEGRO_ALIGN_LEFT, edited_text);
+	}
+	al_draw_textf(font36, WHITE, screen_width / 2, screen_height / 2 + 200, ALLEGRO_ALIGN_CENTRE, "HIGH SCORE");
+	al_draw_textf(font24, WHITE, screen_width / 2, screen_height / 2 + 250, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen_score);
 }
 void cGame::selectBrick() // takes mouse input and selects all same color bricks that are neighboruing to  bricks[x][y]
 {
@@ -436,27 +419,40 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 			int x = selectionList[i].x;
 			int y = selectionList[i].y;
 			if (y - 1 >= 0)
-				if (bricks[x][y].compare(bricks[x][y - 1]))
+				if (bricks[x][y].compare(bricks[x][y - 1]) && !bricks[x][y - 1].selected)
 				{
-					if (!checkDuplicates(bricks[x][y - 1],i)) selectionList.push_back(bricks[x][y - 1]);
+					selectionList.push_back(bricks[x][y - 1]);
+					bricks[x][y - 1].selected = true;
 				}
 			if (y + 1 < BRICKS_MAP_Y)
-				if (bricks[x][y].compare(bricks[x][y + 1]))
+				if (bricks[x][y].compare(bricks[x][y + 1]) && !bricks[x][y + 1].selected)
 				{
-					if (!checkDuplicates(bricks[x][y + 1],i)) selectionList.push_back(bricks[x][y + 1]);
+					selectionList.push_back(bricks[x][y + 1]);
+					bricks[x][y + 1].selected = true;
 				}
-					if (x - 1 >= 0)
-			if (bricks[x][y].compare(bricks[x - 1][y]))
+			if (x - 1 >= 0)
+				if (bricks[x][y].compare(bricks[x - 1][y]) && !bricks[x - 1][y].selected)
 				{
-					if (!checkDuplicates(bricks[x - 1][y],i)) selectionList.push_back(bricks[x - 1][y]);
+					selectionList.push_back(bricks[x - 1][y]);
+					bricks[x - 1][y].selected = true;
 				}
-			if (x + 1 <BRICKS_MAP_X) 
-				if (bricks[x][y].compare(bricks[x + 1][y]))
+			if (x + 1 <BRICKS_MAP_X)
+				if (bricks[x][y].compare(bricks[x + 1][y]) && !bricks[x + 1][y].selected)
 				{
-					if (!checkDuplicates(bricks[x + 1][y],i)) selectionList.push_back(bricks[x + 1][y]);
+					selectionList.push_back(bricks[x + 1][y]);
+					bricks[x + 1][y].selected = true;
 				}
 		}
-		if (selectionList.size() < 2) selectionList.clear();
+		if (selectionList.size() < 2)
+		{
+			for (unsigned int i = 0; i < selectionList.size(); i++)
+			{
+				int x = selectionList[i].x;
+				int y = selectionList[i].y;
+				bricks[x][y].selected = false;
+			}
+			selectionList.clear();
+		}
 		else
 		{
 			for (unsigned int i = 0; i < selectionList.size(); i++)
@@ -466,10 +462,9 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 				int color = bricks[x][y].color;
 				sPoint pos{ x,y };
 				bricks[x][y].create(pos, color,SELECTED);
-				bricks[x][y].setAnimationDelay(i/3);
+				bricks[x][y].setAnimationDelay(i/8);
 			}
 		}
-		//currently_selected = 0;
 	}else 
 	if (selectionList.size()>0 && bricks[xx][yy].state == SELECTED)// else if selected
 	{
@@ -480,7 +475,8 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 			int y = selectionList[i].y;
 			sPoint pos{ x,y };
 			bricks[x][y].create( pos, selectionList[i].color, EXPLODING);
-			bricks[x][y].setAnimationDelay(i/3);
+			bricks[x][y].setAnimationDelay(i/4);
+			bricks[x][y].selected = false;
 		}
 		score += calculateScore();
 		last_score = calculateScore();
@@ -493,26 +489,11 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 				int y = selectionList[i].y;
 				sPoint pos{ x,y };
 				bricks[x][y].create(pos, selectionList[i].color, FULL);
+				bricks[x][y].selected = false;
 			}
 			selectionList.clear();
 		selectBrick();
 		}
-}
-bool cGame::checkDuplicates(cTile tile, int iterator)
-{
-	bool duplicate = false;
-	int start = 0;// iterator - 10;
-	//if (selectionList.size() > 500) start = 490;
-	for (unsigned int i = start; i < selectionList.size(); i++)
-	{
-		if (tile.x == selectionList[i].x && tile.y == selectionList[i].y)
-		{	duplicate = true; break;	}
-		else
-		{
-			duplicate = false;
-		}
-	}
-	return duplicate;
 }
 void cGame::destroyBrick() // after clicking selected bricks destroys them
 {
@@ -535,7 +516,8 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 		for (int i = 0; i < BRICKS_MAP_Y; i++)
 			for (int t = 0; t < BRICKS_MAP_X; t++)
 			{
-				if (bricks[t][i].state == EXPLODING)	{	bricks[t][i].state = EMPTY;	}
+				sPoint position{ t,i };
+				if (bricks[t][i].state == EXPLODING) { bricks[t][i].create(position, bricks[t][i].color, EMPTY); }
 			}
 		dropBrick();
 		destroy_brick_flag = false;
@@ -660,6 +642,7 @@ void cGame::enterPlayerName(int keycode, int unichar)
 	{
 		player_name = edited_text;
 		saveScores();
+		game_state = MAIN_MENU;
 	}
 }
 void cGame::saveHighScore()
@@ -692,7 +675,7 @@ void cGame::loadHighScore()
 
 			int *buffer2 = &high_score[i];
 			al_fread(high_score_file, buffer2, sizeof(high_score[i]));
-
+		//	high_score[i] = 0; //DEBUG: clearing high scores
 			al_free(buffer);
 		}
 	}

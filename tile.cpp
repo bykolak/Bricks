@@ -4,9 +4,7 @@
 
 //=====cTile methods
 void cTile::create(sPoint position, int _color,int _state)
-//void cTile::create(cTile brick)
 {
-//	posX = brick.posX;
 	x = position.x;
 	y = position.y;
 	posX = position.x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2;
@@ -18,6 +16,7 @@ void cTile::create(sPoint position, int _color,int _state)
 	curFrame = 0;
 	maxFrame = 30;
 	animationDelay = 0;
+	selected = false;
 	if (state == EXPLODING)
 	{
 		curFrame = 0;
@@ -29,14 +28,11 @@ void cTile::create(sPoint position, int _color,int _state)
 		curFrame = 0;
 		isAnimating = true;
 		animationDelay = 0;
-	}
-	
+	}	
 }
 int cTile::update()
 {
 	int exit_code = 0;
-	
-	//if (animationDelay>0 && isAnimating)
 	if(isAnimating)
 	{
 		animationDelay--;
@@ -57,9 +53,6 @@ int cTile::update()
 			}
 			frameCount = 0;
 		}
-		
-	
-	
 	}
 	if (state == EXPLODING)
 	{
@@ -79,35 +72,27 @@ bool cTile::compare(cTile brickToComapre)
 }
 void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 {
-	
-	//if (state == FULL || state == SELECTED)
 	if (state!=EMPTY)
 	{
 		al_draw_bitmap_region(bricksPNG, color*BRICK_SIZE, 0, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);
 	}
 	if (animationDelay == 0)
 	{
-	if (state == SELECTED)
-	{
-		al_draw_bitmap_region(bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);
-	}
-
-	
+		if (state == SELECTED)
+		{
+			al_draw_bitmap_region(bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);
+		}
 		if (state == EXPLODING)
 		{
-			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL); //
-			al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame);
-			
+			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL);
+		//	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 		}
 	}
-	al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", animationDelay);
+	//al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", animationDelay);//DEBUG: shows animationDelay on every brick
 }
 void cTile::setAnimationDelay(int delay)
 {
 	animationDelay = delay;
-}
-void cTile::duplicateLocation(cTile brickToCompare)
-{
 }
 //=====cList methods
 cList::cList()

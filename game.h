@@ -45,6 +45,7 @@ private:
 	//int brick_size; //size of bricks
 	bool explosion_finish_flag;
 	bool destroy_brick_flag;
+	cTile cursor;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
@@ -78,7 +79,6 @@ public:
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void endGame(); //draw end game screen
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	bool checkDuplicates(cTile tile, int iterator);//checks if brick was already added to selectionList
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
