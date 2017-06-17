@@ -78,7 +78,7 @@ public:
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
 	void endGame(); //draw end game screen
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
-	bool checkDuplicates(cTile tile);//checks if brick was already added to selectionList
+	bool checkDuplicates(cTile tile, int iterator);//checks if brick was already added to selectionList
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
 	void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)

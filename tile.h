@@ -39,6 +39,7 @@ public:
 	bool compare(cTile brickToComapre); //if color and state matches return true
 	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
 	void setAnimationDelay(int delay);
+	void duplicateLocation(cTile brickToCompare);
 };
 
 

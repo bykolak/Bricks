@@ -341,8 +341,8 @@ void cGame::drawGameArea() // draw all bricks on screen;
 	}
 	int f = 1;
 	al_draw_textf(font36, WHITE, 818, 1004, ALLEGRO_ALIGN_LEFT, " %i", on_screen_score);
-	al_draw_textf(font36, WHITE, 200, 8, ALLEGRO_ALIGN_RIGHT, " selectionList.size:%i", selectionList.size());
-	al_draw_textf(font36, WHITE, 600, 8, ALLEGRO_ALIGN_RIGHT, " score:%i", score);
+	al_draw_textf(font36, WHITE, 50, 8, ALLEGRO_ALIGN_LEFT, " selectionList.size:%i", selectionList.size());
+	al_draw_textf(font36, WHITE, 600, 8, ALLEGRO_ALIGN_LEFT, " score:%i", score);
 }
 void cGame::newGame(bool debug) // restart game
 {
@@ -351,7 +351,11 @@ void cGame::newGame(bool debug) // restart game
 		{
 			sPoint position = { t,i };
 			int color = rand() % BRICK_COLORS;
-			if (debug) color = 1;//DEBUG
+			if (debug)
+			{
+				if (t % 2 && i % 2)	bricks[t][i].create(position, 3, FULL); else bricks[t][i].create(position, 3, FULL);
+
+			}else 
 			bricks[t][i].create(position,color,FULL);
 		}
 	
@@ -434,22 +438,22 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 			if (y - 1 >= 0)
 				if (bricks[x][y].compare(bricks[x][y - 1]))
 				{
-					if (!checkDuplicates(bricks[x][y - 1])) selectionList.push_back(bricks[x][y - 1]);
+					if (!checkDuplicates(bricks[x][y - 1],i)) selectionList.push_back(bricks[x][y - 1]);
 				}
 			if (y + 1 < BRICKS_MAP_Y)
 				if (bricks[x][y].compare(bricks[x][y + 1]))
 				{
-					if (!checkDuplicates(bricks[x][y + 1])) selectionList.push_back(bricks[x][y + 1]);
+					if (!checkDuplicates(bricks[x][y + 1],i)) selectionList.push_back(bricks[x][y + 1]);
 				}
 					if (x - 1 >= 0)
 			if (bricks[x][y].compare(bricks[x - 1][y]))
 				{
-					if (!checkDuplicates(bricks[x - 1][y])) selectionList.push_back(bricks[x - 1][y]);
+					if (!checkDuplicates(bricks[x - 1][y],i)) selectionList.push_back(bricks[x - 1][y]);
 				}
 			if (x + 1 <BRICKS_MAP_X) 
 				if (bricks[x][y].compare(bricks[x + 1][y]))
 				{
-					if (!checkDuplicates(bricks[x + 1][y])) selectionList.push_back(bricks[x + 1][y]);
+					if (!checkDuplicates(bricks[x + 1][y],i)) selectionList.push_back(bricks[x + 1][y]);
 				}
 		}
 		if (selectionList.size() < 2) selectionList.clear();
@@ -462,6 +466,7 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 				int color = bricks[x][y].color;
 				sPoint pos{ x,y };
 				bricks[x][y].create(pos, color,SELECTED);
+				bricks[x][y].setAnimationDelay(i/3);
 			}
 		}
 		//currently_selected = 0;
@@ -475,7 +480,7 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 			int y = selectionList[i].y;
 			sPoint pos{ x,y };
 			bricks[x][y].create( pos, selectionList[i].color, EXPLODING);
-			bricks[x][y].setAnimationDelay(EXPLOSION_DELAY * i);
+			bricks[x][y].setAnimationDelay(i/3);
 		}
 		score += calculateScore();
 		last_score = calculateScore();
@@ -493,10 +498,12 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 		selectBrick();
 		}
 }
-bool cGame::checkDuplicates(cTile tile)
+bool cGame::checkDuplicates(cTile tile, int iterator)
 {
 	bool duplicate = false;
-	for (unsigned int i = 0; i < selectionList.size(); i++)
+	int start = 0;// iterator - 10;
+	//if (selectionList.size() > 500) start = 490;
+	for (unsigned int i = start; i < selectionList.size(); i++)
 	{
 		if (tile.x == selectionList[i].x && tile.y == selectionList[i].y)
 		{	duplicate = true; break;	}
