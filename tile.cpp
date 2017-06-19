@@ -58,6 +58,14 @@ int cTile::update()
 	{
 		screen_shake = (rand() % 4) - 2; // -3 to 3 pixels in both directions
 	}
+	if (isSliding)
+	{
+		posX++;
+		curSlide++;
+		if (curSlide > MAX_SLIDE) { isSliding = false; }
+	}
+	//else { curSlide = 0; }
+
 	if (animationDelay>0)exit_code = DELAYED;
 	if (animationDelay==0)exit_code = ANIMATING;
 	return exit_code;
@@ -93,6 +101,11 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 void cTile::setAnimationDelay(int delay)
 {
 	animationDelay = delay;
+}
+void cTile::slide()
+{
+	posX -= BRICK_SIZE;
+	isSliding = true;
 }
 //=====cList methods
 cList::cList()

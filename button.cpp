@@ -117,7 +117,7 @@ void cButton::create(float posX, float posY, float width, float height, int type
 
 		al_set_target_bitmap(buttonClicked);//draw on button sprite
 		al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
-		al_draw_textf(font36, RED, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number
+		al_draw_textf(font36, BUTTON, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number
 		al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
 	}
 

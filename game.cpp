@@ -361,7 +361,7 @@ void cGame::newGame(bool debug) // restart game
 			int color = rand() % BRICK_COLORS;
 			if (debug)
 			{
-				if (t % 2 && i % 2)	bricks[t][i].create(position, 1, FULL); else bricks[t][i].create(position, 3, FULL);
+				if (t % 2 /*&& i % 2*/)	bricks[t][i].create(position, 1, FULL); else bricks[t][i].create(position, 3, FULL);
 			}else 
 			bricks[t][i].create(position,color,FULL);
 		}
@@ -600,7 +600,11 @@ void cGame::moveBrickLeft()
 						if (xx + 1 < BRICKS_MAP_X) //avoids going outside of vector
 						{
 							sPoint position{ xx ,yy };
-							if (bricks[xx+1][yy].state != EXPLODING)bricks[xx][yy].create(position, bricks[xx + 1][yy].color, bricks[xx + 1][yy].state);
+							if (bricks[xx + 1][yy].state != EXPLODING)
+							{
+								bricks[xx][yy].create(position, bricks[xx + 1][yy].color, bricks[xx + 1][yy].state);
+								bricks[xx][yy].slide();
+							}
 							bricks[xx + 1][yy].color = 0;
 							bricks[xx + 1][yy].state = EMPTY;
 						}

@@ -9,6 +9,7 @@
 #define WHITE al_map_rgb(255,255,255)
 #define YELLOW al_map_rgb(255,255,0)
 #define RED al_map_rgb(255,0,0)
+#define BUTTON al_map_rgb(36,133,150)
 #define GREEN al_map_rgb(0,255,0)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
@@ -23,6 +24,7 @@ const int EXPLOSION_DELAY = 1;
 extern int BRICK_COLORS;
 const int SELECTION_SPEED = 100; //how many bricks selected per second
 const int SCORE_DELAY = 4;
+const int MAX_SLIDE = 40;
 //high scores 
 const int MAX_HIGH_SCORE = 10;//maximum high score entries
 const int MAX_USERNAME_LENGTH = 21;//defines maximum username length 
