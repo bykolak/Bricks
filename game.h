@@ -73,7 +73,7 @@ public:
 	void clickButtons(int mouseButton);
 	void update();
 	void resetHighScores();//resets and saves new high score file
-	void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
+	//void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)

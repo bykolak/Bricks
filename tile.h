@@ -21,15 +21,15 @@ private:
 	float height;
 	float width;
 	float screen_shake;
-	int curSlide;
-	
+	float distance;
 	int curFrame;
 	int frameCount;
 	int frameDelay;
 	int maxFrame;
 	int animationDelay;
 	bool isAnimating;
-	bool isSliding;
+	bool isMoving;
+
 public:
 	bool selected;
 	int color;
@@ -41,7 +41,7 @@ public:
 	bool compare(cTile brickToComapre); //if color and state matches return true
 	void draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG);
 	void setAnimationDelay(int delay);
-	void slide();
+	void move();
 };
 
 
