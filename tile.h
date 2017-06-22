@@ -28,9 +28,10 @@ private:
 	int maxFrame;
 	int animationDelay;
 	bool isAnimating;
-	bool isMoving;
+	
 
 public:
+	bool isMoving;
 	bool selected;
 	int color;
 	int state;

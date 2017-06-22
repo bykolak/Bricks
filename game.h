@@ -81,7 +81,7 @@ public:
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
-	void dropColumn();
+	bool dropColumn();
 	//void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
 	void moveBrickLeft();//if empty vertical line then move rest of screen to the left
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true

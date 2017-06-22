@@ -5,25 +5,13 @@
 //=====cTile methods
 void cTile::create(sPoint position, int _color,int _state)
 {
-	//int oldX = x;
-	//int oldY = y;
 	x = position.x;
 	y = position.y;
-	if (_state == MOVING) 
-	{
-		distance = BRICK_SIZE;
-		isMoving = true;
-		state = FULL; 
-	}
-	else
-	{
-		distance = 0;
-		isMoving = false;
-	}
-		posX = position.x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2+distance;
-		posY = position.y*BRICK_SIZE + (SCREEN_Y - AREA_HEIGHT) / 2;
-	
+	//distance = 0;
+	isMoving = false;
 	state = _state;
+	isAnimating = false;
+	
 	color = _color;
 	frameDelay = 0;
 	frameCount = 0;
@@ -31,10 +19,19 @@ void cTile::create(sPoint position, int _color,int _state)
 	maxFrame = 30;
 	animationDelay = 0;
 	selected = false;
-//	if (state == EXPLODING)
-//	{
-	//	curFrame = 0;
+	if (_state == MOVING)
+	{
+		distance = BRICK_SIZE;
+		isMoving = true;
+		state = FULL;
+
+	}
+	if (state == EXPLODING || state==SELECTED)
+	{
 		isAnimating = true;
+	}
+	posX = position.x*BRICK_SIZE + distance;
+	posY = position.y*BRICK_SIZE + (SCREEN_Y - AREA_HEIGHT) / 2;
 	//	animationDelay = 0;
 //	}
 //	if (state == SELECTED)
@@ -72,13 +69,16 @@ int cTile::update()
 	{
 		screen_shake = (rand() % 4) - 2; // -3 to 3 pixels in both directions
 	}
+	/*if (isMoving && distance > 0)	
+	{		
+		distance-=2;
+	}*/
 	if (isMoving)
 	{
 		distance--;
-		
 		if (distance<0)
 		{
-			isMoving = false; state = FULL; distance = 0;
+			isMoving = false; distance = 0;
 		}
 	}
 	posX = x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2 + distance;
@@ -112,7 +112,7 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL);
 			//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 		}
-		//if (isMoving)
+		if (distance>0)
 			al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX
 
 	}
