@@ -72,6 +72,7 @@ public:
 	void updateBrick();//updates on_screen score
 	void clickButtons(int mouseButton);
 	void update();
+	bool isMoving();
 	void resetHighScores();//resets and saves new high score file
 	//void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
 	void drawGameArea(); // draw all bricks on screen
@@ -83,7 +84,7 @@ public:
 	int calculateScore(); //calculates score for destroyed bricks
 	bool dropColumn();
 	//void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
-	void moveBrickLeft();//if empty vertical line then move rest of screen to the left
+	bool moveBrickLeft();//if empty vertical line then move rest of screen to the left
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void saveScores();//
 	void enterPlayerName(int keycode, int unichar); 

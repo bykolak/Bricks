@@ -31,7 +31,7 @@ private:
 	
 
 public:
-	bool isMoving;
+	//bool isMoving;
 	bool selected;
 	int color;
 	int state;

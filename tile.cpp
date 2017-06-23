@@ -8,7 +8,7 @@ void cTile::create(sPoint position, int _color,int _state)
 	x = position.x;
 	y = position.y;
 	//distance = 0;
-	isMoving = false;
+	
 	state = _state;
 	isAnimating = false;
 	
@@ -21,10 +21,12 @@ void cTile::create(sPoint position, int _color,int _state)
 	selected = false;
 	if (_state == MOVING)
 	{
-		distance = BRICK_SIZE;
-		isMoving = true;
-		state = FULL;
-
+		distance += BRICK_SIZE;
+	//	isMoving = true;
+	}
+	else if (state==EMPTY || state==EXPLODING || state==SELECTED)
+	{
+	//	distance = 0;
 	}
 	if (state == EXPLODING || state==SELECTED)
 	{
@@ -73,18 +75,20 @@ int cTile::update()
 	{		
 		distance-=2;
 	}*/
-	if (isMoving)
+	if (state == MOVING)
 	{
-		distance--;
-		if (distance<0)
+		distance-=2.3;
+		if (distance<=0.0)
 		{
-			isMoving = false; distance = 0;
+			distance = 0.0;
+			state = FULL;
+			//isMoving = false; distance = 0;
 		}
 	}
-	posX = x*BRICK_SIZE + (SCREEN_X - AREA_WIDTH) / 2 + distance;
+	posX = x*BRICK_SIZE + distance;
 	posY = y*BRICK_SIZE + (SCREEN_Y - AREA_HEIGHT) / 2;
-	if (animationDelay>0)exit_code = DELAYED;
-	if (animationDelay==0)exit_code = ANIMATING;
+	//if (animationDelay>0)exit_code = DELAYED;
+	//if (animationDelay==0)exit_code = ANIMATING;
 	return exit_code;
 }
 bool cTile::compare(cTile brickToComapre)
@@ -112,10 +116,13 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 			al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2) + screen_shake, NULL);
 			//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 		}
-		if (distance>0)
-			al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX
+		
+			
 
 	}
+	//if (distance>0)	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX	
+		al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX
+		al_draw_textf(font18, BLACK, posX, posY+20, NULL, "%i", state); //DEBUG: shows distance added to posX
 	//al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", animationDelay);//DEBUG: shows animationDelay on every brick
 }
 void cTile::setAnimationDelay(int delay)

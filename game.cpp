@@ -132,6 +132,13 @@ void cGame::updateBrick()
 	//	}
 	//}
 	//TODO
+	/*for (int i = 1; i <= 1000; i*10)
+	{
+		i * 10;
+
+		if (score / i > 0) on_screen_score += i;
+	}*/
+	
 	if (score / 1000 > 0)on_screen_score += 1000;
 	if (score / 100 > 0)on_screen_score += 100;
 	if (score / 10 > 0)on_screen_score += 10;
@@ -238,7 +245,7 @@ void cGame::clickButtons(int mouseButton)
 void cGame::update()
 {
 	bool render = true;
-
+	bool dropDone = false;
 	al_start_timer(timer);
 	al_start_timer(timer2);
 	while (!done)
@@ -273,25 +280,39 @@ void cGame::update()
 		{
 			if (event.timer.source == timer)
 			{
-				bool dropDone=false;
+				
 				for (int i = 0; i < MAX_BUTTONS; i++) { button[i].update(mouse); } //updates all buttons
 				// 60 times per second
 				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
 				if (button[NEW_STORY_BUTTON].clicked) { button[NEW_STORY_BUTTON].clicked = false; newGame(true); }
 				if (button[EXIT_BUTTON].clicked) { done = true; }
-				
-				updateBrick();
-				if (destroy_brick_flag)
+				if (game_state == PLAY_GAME) 
 				{
-					destroyBrick();									
-					if (dropColumn())	dropDone = true;
+					updateBrick();
+					if (destroy_brick_flag && !dropDone)
+					{
+						destroyBrick();
+						//if (!dropColumn())	dropDone = true;
+						dropColumn();
+						
+						//while (dropColumn() == true)
+						//{
+						//	dropDone = true;
+						//}
+					}
+					//if (dropDone)
+					//{
+						
+						//if (!moveBrickLeft())
+						//while (moveBrickLeft() == true)
+						//{
+						//	dropDone = false;
+						//}
+					
+							
+					//}
+					checkEndGame();
 				}
-				if (dropDone)
-				{
-				//	moveBrickLeft();
-				}
-				//
-				if (game_state == PLAY_GAME) {  checkEndGame(); }
 				if (game_state == END_GAME)
 				{
 					if (checkSaveScores())
@@ -316,6 +337,10 @@ void cGame::update()
 			al_flip_display();
 		}	
 	}
+}
+bool cGame::isMoving()
+{
+	return false;
 }
 void cGame::resetHighScores() //resets all saved highscores TODO
 {
@@ -523,7 +548,7 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 				int x = selectionList[i].x;
 				int y = selectionList[i].y;
 				sPoint pos{ x,y };
-			//	bricks[x][y].create(pos, selectionList[i].color, FULL);
+				bricks[x][y].create(pos, selectionList[i].color, FULL);
 				bricks[x][y].selected = false;
 			}
 			selectionList.clear();
@@ -575,30 +600,35 @@ int  cGame::calculateScore() //calculates score for destroyed bricks
 bool cGame::dropColumn()
 {
 	bool dropped = false;
+	for (int times = 0; times < BRICKS_MAP_X; times++)
 	for (int x = 0; x < BRICKS_MAP_X; x++)
-	for (int y = BRICKS_MAP_Y - 1; y > 0; y--)
+	for (int y = BRICKS_MAP_Y -1; y >= 0; y--)
 	{
-	//	if (bricks[x][y].state == EMPTY && bricks[x][y-1].state!=EXPLODING && !bricks[x][y-1].isMoving)
-		if (bricks[x][y].state == EMPTY )
+		if(y-1>=0)
+		if (bricks[x][y].state == EMPTY && bricks[x][y-1].state==FULL) //&& !bricks[x][y - 1].isMoving)
 		{
 			sPoint position{  x,y };
 			bricks[x][y].create(position, bricks[x][y - 1].color, bricks[x][y - 1].state);
 			//bricks[x][y] = bricks[x][y - 1];
-			bricks[x][y - 1].state = EMPTY;
+			position.y--;
+			bricks[x][y - 1].create(position, 0, EMPTY);
+			//bricks[x][y - 1].state = EMPTY;
 			dropped = true;
 		}
 	}
 	return dropped;
 }
 
-void cGame::moveBrickLeft()
+bool cGame::moveBrickLeft()
 {	
+	bool ifMoved = false;
+	//for (int times = 0; times < BRICKS_MAP_X; times++)
 	for (int x = 0; x < BRICKS_MAP_X; x++)
 	{
 		int empty = 0;
 		for (int y = 0; y < BRICKS_MAP_Y; y++)
 		{
-			if (bricks[x][y].state == EMPTY && !bricks[x][y].isMoving)
+			if (bricks[x][y].state == EMPTY)// && !bricks[x][y].isMoving)
 			{
 				empty++;
 			}
@@ -610,11 +640,12 @@ void cGame::moveBrickLeft()
 						if (xx + 1 < BRICKS_MAP_X) //avoids going outside of vector
 						{
 							sPoint position{ xx ,yy };
-							if (bricks[xx + 1][yy].state == FULL && !bricks[xx+1][yy].isMoving)
+							if (bricks[xx + 1][yy].state == FULL )
 							{
 								bricks[xx][yy].create(position, bricks[xx + 1][yy].color, MOVING); //bricks[xx + 1][yy].state);
 								bricks[xx + 1][yy].color = 0;
 								bricks[xx + 1][yy].state = EMPTY;
+								ifMoved = true;
 							}
 							
 						}
@@ -622,7 +653,7 @@ void cGame::moveBrickLeft()
 			}
 		}
 	}
-
+	return ifMoved;
 }
 bool cGame::checkSaveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
 {
