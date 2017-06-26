@@ -72,7 +72,6 @@ public:
 	void updateBrick();//updates on_screen score
 	void clickButtons(int mouseButton);
 	void update();
-	bool isMoving();
 	void resetHighScores();//resets and saves new high score file
 	//void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
 	void drawGameArea(); // draw all bricks on screen

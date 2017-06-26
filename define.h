@@ -44,9 +44,9 @@ const int AREA_WIDTH = BRICK_SIZE * BRICKS_MAP_X;
 const int AREA_HEIGHT = BRICK_SIZE * BRICKS_MAP_Y;
 
  //margins
-const int TOP_MARGIN = 20;
+const int TOP_MARGIN =65;//(SCREEN_Y -AREA_HEIGHT)/2;
 
-const int DOWN_MARGIN = 100;
+//const int DOWN_MARGIN = 100;
 
 const int MUSIC_MUTE_X = 295;
 const int MUSIC_MUTE_Y = 312;
