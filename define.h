@@ -42,7 +42,7 @@ const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
 const int BRICK_SIZE = 40;//brick size in pixels
 const int AREA_WIDTH = BRICK_SIZE * BRICKS_MAP_X;
 const int AREA_HEIGHT = BRICK_SIZE * BRICKS_MAP_Y;
-
+const int MIN_FRAME = 15;
  //margins
 const int TOP_MARGIN =65;//(SCREEN_Y -AREA_HEIGHT)/2;
 

@@ -14,7 +14,6 @@ cGame::cGame() //default constructor
 {
 //	resetHighScores();//DEBUG: clears high scores from names and points
 	done = false;
-	score_count = 0;
 	game_state = REFRESH_GAME;
 	score = 0;
 	destroy_brick_flag = false;
@@ -98,26 +97,7 @@ cGame::cGame() //default constructor
 	button[OPTIONS_POPUP].fadeIn = false;
 	button[HIGHSCORES_POPUP].fadeIn = false;
 } 
-void cGame::updateBrick()
-{
-	//updates on_screen score (needs rework)
-	if (score / 1000 > 0)on_screen_score += 1000;
-	if (score / 100 > 0)on_screen_score += 100;
-	if (score / 10 > 0)on_screen_score += 10;
-	if (score / 1 > 0)on_screen_score += 1;
-	if (on_screen_score > score) on_screen_score = score;
-	/*for (unsigned int i = 0; i < selectionList.size(); i++)  //updates only selected bricks
-	{
-		int x = selectionList[i].x;
-		int y = selectionList[i].y;
-		bricks[x][y].update();
-	}*/
-		for (int i = 0; i < BRICKS_MAP_X; i++)
-		for (int t = 0; t < BRICKS_MAP_Y; t++)
-		{
-			bricks[i][t].update();
-		}
-}
+
 void cGame::clickButtons(int mouseButton)
 {
 	if (mouseButton == 1) //if left mouse button pressed
@@ -158,24 +138,11 @@ void cGame::clickButtons(int mouseButton)
 				button[NEW_RANDOM_BUTTON].fadeIn = false;
 			}
 
-			if (button[OPTIONS_BUTTON].clicked)
-			{
-				button[OPTIONS_POPUP].fadeIn = true;
-			}
-			else
-			{
-				button[OPTIONS_POPUP].fadeIn = false;
-			}
+			if (button[OPTIONS_BUTTON].clicked)			{		button[OPTIONS_POPUP].fadeIn = true;			}
+			else										{		button[OPTIONS_POPUP].fadeIn = false;			}
 
-			if (button[HIGHSCORES_BUTTON].clicked)
-			{
-				button[HIGHSCORES_POPUP].fadeIn = true;
-			}
-			else
-			{
-				button[HIGHSCORES_POPUP].fadeIn = false;
-			}
-
+			if (button[HIGHSCORES_BUTTON].clicked)		{		button[HIGHSCORES_POPUP].fadeIn = true;			}
+			else										{		button[HIGHSCORES_POPUP].fadeIn = false;		}
 		}
 
 		if (game_state == PLAY_GAME) //if playing game check these clicks
@@ -185,17 +152,15 @@ void cGame::clickButtons(int mouseButton)
 	}
 	if (mouseButton == 2) //if right mouse button pressed
 	{
-		if (game_state == MAIN_MENU)
-		{
-			resetHighScores();//debug
-		}
+		if (game_state == MAIN_MENU)		{			resetHighScores();		}//debug
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			//if (button[PLAY_BUTTON].mouseOver) { game_state = CHEAT; }
 			if (button[GAME_AREA_BUTTON].mouseOver)			
 			{
-				sPoint position { mouse.bricksX,mouse.bricksY };
-				bricks[mouse.bricksX][mouse.bricksY].create(position, 1, FULL);//	changeTile(mouse.x / BRICK_SIZE, (mouse.y - TOP_MARGIN) / BRICK_SIZE, 0);
+				float posX = mouse.bricksX;
+				float posY = mouse.bricksY;
+				sPoint position { posX,posY };
+				bricks[mouse.bricksX][mouse.bricksY].create(position, 1, FULL);
 			} //debug	
 			else game_state = MAIN_MENU;
 		}
@@ -213,20 +178,13 @@ void cGame::update()
 		ALLEGRO_EVENT event;
 		al_wait_for_event(event_queue, &event);
 		//==========INPUT
-		if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) // checks for window Xed
-		{
-			done = true;
-		}
+		if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)		{			done = true;		}// checks for window Xed
 		else if (event.type == ALLEGRO_EVENT_MOUSE_AXES) //checks if mouse moved 
 		{
 			mouse.x = event.mouse.x;//position in pixels
 			mouse.y = event.mouse.y;
 			mouse.bricksX = mouse.x  / BRICK_SIZE; // bricks[bricksX][bricksY]
 			mouse.bricksY = (mouse.y - TOP_MARGIN) / BRICK_SIZE;
-			if (mouse.bricksX > 0 && mouse.bricksX < BRICKS_MAP_X)
-			{
-
-			}
 		}
 		else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) //checks if mouse button pressed
 		{
@@ -239,12 +197,12 @@ void cGame::update()
 		else if (event.type == ALLEGRO_EVENT_KEY_CHAR)
 		{
 			if (game_state == SAVING_SCORE) { enterPlayerName(event.keyboard.keycode, event.keyboard.unichar); }
+			if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE && game_state==PLAY_GAME) { game_state=MAIN_MENU; }
 		}
 		else if (event.type == ALLEGRO_EVENT_TIMER)
 		{
 			if (event.timer.source == timer)
 			{
-				
 				for (int i = 0; i < MAX_BUTTONS; i++) { button[i].update(mouse); } //updates all buttons
 				// 60 times per second
 				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
@@ -252,26 +210,24 @@ void cGame::update()
 				if (button[EXIT_BUTTON].clicked) { done = true; }
 				if (game_state == PLAY_GAME) 
 				{
-					updateBrick();
-					if (destroy_brick_flag)// && !dropDone)
-					{
-						destroyBrick();
-					}
-					if (!dropColumn())	moveBrickLeft();
+					//updates on_screen score (needs rework)
+					if (score / 1000 > 0)on_screen_score += 1000;
+					if (score / 100 > 0)on_screen_score += 100;
+					if (score / 10 > 0)on_screen_score += 10;
+					if (score / 1 > 0)on_screen_score += 1;
+					if (on_screen_score > score) on_screen_score = score;
+					for (int i = 0; i < BRICKS_MAP_X; i++)
+					for (int t = 0; t < BRICKS_MAP_Y; t++)  {		bricks[i][t].update();				}
+					if (destroy_brick_flag)					{		destroyBrick();						}
+					if (!dropColumn())						{		moveLeft();					}
 					checkEndGame();
 				}
 				if (game_state == END_GAME)
 				{
-					if (checkSaveScores())
-					{
-						game_state = SAVING_SCORE;
-					}
+					if (checkSaveScores())					{		game_state = SAVING_SCORE;			}
 				}
 				render = true;
-			}
-
-//			if (event.timer.source == timer2)	updateNumberOfSelected();
-		
+			}	
 		}
 		//=========RENDERER
 		if (render && al_is_event_queue_empty(event_queue))
@@ -316,10 +272,11 @@ void cGame::drawGameArea() // draw all bricks on screen;
 		if (selectionList.size()>100) shake=20;
 		if (shake == 0) shake = 1;
 		int f = rand() % shake;
+		
 		//al_play_sample(explosionOGG, 1, 0, 1.3, ALLEGRO_PLAYMODE_ONCE, NULL);
-		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE)  + (BRICK_SIZE / 2)-2+f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
-		al_draw_textf(font36, BLACK, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2)+2+ f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
-		al_draw_textf(font36, WHITE, (last_clicked_x *BRICK_SIZE) + (BRICK_SIZE / 2)+f, (last_clicked_y *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE)  + (BRICK_SIZE / 2)-2+f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
+		al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2)+2+ f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
+		al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2)+f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN +f, NULL, "%i", last_score);
 	}
 	int f = 1;
 	al_draw_textf(font36, WHITE, 818, 1004, ALLEGRO_ALIGN_LEFT, " %i", on_screen_score);
@@ -357,14 +314,12 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 {
 	int selected = 0;
 	int x = 0;
-	int y = 0;
-	
+	int y = 0;	
 		for (x = BRICKS_MAP_X - 1; x >= 0; x--)
 			for (y = BRICKS_MAP_Y - 1; y >= 0; y--)
 			{
 				if (bricks[x][y].state!=EMPTY)
 				{
-
 					if (x > 0)//avoids going outside of vector
 					{
 					if (bricks[x][y].color == bricks[x - 1][y].color && bricks[x - 1][y].state != EMPTY)		{ selected++; }
@@ -382,10 +337,8 @@ void cGame::checkEndGame() //checks if game ended (no more bricks to destroy)
 					if (bricks[x][y].color == bricks[x][y + 1].color && bricks[x][y + 1].state != EMPTY)		{ selected++; }
 					}
 				}
-
 			}
-		if (selected == 0 && !destroy_brick_flag) game_state = END_GAME;
-		
+		if (selected == 0 && !destroy_brick_flag) game_state = END_GAME;		
 }
 void cGame::endGame()
 {
@@ -502,7 +455,7 @@ void cGame::selectBrick() // takes mouse input and selects all same color bricks
 }
 void cGame::destroyBrick() // after clicking selected bricks destroys them
 {
-	bool animationEnds=false;
+	bool animationEnds = false;
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		int x = selectionList[i].x;
@@ -510,29 +463,29 @@ void cGame::destroyBrick() // after clicking selected bricks destroys them
 		if (bricks[x][y].state == EMPTY) { animationEnds = true; }
 		else animationEnds = false;
 	}
-	if (selectionList.size() ==0|| animationEnds)		{	explosion_finish_flag = true; 	}
+	if (selectionList.size() == 0 || animationEnds) { explosion_finish_flag = true; }
 	float explosion_volume = 0.3 + 0.05 * selectionList.size(); //more bricks, louder explosion
-	if (explosion_volume>1.2) explosion_volume = 1.2; // up to 150% volume
+	if (explosion_volume > 1.2) explosion_volume = 1.2; // up to 150% volume
 	al_set_sample_instance_gain(instance, explosion_volume);
 	al_play_sample_instance(instance);
-	
 	if (explosion_finish_flag)
 	{
-		for (int i = 0; i < BRICKS_MAP_Y; i++)
-			for (int t = 0; t < BRICKS_MAP_X; t++)
+		for (unsigned int i = 0; i < BRICKS_MAP_Y; i++)
+			for (unsigned int t = 0; t < BRICKS_MAP_X; t++)
 			{
 				sPoint position{ t,i };
-				if (bricks[t][i].state == EXPLODING) { bricks[t][i].create(position, bricks[t][i].color, EMPTY); }
-				
+				if (bricks[t][i].state == EXPLODING) {
+					bricks[t][i].create(position, bricks[t][i].color, EMPTY);
+				}
+
+				destroy_brick_flag = false;
+				screen_shake = 0.0;
+				selectionList.clear();
+				explosion_finish_flag = false;
 			}
-		
-		destroy_brick_flag = false;
-		screen_shake = 0.0;
-		selectionList.clear();
-		explosion_finish_flag = false;
 	}
 }
-int  cGame::calculateScore() //calculates score for destroyed bricks
+int cGame::calculateScore() //calculates score for destroyed bricks
 {
 	int score_earned = 0;
 	int iterator = selectionList.size();
@@ -545,7 +498,7 @@ int  cGame::calculateScore() //calculates score for destroyed bricks
 bool cGame::dropColumn()
 {
 	bool dropped = false;
-	int dropCounter = 0;
+	dropCounter = 0;
 	for (int x = 0; x < BRICKS_MAP_X; x++)
 		for (int y = BRICKS_MAP_Y - 1; y >= 0; y--)
 		{
@@ -564,9 +517,9 @@ bool cGame::dropColumn()
 	return false;
 }
 
-bool cGame::moveBrickLeft()
+bool cGame::moveLeft()
 {	
-	int moveCounter = 0;
+	moveCounter = 0;
 	for (int x = 0; x < BRICKS_MAP_X; x++)
 	{
 		int empty = 0;
@@ -711,7 +664,6 @@ void cGame::saveGame()
 			}
 		al_fclose(save_game);
 	}
-	update_position = true;
 }
 void cGame::loadGame()
 {
@@ -731,16 +683,12 @@ void cGame::loadGame()
 				al_fread(save_game, &state, sizeof(int));
 				bricks[i][t].state = state;
 			}
-		
-		//on_screen_score = score;
-		
 	}
 	else
 	{
 		game_state = REFRESH_GAME;
 	}
 	al_fclose(save_game);
-	update_position = true;
 }
 void cGame::drawMenu()
 {

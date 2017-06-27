@@ -19,6 +19,7 @@ void cTile::create(sPoint position, int _color,int _state)
 	screen_shake = 0;
 	if (_state == MOVING)						{	distance += BRICK_SIZE;	}
 	if (state == EXPLODING || state==SELECTED)	{	isAnimating = true;		}
+	if (state == EXPLODING) { curFrame = rand() % MIN_FRAME; }
 	posX = x*BRICK_SIZE + distance + screen_shake;
 	posY = y*BRICK_SIZE + screen_shake + TOP_MARGIN;
 }
@@ -87,28 +88,3 @@ void cTile::setAnimationDelay(int delay)
 {
 	animationDelay = delay;
 }
-
-////=====cList methods
-//cList::cList()
-//{
-//	x = 0;
-//	y = 0;
-//	state = false;
-//}
-//cList::cList(int _x, int _y, bool _state)
-//{
-//	x = _x;
-//	y = _y;
-//	state = _state;
-//}
-//void cList::setState(bool _state)
-//{
-//	state = _state;
-//}
-//void cList::set(int _x, int _y, bool _state)
-//{
-//	x = _x;
-//	y = _y;
-//	state = _state;
-//}
-//

@@ -20,22 +20,16 @@ class cGame
 private:
 	bool done;
 	sPoint mouse;// contains postion of mouse on screen
-	std::vector<cTile> selectionList;
-	std::vector< std::vector<cTile> > bricks;
-	//unsigned int currently_selected;
+	std::vector<cTile> selectionList;//vector of selected tiles
+	std::vector< std::vector<cTile> > bricks;//2d array with all bricks
 	int score; // players score
 	int on_screen_score;//shown score
-	int score_count;
 	bool saved_scores; //if high scores already saved
-	bool update_position;
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
 	int screen_shake;// move everything on screen (in pixels)
-	ALLEGRO_EVENT ev;
 	int last_score; //holds value of last destroyed bricks
-	int last_clicked_x ;
-	int last_clicked_y ;
 	ALLEGRO_SAMPLE *explosionOGG;
 	ALLEGRO_SAMPLE *clickWAV;
 	ALLEGRO_SAMPLE_INSTANCE *instance;
@@ -45,6 +39,8 @@ private:
 	//int brick_size; //size of bricks
 	bool explosion_finish_flag;
 	bool destroy_brick_flag;
+	int dropCounter;//amount of bricks moved down in last game-tick
+	int moveCounter;//amount of bricks moved left in last game-tick
 	cTile cursor;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
@@ -69,7 +65,6 @@ private:
 public:
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
-	void updateBrick();//updates on_screen score
 	void clickButtons(int mouseButton);
 	void update();
 	void resetHighScores();//resets and saves new high score file
@@ -81,9 +76,8 @@ public:
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	void destroyBrick(); // after clicking selected bricks destroys them
 	int calculateScore(); //calculates score for destroyed bricks
-	bool dropColumn();
-	//void dropBrick(); //after destroying bricks fill holes by dropping them (checks from bottom)
-	bool moveBrickLeft();//if empty vertical line then move rest of screen to the left
+	bool dropColumn(); //drop bricks by one
+	bool moveLeft();//if column is empty then move every brick on the right by one
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void saveScores();//
 	void enterPlayerName(int keycode, int unichar); 
