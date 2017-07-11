@@ -22,6 +22,7 @@ void cTile::create(sPoint position, int _color,int _state)
 	if (state == EXPLODING) { curFrame = rand() % MIN_FRAME; }
 	posX = x*BRICK_SIZE + distance + screen_shake;
 	posY = y*BRICK_SIZE + screen_shake + TOP_MARGIN;
+	//selected = false;
 }
 int cTile::update()
 {
@@ -64,7 +65,7 @@ int cTile::update()
 }
 bool cTile::compare(cTile brickToComapre)
 {
-	if (brickToComapre.color == color && brickToComapre.state == state)
+	if (brickToComapre.color == color && brickToComapre.state == state && !brickToComapre.selected)
 	{
 		return true;
 	}
@@ -87,4 +88,20 @@ void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
 void cTile::setAnimationDelay(int delay)
 {
 	animationDelay = delay;
+}
+
+int cTile::returnState()
+{
+	return state;
+}
+
+int cTile::returnColor()
+{
+	return color;
+}
+
+sPoint cTile::returnPosition()
+{
+	sPoint position{ static_cast<float>(x),static_cast<float>(y),x,y };
+	return position;
 }
