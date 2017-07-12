@@ -2,6 +2,193 @@
 #include "button.h"
 #include "game.h"
 
+//=====cScore methods
+void cScore::resetHighScores() //resets all saved highscores TODO
+{
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		high_score[i] = 0;
+		al_ustr_free(high_score_name[i]);
+		high_score_name[i] = al_ustr_new(" ");
+		high_score[i] = 0;
+	}
+	saveHighScore();
+}
+void cScore::endGame()
+{
+	/*NEEDS REWORK*/
+	//al_draw_bitmap(highscorePNG, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2), screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), 0);
+	//for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	//{
+	//	al_draw_textf(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+70, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_CENTRE, "1.");
+	//	al_draw_ustr(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+80, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+	//	al_draw_textf(font18, WHITE, screen_width / 2 - (al_get_bitmap_width(highscorePNG) / 2)+360, (28 * i) + 80+screen_height / 2 - (al_get_bitmap_height(highscorePNG) / 2), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	//}
+	//if (checkSaveScores())
+	//{
+	//	int x = screen_width / 2;
+	//	int y = screen_height / 2 + 300;
+	//	al_draw_textf(font18, WHITE, x, y, ALLEGRO_ALIGN_CENTRE, "Enter your name:");
+	//	al_draw_ustr(font18, WHITE, x, y+25, ALLEGRO_ALIGN_CENTRE, edited_text);
+	//}
+	//al_draw_textf(font36, WHITE, screen_width / 2, screen_height / 2 + 200, ALLEGRO_ALIGN_CENTRE, "HIGH SCORE");
+	//al_draw_textf(font24, WHITE, screen_width / 2, screen_height / 2 + 250, ALLEGRO_ALIGN_CENTRE, "you scored %i points !", on_screen);
+}
+void cScore::calculateScore(int selectedBricks) //calculates score for destroyed bricks
+{
+	score_earned = 0;
+	//int iterator = selectionList.size();
+	for (int i = 0; i<selectedBricks; i++)
+	{
+		score_earned += i * 2; //NEEDS EVALUATION
+	}
+	current += score_earned;
+}
+void cScore::update()
+{
+	//updates on_screen score (needs rework)
+	if (current / 1000 > 0)on_screen += 1000;
+	if (current / 100 > 0)on_screen += 100;
+	if (current / 10 > 0)on_screen += 10;
+	if (current / 1 > 0)on_screen += 1;
+	if (on_screen > current) on_screen = current;
+}
+void cScore::draw()
+{
+	/* DRAWING NEEDS REWORK */
+	//int shake = selectionList.size() / 5;
+	//if (selectionList.size()>100) shake = 20;
+	//if (shake == 0) shake = 1;
+	//int f = rand() % shake;
+	//al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) - 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+	//al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+	//al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+	////draw highscores
+	//float highX = al_get_bitmap_width(highscorePNG);
+	//float highY = al_get_bitmap_height(highscorePNG);
+	//high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
+	//al_set_target_bitmap(high_scoresTMP);
+	//al_draw_bitmap(highscorePNG, 0, 0, NULL);
+	//for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	//{
+	//	al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "1.");
+	//	al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, score.high_score_name[i]);
+	//	al_draw_textf(font18, WHITE, 360, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", score.high_score[i]);
+	//}
+	//al_set_target_bitmap(al_get_backbuffer(display));
+	//al_draw_tinted_scaled_bitmap(high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
+	//	0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
+	//al_destroy_bitmap(high_scoresTMP);//always destroy temp bitmaps
+}
+void cScore::reset()
+{
+	current = 0;
+	on_screen = 0;
+	is_saved = false;
+	player_name = NULL;
+}
+cScore::cScore()
+{
+	current = 0;
+	on_screen = 0;
+	player_name = NULL;
+}
+bool cScore::checkSaveScores()//checks highscores & if your score is > than lowest highscore then prompts for username and saves it to file
+{
+	if (!is_saved)
+	{
+		int i;
+		int t = 0;
+		for (i = 0; i<MAX_HIGH_SCORE; i++)
+		{
+			if (current>high_score[i]) { t++; }
+		}
+		if (t > 0) return true;
+		else return false;
+	}
+	return false;
+}
+void cScore::saveScores()
+{
+	int i = 0;
+	int t = 0;
+
+	if (!is_saved)
+	{
+		for (i = 0; i<MAX_HIGH_SCORE; i++)
+		{
+			if (current>high_score[i])
+			{
+				for (t = MAX_HIGH_SCORE - 1; t > i; t--)
+				{
+
+					high_score[t] = high_score[t - 1];
+					high_score_name[t] = high_score_name[t - 1];
+				}
+				high_score[i] = current;
+				high_score_name[i] = player_name;
+				player_name = al_ustr_new("");
+				edited_text = al_ustr_new("");
+				//			game_state = END_GAME;
+				is_saved = true;
+				i = MAX_HIGH_SCORE + 1;
+			}
+		}
+	}
+	saveHighScore();
+}
+void cScore::enterPlayerName(int keycode, int unichar)
+{
+	if (keycode <= ALLEGRO_KEY_9 || keycode == ALLEGRO_KEY_SPACE) //if A-Z and 0-9 pressed or spacebar
+		if (al_ustr_length(edited_text) < MAX_USERNAME_LENGTH) al_ustr_append_chr(edited_text, unichar);
+
+	if (keycode == ALLEGRO_KEY_BACKSPACE)
+	{
+		if (al_ustr_length(edited_text) > 0) { al_ustr_truncate(edited_text, al_ustr_length(edited_text) - 1); }
+	}
+	if (keycode == ALLEGRO_KEY_ENTER || keycode == ALLEGRO_KEY_PAD_ENTER)
+	{
+		player_name = edited_text;
+		saveScores();
+		//game_state = MAIN_MENU;
+	}
+}
+void cScore::saveHighScore()
+{
+	ALLEGRO_FILE* high_score_file = al_fopen("high_score.bri", "wb");
+	int i = 0;
+	for (i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		int buffer = al_ustr_size(high_score_name[i]);
+		al_fwrite32le(high_score_file, buffer);
+		al_fwrite(high_score_file, al_cstr(high_score_name[i]), buffer);
+		al_fwrite(high_score_file, &high_score[i], sizeof(high_score[i]));
+
+	}
+	al_fclose(high_score_file);
+}
+void cScore::loadHighScore()
+{
+	ALLEGRO_FILE* high_score_file = al_fopen("high_score.bri", "rb");
+	int i = 0;
+	for (i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		int size = al_fread32le(high_score_file);
+
+		if (size > 0)
+		{
+			char *buffer = (char *)al_malloc(size);
+			al_fread(high_score_file, buffer, size);
+			high_score_name[i] = al_ustr_new_from_buffer(buffer, size);
+
+			int *buffer2 = &high_score[i];
+			al_fread(high_score_file, buffer2, sizeof(high_score[i]));
+			al_free(buffer);
+		}
+	}
+
+	al_fclose(high_score_file);
+}
 //=====cTile methods
 void cTile::create(sPoint position, int _color,int _state)
 {

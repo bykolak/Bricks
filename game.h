@@ -23,12 +23,10 @@ private:
 	std::vector<cTile> selectionList;//vector of selected tiles
 	std::vector< std::vector<cTile> > bricks;//2d array with all bricks
 	cScore score;
-	bool saved_scores; //if high scores already saved
 	int bricks_on_screen; //total number of bricks on screen
 	int area_width;//number of bricks in x axis * brick_size
 	int area_height;//number of bricks in y axis * brick_size
 	int screen_shake;// move everything on screen (in pixels)
-	//int last_score; //holds value of last destroyed bricks
 	ALLEGRO_SAMPLE *explosionOGG;
 	ALLEGRO_SAMPLE *clickWAV;
 	ALLEGRO_SAMPLE_INSTANCE *instance;
@@ -43,11 +41,9 @@ private:
 	cTile cursor;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
-	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
-	ALLEGRO_USTR* high_score_name[MAX_HIGH_SCORE];
+	
 	cButton button[MAX_BUTTONS];
-	ALLEGRO_USTR* player_name = al_ustr_new("_");
-	ALLEGRO_USTR* edited_text = al_ustr_new("");
+
 	ALLEGRO_BITMAP *bricksPNG = NULL;
 	ALLEGRO_BITMAP *backgroundPNG = NULL;
 	ALLEGRO_BITMAP *explosionPNG = NULL;
@@ -66,22 +62,20 @@ public:
 	cGame(); //default constructor
 	void clickButtons(int mouseButton);
 	void update();
-	void resetHighScores();//resets and saves new high score file
+	
 	//void changeTile(int x, int y, int color); //changes color of x,y tile //DEBUG CAN REMOVE
 	void drawGameArea(); // draw all bricks on screen
 	void newGame(bool debug); // restart game
 	void checkEndGame(); //checks if game ended (no more bricks to destroy)
-	void endGame(); //draw end game screen
+	
 	void selectBrick(); // takes mouse input and selects all same color bricks that are connected to  Brick[x][y]
 	void destroyBrick(); // after clicking selected bricks destroys them
 	
 	bool dropColumn(); //drop bricks by one
 	bool moveLeft();//if column is empty then move every brick on the right by one
-	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
-	void saveScores();//
-	void enterPlayerName(int keycode, int unichar); 
-	void saveHighScore();
-	void loadHighScore();
+	
+	
+	
 	void saveGame();
 	void loadGame();
 	void drawMenu();
