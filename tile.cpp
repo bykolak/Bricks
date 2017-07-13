@@ -53,32 +53,33 @@ void cScore::update()
 	if (current / 1 > 0)on_screen += 1;
 	if (on_screen > current) on_screen = current;
 }
-void cScore::draw()
+void cScore::drawHighScores(cBitmaps bitmap)
 {
 	/* DRAWING NEEDS REWORK */
-	//int shake = selectionList.size() / 5;
-	//if (selectionList.size()>100) shake = 20;
-	//if (shake == 0) shake = 1;
-	//int f = rand() % shake;
-	//al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) - 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
-	//al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
-	//al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
-	////draw highscores
-	//float highX = al_get_bitmap_width(highscorePNG);
-	//float highY = al_get_bitmap_height(highscorePNG);
-	//high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
-	//al_set_target_bitmap(high_scoresTMP);
-	//al_draw_bitmap(highscorePNG, 0, 0, NULL);
-	//for (int i = 0; i < MAX_HIGH_SCORE; i++)
-	//{
-	//	al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "1.");
-	//	al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, score.high_score_name[i]);
-	//	al_draw_textf(font18, WHITE, 360, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", score.high_score[i]);
-	//}
-	//al_set_target_bitmap(al_get_backbuffer(display));
-	//al_draw_tinted_scaled_bitmap(high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
-	//	0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
-	//al_destroy_bitmap(high_scoresTMP);//always destroy temp bitmaps
+	/*int shake = selectionList.size() / 5;
+	if (selectionList.size()>100) shake = 20;
+	if (shake == 0) shake = 1;
+	int f = rand() % shake;
+	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) - 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+	al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);*/
+	//draw highscores
+	float highX = al_get_bitmap_width(bitmap.highscorePNG);
+	float highY = al_get_bitmap_height(bitmap.highscorePNG);
+	bitmap.high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
+	al_set_target_bitmap(bitmap.high_scoresTMP);
+	al_draw_bitmap(bitmap.highscorePNG, 0, 0, NULL);
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "1.");
+		al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_textf(font18, WHITE, 360, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	}
+	al_set_target_bitmap(al_get_backbuffer(display));
+//	al_draw_tinted_scaled_bitmap(bitmap.high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
+//		0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
+	al_draw_tinted_scaled_bitmap(bitmap.high_scoresTMP, al_map_rgba_f(1,1,1,1),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs real values
+	al_destroy_bitmap(bitmap.high_scoresTMP);//always destroy temp bitmaps
 }
 void cScore::reset()
 {
@@ -163,7 +164,6 @@ void cScore::saveHighScore()
 		al_fwrite32le(high_score_file, buffer);
 		al_fwrite(high_score_file, al_cstr(high_score_name[i]), buffer);
 		al_fwrite(high_score_file, &high_score[i], sizeof(high_score[i]));
-
 	}
 	al_fclose(high_score_file);
 }
@@ -258,13 +258,13 @@ bool cTile::compare(cTile brickToComapre)
 	}
 	else return false;
 }
-void cTile::draw(ALLEGRO_BITMAP * bricksPNG, ALLEGRO_BITMAP * explosionPNG)
+void cTile::draw(cBitmaps bitmap)
 {
-	if (state!=EMPTY)	{		al_draw_bitmap_region(bricksPNG, color*BRICK_SIZE, 0, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);	}
+	if (state!=EMPTY)	{		al_draw_bitmap_region(bitmap.bricksPNG, color*BRICK_SIZE, 0, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);	}
 	if (animationDelay == 0)
 	{
-		if (state == SELECTED)		{		al_draw_bitmap_region(bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		}
-		if (state == EXPLODING)		{		al_draw_bitmap_region(explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2), posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2), NULL);		}
+		if (state == SELECTED)		{		al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		}
+		if (state == EXPLODING)		{		al_draw_bitmap_region(bitmap.explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2), posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2), NULL);		}
 	}
 	//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 	//if (distance>0)	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX	
@@ -292,3 +292,35 @@ sPoint cTile::returnPosition()
 	sPoint position{ static_cast<float>(x),static_cast<float>(y),x,y };
 	return position;
 }
+
+cBitmaps::cBitmaps()
+{
+	bricksPNG = NULL;
+	explosionPNG = NULL;
+	backgroundPNG = NULL;
+	mainPNG = NULL;
+	optionsPNG = NULL;
+	highscorePNG = NULL;
+	high_scoresTMP = NULL;
+}
+
+//cBitmaps::~cBitmaps()
+//{
+//	al_destroy_bitmap(bricksPNG);
+//	al_destroy_bitmap(explosionPNG);
+//	al_destroy_bitmap(backgroundPNG);
+//	al_destroy_bitmap(mainPNG);
+//	al_destroy_bitmap(optionsPNG);
+//	al_destroy_bitmap(highscorePNG);
+//}
+
+void cBitmaps::load()
+{
+	bricksPNG = al_load_bitmap("bricks.png");
+	explosionPNG = al_load_bitmap("explosion.png");
+	backgroundPNG = al_load_bitmap("background.png");
+	mainPNG = al_load_bitmap("main.png");
+	optionsPNG = al_load_bitmap("options.png");
+	highscorePNG = al_load_bitmap("highscore.png");
+}
+

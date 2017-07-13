@@ -43,15 +43,7 @@ private:
 	int screen_height;//screen size y in pixels	
 	
 	cButton button[MAX_BUTTONS];
-
-	ALLEGRO_BITMAP *bricksPNG = NULL;
-	ALLEGRO_BITMAP *backgroundPNG = NULL;
-	ALLEGRO_BITMAP *explosionPNG = NULL;
-	ALLEGRO_BITMAP * mainPNG = NULL;
-	ALLEGRO_BITMAP * optionsPNG = NULL;
-	ALLEGRO_BITMAP * highscorePNG = NULL;
-	ALLEGRO_BITMAP * high_scoresTMP = NULL;
-	ALLEGRO_BITMAP * newgamePNG = NULL;
+	cBitmaps bitmap;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;

@@ -31,12 +31,7 @@ cGame::cGame() //default constructor
 	al_install_mouse();
 	// LOADING GRAPHICS
 	al_init_image_addon();
-	bricksPNG = al_load_bitmap("bricks.png");
-	explosionPNG = al_load_bitmap("explosion.png");
-	backgroundPNG = al_load_bitmap("background.png");
-	mainPNG = al_load_bitmap("main.png");
-	optionsPNG = al_load_bitmap("options.png");
-	highscorePNG = al_load_bitmap("highscore.png");
+	bitmap.load();
 	score.loadHighScore();
 	loadGame();
 	game_state = PLAY_GAME;
@@ -81,8 +76,8 @@ cGame::cGame() //default constructor
 	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, GAME_AREA, "");//remove magic numbers 414,615
 	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), RECTANGLE, "");//temp shit
-	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), RECTANGLE, "");//temp shit
+	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), RECTANGLE, "");//temp shit
+	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), RECTANGLE, "");//temp shit
 	button[NEW_STORY_BUTTON].opacity = 0.0;
 	button[LOAD_GAME_BUTTON].opacity = 0.0;
 	button[OPTIONS_POPUP].opacity = 0.0;
@@ -233,20 +228,20 @@ void cGame::update()
 }
 void cGame::drawGameArea() // draw all bricks on screen;
 {
-	al_draw_bitmap(backgroundPNG,0, 0, NULL);
+	al_draw_bitmap(bitmap.backgroundPNG,0, 0, NULL);
 	for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			bricks[t][i].draw(bricksPNG,explosionPNG);
+			bricks[t][i].draw(bitmap);
 		}
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		sPoint position = selectionList[i].returnPosition();
-		bricks[position.bricksX][position.bricksY].draw(bricksPNG, explosionPNG);
+		bricks[position.bricksX][position.bricksY].draw(bitmap);
 	}
 	if (destroy_brick_flag)
 	{
-		score.draw();
+	//	score.drawHighScores(bitmap);
 		//al_play_sample(explosionOGG, 1, 0, 1.3, ALLEGRO_PLAYMODE_ONCE, NULL);
 	
 	}
@@ -510,7 +505,7 @@ void cGame::loadGame()
 	ALLEGRO_FILE* save_game = al_fopen("save.bri", "rb");
 	if (al_fopen("save.bri", "rb"))
 	{
-		int score;
+		cScore score;
 		al_fread(save_game, &score, sizeof(cScore));
 		//on_screen = score;
 		for (int i = 0; i < BRICKS_MAP_X; i++)
@@ -532,7 +527,7 @@ void cGame::loadGame()
 }
 void cGame::drawMenu()
 {
-	al_draw_bitmap(mainPNG, 0, 0, 0);
+	al_draw_bitmap(bitmap.mainPNG, 0, 0, 0);
 	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(!BUTTON_OVERLAY);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].clicked)
 	{
@@ -547,9 +542,9 @@ void cGame::drawMenu()
 	if (button[OPTIONS_POPUP].opacity == 0) { button[OPTIONS_POPUP].clicked = false; }
 
 //draw options	
-		al_draw_tinted_scaled_bitmap(optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
-			0, 0, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(optionsPNG), al_get_bitmap_height(optionsPNG), 0);
+		al_draw_tinted_scaled_bitmap(bitmap.optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
+			0, 0, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), 0);
 //draw highscores	
-		score.draw();
+		score.drawHighScores(bitmap);
 }
 
