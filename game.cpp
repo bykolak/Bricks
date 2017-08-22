@@ -545,6 +545,8 @@ void cGame::drawMenu()
 		al_draw_tinted_scaled_bitmap(bitmap.optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
 			0, 0, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), 0);
 //draw highscores	
-		score.drawHighScores(bitmap);
+		al_draw_textf(font18, WHITE, 100, 80, ALLEGRO_ALIGN_LEFT, "opacity: %f", button[HIGHSCORES_POPUP].opacity);
+		float opacity = button[HIGHSCORES_POPUP].opacity;//temp fix to pass opacity of button
+		score.drawHighScores(bitmap, opacity);
 }
 

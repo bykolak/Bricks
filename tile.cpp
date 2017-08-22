@@ -53,7 +53,7 @@ void cScore::update()
 	if (current / 1 > 0)on_screen += 1;
 	if (on_screen > current) on_screen = current;
 }
-void cScore::drawHighScores(cBitmaps bitmap)
+void cScore::drawHighScores(cBitmaps bitmap, float opacity)
 {
 	/* DRAWING NEEDS REWORK */
 	/*int shake = selectionList.size() / 5;
@@ -78,7 +78,7 @@ void cScore::drawHighScores(cBitmaps bitmap)
 	al_set_target_bitmap(al_get_backbuffer(display));
 //	al_draw_tinted_scaled_bitmap(bitmap.high_scoresTMP, al_map_rgba_f(button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity, button[HIGHSCORES_POPUP].opacity),
 //		0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
-	al_draw_tinted_scaled_bitmap(bitmap.high_scoresTMP, al_map_rgba_f(1,1,1,1),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs real values
+	al_draw_tinted_scaled_bitmap(bitmap.high_scoresTMP, al_map_rgba_f(opacity,opacity,opacity,opacity),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs to takes values from button instead of temp int in drawMenu()
 	al_destroy_bitmap(bitmap.high_scoresTMP);//always destroy temp bitmaps
 }
 void cScore::reset()
