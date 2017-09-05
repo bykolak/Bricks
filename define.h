@@ -35,11 +35,11 @@ const float AWAY_FROM_CENTER = 20.0;
 const float BUTTON_SIZE = 277.0;
 const float OPACITY_INCREASE = 0.032f;
 // predefined sizes of game
-const int BRICKS_MAP_X = 48;// number of bricks in X axis
-const int BRICKS_MAP_Y = 23;// number of bricks in Y axis
+const int BRICKS_MAP_X = 40;// number of bricks in X axis
+const int BRICKS_MAP_Y = 19;// number of bricks in Y axis
 
 //sizes of bricks
-const int BRICK_SIZE = 40;//brick size in pixels
+const int BRICK_SIZE = 48;//brick size in pixels
 const int AREA_WIDTH = BRICK_SIZE * BRICKS_MAP_X;
 const int AREA_HEIGHT = BRICK_SIZE * BRICKS_MAP_Y;
 const int MIN_FRAME = 15;
