@@ -48,6 +48,10 @@ cButton::cButton()//constructor
 	buttonPNG = NULL;
 	fadeIn = true;
 }
+float cButton::getOpacity()
+{
+	return opacity;
+}
 bool cButton::update(sPoint m) //if inside button then change flags to true else make it false
 {
 	int counter = 0;

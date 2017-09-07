@@ -42,14 +42,16 @@ private:
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
 	
-	cButton button[MAX_BUTTONS];
-	cBitmaps bitmap;
+	
+	
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;
 	
 	
 public:
+	cButton button[MAX_BUTTONS];
+	cBitmaps * bitmap = NULL;
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
 	void clickButtons(int mouseButton);

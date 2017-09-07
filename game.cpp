@@ -31,7 +31,8 @@ cGame::cGame() //default constructor
 	al_install_mouse();
 	// LOADING GRAPHICS
 	al_init_image_addon();
-	bitmap.load();
+	//bitmap.load();
+	bitmap = new cBitmaps();
 	score.loadHighScore();
 	loadGame();
 	game_state = PLAY_GAME;
@@ -39,7 +40,7 @@ cGame::cGame() //default constructor
 	al_install_audio();
 	al_init_acodec_addon();
 	al_reserve_samples(10 );
-	explosionOGG = al_load_sample("explosion.ogg");
+	explosionOGG = al_load_sample("explosion.wav");
 	clickWAV = al_load_sample("button.wav");
 	instance = al_create_sample_instance(explosionOGG);
 	instance2 = al_create_sample_instance(explosionOGG);
@@ -76,8 +77,8 @@ cGame::cGame() //default constructor
 	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, GAME_AREA, "");//remove magic numbers 414,615
 	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), RECTANGLE, "");//temp shit
-	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), RECTANGLE, "");//temp shit
+	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
+	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
 	button[NEW_STORY_BUTTON].opacity = 0.0;
 	button[LOAD_GAME_BUTTON].opacity = 0.0;
 	button[OPTIONS_POPUP].opacity = 0.0;
@@ -219,7 +220,7 @@ void cGame::update()
 		{
 			render = false;
 			drawGameArea();
-			if (game_state == END_GAME || game_state == SAVING_SCORE) { score.endGame(); }
+			if (game_state == END_GAME || game_state == SAVING_SCORE) { score.drawHighScores(*this); if (game_state == SAVING_SCORE) score.drawEnd(); }
 
 			if (game_state == MAIN_MENU)		{	drawMenu();	}
 			al_flip_display();
@@ -228,16 +229,16 @@ void cGame::update()
 }
 void cGame::drawGameArea() // draw all bricks on screen;
 {
-	al_draw_bitmap(bitmap.backgroundPNG,0, 0, NULL);
+	al_draw_bitmap(bitmap->backgroundPNG,0, 0, NULL);
 	for (int i = 0; i < BRICKS_MAP_Y; i++)
 		for (int t = 0; t < BRICKS_MAP_X; t++)
 		{
-			bricks[t][i].draw(bitmap);
+			bricks[t][i].draw(*bitmap);
 		}
 	for (unsigned int i = 0; i < selectionList.size(); i++)
 	{
 		sPoint position = selectionList[i].returnPosition();
-		bricks[position.bricksX][position.bricksY].draw(bitmap);
+		bricks[position.bricksX][position.bricksY].draw(*bitmap);
 	}
 	if (destroy_brick_flag)
 	{
@@ -527,7 +528,7 @@ void cGame::loadGame()
 }
 void cGame::drawMenu()
 {
-	al_draw_bitmap(bitmap.mainPNG, 0, 0, 0);
+	al_draw_bitmap(bitmap->mainPNG, 0, 0, 0);
 	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(!BUTTON_OVERLAY);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].clicked)
 	{
@@ -542,11 +543,11 @@ void cGame::drawMenu()
 	if (button[OPTIONS_POPUP].opacity == 0) { button[OPTIONS_POPUP].clicked = false; }
 
 //draw options	
-		al_draw_tinted_scaled_bitmap(bitmap.optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
-			0, 0, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap.optionsPNG), al_get_bitmap_height(bitmap.optionsPNG), 0);
+		al_draw_tinted_scaled_bitmap(bitmap->optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
+			0, 0, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), 0);
 //draw highscores	
 		al_draw_textf(font18, WHITE, 100, 80, ALLEGRO_ALIGN_LEFT, "opacity: %f", button[HIGHSCORES_POPUP].opacity);
 		float opacity = button[HIGHSCORES_POPUP].opacity;//temp fix to pass opacity of button
-		score.drawHighScores(bitmap, opacity);
+		score.drawHighScores(*this);
 }
 

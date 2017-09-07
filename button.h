@@ -39,6 +39,7 @@ private:
 	bool fadeIn;
 public:
 	cButton();//constructor
+	float getOpacity();
 	bool update(sPoint m); //if inside button then change flags to true else make it false
 	void create(float posX, float posY, float width, float height, int type, const char* text); //sets all button presets
 	void draw(bool debug);//draw button on screen
