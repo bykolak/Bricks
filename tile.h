@@ -25,8 +25,8 @@ protected:
 	
 	float posX;
 	float posY;
-	float height;
-	float width;
+	//float height;
+	//float width;
 	float screen_shake;
 	float distance;
 	int curFrame;

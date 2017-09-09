@@ -105,12 +105,12 @@ void cButton::create(float posX, float posY, float width, float height, int type
 		downTriangle.set(point2[0], point2[1], point2[2]);
 	}
 	buttonPNG = al_load_bitmap("buttons.png");
-	buttonNotClicked = al_create_bitmap(BUTTON_SIZE, BUTTON_SIZE);
-	buttonClicked = al_create_bitmap(BUTTON_SIZE, BUTTON_SIZE);
+	buttonNotClicked = al_create_bitmap(width, height);
+	buttonClicked = al_create_bitmap(width, height);
 
 	//al_set_target_bitmap(buttonPNG);//draw on button sprite
 
-	if (type != GAME_AREA) //if not game area create button bitmaps 
+	if (type != GAME_AREA && type!=HIGHSCORES_END) //if not game area create button bitmaps 
 	{
 		al_set_target_bitmap(buttonNotClicked);//draw on button sprite
 		int horizontal_position = 0;
@@ -132,9 +132,22 @@ void cButton::create(float posX, float posY, float width, float height, int type
 		upTriangle.set(point[0], point[1], point[2]);
 		downTriangle.set(point2[0], point2[1], point2[2]);
 	}
-	buttonPNG = al_load_bitmap("highscores.png");
+	
 	if (type == HIGHSCORES_END)
 	{
+		buttonPNG = al_load_bitmap("highscores.png");
+		buttonNotClicked = al_create_bitmap(width, height);
+		buttonClicked = al_create_bitmap(width, height);
+		sPoint point[3] = { { 0, 0 },{ 0, 0},{ 0,0 } };
+		sPoint point2[3] = { { 0, 0 },{ 0, 0 },{ 0,0 } };
+		
+		upTriangle.set(point[0], point[1], point[2]);
+		downTriangle.set(point2[0], point2[1], point2[2]);
+		al_set_target_bitmap(buttonNotClicked);
+		al_draw_bitmap(buttonPNG, 0, 0, NULL);
+		al_set_target_bitmap(buttonClicked);
+		al_draw_bitmap(buttonPNG, 0, 0, NULL);
+		al_set_target_bitmap(al_get_backbuffer(display));
 
 	}
 	x = posX;		y = posY; //sets bitmap position on screen
@@ -148,7 +161,6 @@ void cButton::draw(bool debug)//draw button on screen
 		al_draw_tinted_scaled_bitmap(buttonClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, BUTTON_SIZE, BUTTON_SIZE, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), BUTTON_SIZE*scale, BUTTON_SIZE*scale, 0);
 	}
 	else al_draw_tinted_scaled_bitmap(buttonNotClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, BUTTON_SIZE, BUTTON_SIZE, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), BUTTON_SIZE*scale, BUTTON_SIZE*scale, 0);
-
 	if (debug) //if debug overlay is active
 	{
 		if (mouseOver)

@@ -64,22 +64,23 @@ void cScore::drawHighScores(cGame& game)
 	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
 	al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);*/
 	//draw highscores
-	float highX = al_get_bitmap_width(game.bitmap->highscorePNG);
-	float highY = al_get_bitmap_height(game.bitmap->highscorePNG);
+	//float highX = al_get_bitmap_width(game.bitmap->highscorePNG);
+	//float highY = al_get_bitmap_height(game.bitmap->highscorePNG);
 
-	game.bitmap->high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
-	al_set_target_bitmap(game.bitmap->high_scoresTMP);
+	//game.bitmap->high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
+	//al_set_target_bitmap(game.bitmap->high_scoresTMP);
 	/*cButton * button = NULL;
 	button = &game.button[HIGHSCORES_POPUP];
 	button -*/
-	al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
+	game.button[HIGHSCORES_END].draw(false);
+	//al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "1.");
+		al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "%i.",i+1);
 		al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
 		al_draw_textf(font18, WHITE, 360, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
 	}
-	al_set_target_bitmap(al_get_backbuffer(display));
+	/*al_set_target_bitmap(al_get_backbuffer(display));
 	float opacity = 0.0;
 	if (game.game_state == SAVING_SCORE) 
 	{
@@ -92,10 +93,10 @@ void cScore::drawHighScores(cGame& game)
 	}
 	float screen_width = al_get_display_width(display);
 	float screen_height = al_get_display_height(display);
-	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
+	al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);*/
 	//float opacity = 
 	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(game. bopacity,opacity,opacity,opacity),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs to takes values from button instead of temp int in drawMenu()
-	al_destroy_bitmap(game.bitmap->high_scoresTMP);//always destroy temp bitmaps
+	//al_destroy_bitmap(game.bitmap->high_scoresTMP);//always destroy temp bitmaps
 }
 void cScore::reset()
 {
@@ -210,7 +211,9 @@ void cScore::loadHighScore()
 //=====cTile methods
 void cTile::create(sPoint position, int _color,int _state)
 {
-	maskOpacity = 0.0;
+	distance = 0.0;
+	maskOpacity = 1.0;
+	fadeIn = false;
 	x = position.x;
 	y = position.y;
 	state = _state;
@@ -219,12 +222,12 @@ void cTile::create(sPoint position, int _color,int _state)
 	frameDelay = 0;
 	frameCount = 0;
 	curFrame = 0;
-	maxFrame = 60;
+	maxFrame = 37;
 	animationDelay = 0;
 	selected = false;
 	screen_shake = 0;
 	if (_state == MOVING)						{	distance += BRICK_SIZE;	}
-	if (state == EXPLODING || state == SELECTED) { isAnimating = true;	maskOpacity = 1.0; }
+	if (state == EXPLODING || SELECTED) { isAnimating = true; }
 	if (state == EXPLODING) { curFrame = rand() % MIN_FRAME; }
 	posX = x*BRICK_SIZE + distance + screen_shake;
 	posY = y*BRICK_SIZE + screen_shake + TOP_MARGIN;
@@ -296,7 +299,8 @@ void cTile::draw(cBitmaps& bitmap)
 	}
 	if (animationDelay == 0)
 	{
-		if (state == SELECTED)		{		//al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		
+		if (state == SELECTED)		{	//	al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		
+
 		al_draw_tinted_scaled_bitmap(bitmap.bricksPNG,al_map_rgba_f(maskOpacity,maskOpacity,maskOpacity,maskOpacity),0,BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY,BRICK_SIZE,BRICK_SIZE, NULL);
 		}
 		if (state == EXPLODING)
@@ -307,8 +311,9 @@ void cTile::draw(cBitmaps& bitmap)
 	//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 	//if (distance>0)	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX	
 	//	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX
-	//	al_draw_textf(font18, BLACK, posX, posY+20, NULL, "%i", state); //DEBUG: shows distance added to posX
+	//	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", state); //DEBUG: shows brick state
 	//al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", animationDelay);//DEBUG: shows animationDelay on every brick
+	//al_draw_textf(font18, BLACK, posX, posY + 20, NULL, "%i", color); //DEBUG: shows brick color
 }
 void cTile::setAnimationDelay(int delay)
 {
@@ -355,4 +360,3 @@ cBitmaps::cBitmaps()
 //{
 //	
 //}
-
