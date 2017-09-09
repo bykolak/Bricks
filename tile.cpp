@@ -92,7 +92,7 @@ void cScore::drawHighScores(cGame& game)
 	}
 	float screen_width = al_get_display_width(display);
 	float screen_height = al_get_display_height(display);
-	al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
+	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);
 	//float opacity = 
 	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(game. bopacity,opacity,opacity,opacity),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs to takes values from button instead of temp int in drawMenu()
 	al_destroy_bitmap(game.bitmap->high_scoresTMP);//always destroy temp bitmaps
@@ -290,8 +290,11 @@ void cTile::draw(cBitmaps& bitmap)
 	if (animationDelay == 0)
 	{
 		if (state == SELECTED)		{		al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		}
-		if (state == EXPLODING)		{		al_draw_bitmap_region(bitmap.explosionPNG, 240 * curFrame, 0, 240, 240, posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2), posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2), NULL);		}
-	}
+		if (state == EXPLODING)
+		{
+			al_draw_bitmap_region(bitmap.explosionPNG, 240 * curFrame, 240 * color, 240, 240, posX - (BRICK_SIZE * 2), posY - (BRICK_SIZE * 2), NULL);//posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2), posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2), NULL);
+		}
+	 }
 	//al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", curFrame); //DEBUG: shows curFrame on every brick
 	//if (distance>0)	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX	
 	//	al_draw_textf(font18, BLACK, posX, posY, NULL, "%i", distance); //DEBUG: shows distance added to posX

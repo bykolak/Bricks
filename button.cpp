@@ -132,7 +132,11 @@ void cButton::create(float posX, float posY, float width, float height, int type
 		upTriangle.set(point[0], point[1], point[2]);
 		downTriangle.set(point2[0], point2[1], point2[2]);
 	}
+	buttonPNG = al_load_bitmap("highscores.png");
+	if (type == HIGHSCORES_END)
+	{
 
+	}
 	x = posX;		y = posY; //sets bitmap position on screen
 }
 
