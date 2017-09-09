@@ -39,6 +39,8 @@ protected:
 	int color;
 	int x;
 	int y;
+	float maskOpacity;
+	bool fadeIn;
 public:
 	
 	bool selected;
@@ -62,7 +64,7 @@ private:
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
 public:
-	void enterPlayerName(int keycode, int unichar);
+	bool enterPlayerName(int keycode, int unichar);
 	void resetHighScores();//resets and saves new high score file
 	bool is_saved; //if high scores already saved
 	int on_screen;//shown score

@@ -198,7 +198,7 @@ void cGame::update()
 		}
 		else if (event.type == ALLEGRO_EVENT_KEY_CHAR)
 		{
-			if (game_state == SAVING_SCORE) { score.enterPlayerName(event.keyboard.keycode, event.keyboard.unichar); }
+			if (game_state == SAVING_SCORE) { if(score.enterPlayerName(event.keyboard.keycode, event.keyboard.unichar))game_state=MAIN_MENU; }//if enterPlayerName returns true(pressed enter) change game_state to MAIN_MENU
 			if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE && game_state==PLAY_GAME) { game_state=MAIN_MENU; }
 		}
 		else if (event.type == ALLEGRO_EVENT_TIMER)

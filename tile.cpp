@@ -154,7 +154,7 @@ void cScore::saveScores()
 	}
 	saveHighScore();
 }
-void cScore::enterPlayerName(int keycode, int unichar)
+bool cScore::enterPlayerName(int keycode, int unichar)
 {
 	if (keycode <= ALLEGRO_KEY_9 || keycode == ALLEGRO_KEY_SPACE) //if A-Z and 0-9 pressed or spacebar
 		if (al_ustr_length(edited_text) < MAX_USERNAME_LENGTH) al_ustr_append_chr(edited_text, unichar);
@@ -168,7 +168,9 @@ void cScore::enterPlayerName(int keycode, int unichar)
 		player_name = edited_text;
 		saveScores();
 		//game_state = MAIN_MENU;
+		return true;
 	}
+	return false;
 }
 void cScore::saveHighScore()
 {
@@ -208,6 +210,7 @@ void cScore::loadHighScore()
 //=====cTile methods
 void cTile::create(sPoint position, int _color,int _state)
 {
+	maskOpacity = 0.0;
 	x = position.x;
 	y = position.y;
 	state = _state;
@@ -221,7 +224,7 @@ void cTile::create(sPoint position, int _color,int _state)
 	selected = false;
 	screen_shake = 0;
 	if (_state == MOVING)						{	distance += BRICK_SIZE;	}
-	if (state == EXPLODING || state==SELECTED)	{	isAnimating = true;		}
+	if (state == EXPLODING || state == SELECTED) { isAnimating = true;	maskOpacity = 1.0; }
 	if (state == EXPLODING) { curFrame = rand() % MIN_FRAME; }
 	posX = x*BRICK_SIZE + distance + screen_shake;
 	posY = y*BRICK_SIZE + screen_shake + TOP_MARGIN;
@@ -254,6 +257,10 @@ int cTile::update()
 	if (state == EXPLODING || state == SELECTED)
 	{
 		screen_shake = (rand() % 2) - 1; // -3 to 3 pixels in both directions
+		if(fadeIn) maskOpacity += OPACITY_INCREASE;
+		else maskOpacity -= OPACITY_INCREASE;
+		if (maskOpacity >= 1.0) { fadeIn = false; maskOpacity = 1.0; }
+		if (maskOpacity <= 0.0) { fadeIn = true; maskOpacity = 0.0; }
 	}
 	else { screen_shake = 0.0; }
 
@@ -289,7 +296,9 @@ void cTile::draw(cBitmaps& bitmap)
 	}
 	if (animationDelay == 0)
 	{
-		if (state == SELECTED)		{		al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		}
+		if (state == SELECTED)		{		//al_draw_bitmap_region(bitmap.bricksPNG, 0, BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY, NULL);		
+		al_draw_tinted_scaled_bitmap(bitmap.bricksPNG,al_map_rgba_f(maskOpacity,maskOpacity,maskOpacity,maskOpacity),0,BRICK_SIZE, BRICK_SIZE, BRICK_SIZE, posX, posY,BRICK_SIZE,BRICK_SIZE, NULL);
+		}
 		if (state == EXPLODING)
 		{
 			al_draw_bitmap_region(bitmap.explosionPNG, 240 * curFrame, 240 * color, 240, 240, posX - (BRICK_SIZE * 2), posY - (BRICK_SIZE * 2), NULL);//posX - (BRICK_SIZE * 2 + BRICK_SIZE / 2), posY - (BRICK_SIZE * 2 + BRICK_SIZE / 2), NULL);
