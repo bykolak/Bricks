@@ -79,7 +79,7 @@ cGame::cGame() //default constructor
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
 	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
 	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
-	button[HIGHSCORES_END].create(screen_width / 2, screen_height / 2, al_get_bitmap_width(bitmap->highscorePNG), al_get_bitmap_height(bitmap->highscorePNG), HIGHSCORES_END, "");//temp shit
+	button[HIGHSCORES_END].create(screen_width / 2, screen_height / 2, al_get_bitmap_width(bitmap->highscorePNG), al_get_bitmap_height(bitmap->highscorePNG), HIGHSCORES_END, "");
 	button[NEW_STORY_BUTTON].opacity = 0.0;
 	button[LOAD_GAME_BUTTON].opacity = 0.0;
 	button[OPTIONS_POPUP].opacity = 0.0;
@@ -158,14 +158,13 @@ void cGame::clickButtons(int mouseButton)
 				bricks[mouse.bricksX][mouse.bricksY].create(position, 1, FULL);
 			} //debug	
 			else game_state = MAIN_MENU;
-		}
-		
+		}	
 	}
 	//if nothing pressed
 	if (game_state == SAVING_SCORE)
 	{
-		button[HIGHSCORES_END].clicked = true;
-		button[HIGHSCORES_END].clicked = true;
+		button[HIGHSCORES_END].clicked = false;
+		//button[HIGHSCORES_END].clicked = true;
 	}
 	else button[HIGHSCORES_END].fadeIn = false;
 }
