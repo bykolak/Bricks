@@ -29,8 +29,8 @@ private:
 	float scale;
 	float x;
 	float y;
-	float w;
-	float h;
+	float width;
+	float height;
 	int type;
 	cTriangle upTriangle;
 	cTriangle downTriangle;
@@ -44,7 +44,7 @@ public:
 	cButton();//constructor
 	float getOpacity();
 	bool update(sPoint m); //if inside button then change flags to true else make it false
-	void create(float posX, float posY, float width, float height, int _type, const char* text); //sets all button presets
+	void create(float posX, float posY, float w, float h, int _type, const char* text); //sets all button presets
 	void draw(bool debug);//draw button on screen
 };
 #endif

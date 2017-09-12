@@ -72,7 +72,7 @@ void cScore::drawHighScores(cGame& game)
 	/*cButton * button = NULL;
 	button = &game.button[HIGHSCORES_POPUP];
 	button -*/
-	game.button[HIGHSCORES_END].draw(false);
+//	game.button[HIGHSCORES_END].draw(false);
 	//al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{

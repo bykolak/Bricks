@@ -46,7 +46,7 @@ cButton::cButton()//constructor
 	opacity = 1.0;
 	scale = 1.0;
 	buttonPNG = NULL;
-	fadeIn = true;
+	fadeIn = false;
 }
 float cButton::getOpacity()
 {
@@ -67,7 +67,7 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 
 	if (scale > 1.2) { scale = 1.2; }
 	if (scale < 1.0) { scale = 1.0; }
-	if (type == HIGHSCORES_END) scale = 1.0;
+	//if (type == HIGHSCORES_END) scale = 1.0;
 	if (fadeIn)
 	{
 		opacity += OPACITY_INCREASE;
@@ -80,79 +80,63 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 	if (opacity < 0.0) { opacity = 0.0; }
 	return mouseOver;
 }
-void cButton::create(float posX, float posY, float width, float height, int _type, const char* text) //sets all button parameters
+void cButton::create(float posX, float posY, float w, float h, int _type, const char* text) //sets all button parameters
 {
-	w = width;
-	h = height;
+	x = posX;		y = posY; //sets bitmap position on screen
+	type = _type;
+	width=w;
+	height=h;
 	scale = 1.0;
-	if (_type == RECTANGLE)//rectangle
+	buttonNotClicked = al_create_bitmap(width, height);
+	buttonClicked = al_create_bitmap(width, height);
+	buttonPNG = al_load_bitmap("buttons.png");
+	if (type == TEXT_BUTTON)//every clickable text
+	{
+		sPoint point[3] = { { posX,posY },{ posX + width, posY },{ posX, height + posY } };
+		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
+		upTriangle.set(point[0], point[1], point[2]);
+		downTriangle.set(point2[0], point2[1], point2[2]);
+		opacity = 0.0;
+		al_set_target_bitmap(buttonNotClicked);
+		al_draw_textf(font36, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);	
+		al_set_target_bitmap(buttonClicked);
+		al_draw_textf(font36, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+	}
+	if (type == MENU_BUTTON)// diamond menu button
+	{
+		fadeIn = true;
+		sPoint point[3] = { { posX, posY + height / 2 },{ posX + width / 2, posY },{ posX + width, posY + height / 2 } };
+		sPoint point2[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
+		upTriangle.set(point[0], point[1], point[2]);
+		downTriangle.set(point2[0], point2[1], point2[2]);
+		opacity = 1.0;
+		al_set_target_bitmap(buttonNotClicked);//start drawing on not cliked button sprite
+		al_draw_bitmap_region(buttonPNG, 0, 0, width, height, 0, 0, NULL);
+		al_draw_textf(font36, WHITE, BUTTON_SIZE / 2, BUTTON_SIZE / 2 -(al_get_font_line_height(font36)/2), ALLEGRO_ALIGN_CENTRE, text);
+		
+		al_set_target_bitmap(buttonClicked);//start drawing on clicked button sprite
+		al_draw_bitmap_region(buttonPNG, 0, 0, width, height, 0, 0, NULL);
+		al_draw_textf(font36, BUTTON, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - (al_get_font_line_height(font36) / 2), ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number	
+	}
+	if (type == MASTER_VOLUME)
+	{
+		sPoint point[3] = { { posX,posY },{ posX + width, posY },{ posX, height + posY } };
+		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
+		upTriangle.set(point[0], point[1], point[2]);
+		downTriangle.set(point2[0], point2[1], point2[2]);
+		//TODO:
+		//load master volume bitmap
+		
+	}
+	if (_type == GAME_AREA)
 	{
 		sPoint point[3] = { { posX,posY },{ posX + width, posY },{ posX, height + posY } };
 		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
 		upTriangle.set(point[0], point[1], point[2]);
 		downTriangle.set(point2[0], point2[1], point2[2]);
 	}
-	if (_type == RHOMB)//rhomb
-	{
-		sPoint point[3] = { { posX, posY + height / 2 },{ posX + width / 2, posY },{ posX + width, posY + height / 2 } };
-		sPoint point2[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
-		upTriangle.set(point[0], point[1], point[2]);
-		downTriangle.set(point2[0], point2[1], point2[2]);
-	}
-	if (_type == TRIANGLE)//triangle
-	{
-		sPoint point[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
-		sPoint point2[3] = { { posX + width, posY + height / 2 },{ posX, posY + height / 2 },{ posX + width / 2, posY + height } };
-		upTriangle.set(point[0], point[1], point[2]);
-		downTriangle.set(point2[0], point2[1], point2[2]);
-	}
-	buttonPNG = al_load_bitmap("buttons.png");
-	buttonNotClicked = al_create_bitmap(width, height);
-	buttonClicked = al_create_bitmap(width, height);
 
-	//al_set_target_bitmap(buttonPNG);//draw on button sprite
-
-	if (_type != GAME_AREA && _type!=HIGHSCORES_END) //if not game area create button bitmaps 
-	{
-		al_set_target_bitmap(buttonNotClicked);//draw on button sprite
-		int horizontal_position = 0;
-		if (type == TRIANGLE) { horizontal_position = -18; }
-		else horizontal_position = 27;
-		al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
-		al_draw_textf(font36, WHITE, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); //font size is 36 / 2 = 18 + (1/2 *18)=27 <---magic number
-
-		al_set_target_bitmap(buttonClicked);//draw on button sprite
-		al_draw_bitmap_region(buttonPNG, type*BUTTON_SIZE, 0, BUTTON_SIZE, BUTTON_SIZE, 0, 0, NULL);
-		al_draw_textf(font36, BUTTON, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - horizontal_position, ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number
-		al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
-	}
-
-	if (_type == GAME_AREA)
-	{
-		sPoint point[3] = { { posX, posY },{ posX + width, posY },{ posX, height + posY } };
-		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
-		upTriangle.set(point[0], point[1], point[2]);
-		downTriangle.set(point2[0], point2[1], point2[2]);
-	}
-	
-	if (_type == HIGHSCORES_END)
-	{
-		buttonPNG = al_load_bitmap("highscore.png");
-		sPoint point[3] = { { 3921, 3081 },{ 3921, 3081},{ 3921,3081 } };
-		sPoint point2[3] = { { 3921, 3081 },{ 3921, 3081 },{ 3921,3081 } };
-		upTriangle.set(point[0], point[1], point[2]);
-		downTriangle.set(point2[0], point2[1], point2[2]);
-		al_set_target_bitmap(buttonNotClicked);
-		al_draw_bitmap(buttonPNG, 0, 0, NULL);
-		al_draw_textf(font36, BUTTON, w / 2, h / 2, ALLEGRO_ALIGN_CENTRE, "gdfsgds");
-		al_set_target_bitmap(buttonClicked);
-		al_draw_bitmap(buttonPNG, 0, 0, NULL);
-		al_set_target_bitmap(al_get_backbuffer(display));
-		fadeIn = true;
-		clicked = false;
-	}
-	x = posX;		y = posY; //sets bitmap position on screen
-	type = _type;
+	al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
 }
 
 void cButton::draw(bool debug)//draw button on screen 
@@ -160,9 +144,9 @@ void cButton::draw(bool debug)//draw button on screen
 
 	if (clicked)
 	{
-		al_draw_tinted_scaled_bitmap(buttonClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, w, h, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), w*scale, h*scale, 0);
+		al_draw_tinted_scaled_bitmap(buttonClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, width, height, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), width*scale, height*scale, 0);
 	}
-	else al_draw_tinted_scaled_bitmap(buttonNotClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, w, h, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), w*scale, h*scale, 0);
+	else al_draw_tinted_scaled_bitmap(buttonNotClicked, al_map_rgba_f(opacity, opacity, opacity, opacity), 0, 0, width, height, x - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), y - (((BUTTON_SIZE*scale) - BUTTON_SIZE) / 2), width*scale, height*scale, 0);
 	if (debug) //if debug overlay is active
 	{
 		if (mouseOver)

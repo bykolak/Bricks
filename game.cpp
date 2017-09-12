@@ -65,32 +65,18 @@ cGame::cGame() //default constructor
 	timer2 = al_create_timer(1.0 / SELECTION_SPEED);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
-
-	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "PLAY");
-	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "OPTIONS");
-	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, RHOMB,"HIGH SCORES");
-	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, BUTTON_SIZE , BUTTON_SIZE, RHOMB,"EXIT");
-	button[NEW_STORY_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER , screen_height / 2 - BUTTON_SIZE - AWAY_FROM_CENTER - BUTTON_SIZE / 2-20, BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW STORY");
-	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 - 2*BUTTON_SIZE - 3*AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, TRIANGLE, "LOAD");
-	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE - 2*AWAY_FROM_CENTER - BUTTON_SIZE / 2 , BUTTON_SIZE, BUTTON_SIZE, RHOMB, "NEW RANDOM");
-	button[MUSIC_MUTE_BUTTON].create(screen_width / 16+MUSIC_MUTE_X, screen_height / 4+MUSIC_MUTE_Y , 24, 24, GAME_AREA, ""); //remove magic numbers 414,580
-	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, GAME_AREA, "");//remove magic numbers 414,615
-	button[RESET_PROFILE_BUTTON].create(414, 655, 24, 24, GAME_AREA, "");//remove magic numbers
+	//int sd = al_get_text_width(font36, "NEW");
+	//int fs = al_get_font_line_height(font36);
+	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON, "PLAY");
+	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON, "OPTIONS");
+	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON,"SCORES");
+	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, BUTTON_SIZE , BUTTON_SIZE, MENU_BUTTON,"EXIT");
+	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "LOAD") , al_get_font_line_height(font36), TEXT_BUTTON, "LOAD");
+	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "NEW "), al_get_font_line_height(font36), TEXT_BUTTON, "NEW");
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
-	button[HIGHSCORES_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), RECTANGLE, "");//temp shit
-	button[HIGHSCORES_END].create(screen_width / 2, screen_height / 2, al_get_bitmap_width(bitmap->highscorePNG), al_get_bitmap_height(bitmap->highscorePNG), HIGHSCORES_END, "");
-	button[NEW_STORY_BUTTON].opacity = 0.0;
-	button[LOAD_GAME_BUTTON].opacity = 0.0;
-	button[OPTIONS_POPUP].opacity = 0.0;
-	button[HIGHSCORES_POPUP].opacity = 0.0;
-	button[NEW_RANDOM_BUTTON].opacity = 0.0;
-	button[HIGHSCORES_POPUP].opacity = 1.0;
-	button[NEW_STORY_BUTTON].fadeIn = false;
-	button[LOAD_GAME_BUTTON].fadeIn = false;
-	button[NEW_RANDOM_BUTTON].fadeIn = false;
-	button[OPTIONS_POPUP].fadeIn = false;
-	button[HIGHSCORES_POPUP].fadeIn = false;
+	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), TEXT_BUTTON, "OPTIONS");//temp shit
+	button[HIGHSCORES_POPUP].create(screen_width / 2+BUTTON_SIZE , screen_height / 6, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), TEXT_BUTTON, "SCORES");//temp shit
+	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, MUTE_BUTTON, "");//remove magic numbers 414,615
 } 
 void cGame::clickButtons(int mouseButton)
 {
@@ -116,18 +102,18 @@ void cGame::clickButtons(int mouseButton)
 			}
 			if (button[PLAY_BUTTON].clicked)
 			{
-				button[NEW_STORY_BUTTON].fadeIn = true;
+//				button[NEW_STORY_BUTTON].fadeIn = true;
 				button[LOAD_GAME_BUTTON].fadeIn = true;
 				button[NEW_RANDOM_BUTTON].fadeIn = true;
 				click = -1;
-				if (button[NEW_STORY_BUTTON].mouseOver) { click = NEW_STORY_BUTTON; }
+	//			if (button[NEW_STORY_BUTTON].mouseOver) { click = NEW_STORY_BUTTON; }
 				if (button[LOAD_GAME_BUTTON].mouseOver) { click = LOAD_GAME_BUTTON; }
 				if (button[NEW_RANDOM_BUTTON].mouseOver) { click = NEW_RANDOM_BUTTON; }
 				if (click > -1) { button[click].clicked = true; }
 			}
 			else
 			{
-				button[NEW_STORY_BUTTON].fadeIn = false;
+		//		button[NEW_STORY_BUTTON].fadeIn = false;
 				button[LOAD_GAME_BUTTON].fadeIn = false;
 				button[NEW_RANDOM_BUTTON].fadeIn = false;
 			}
@@ -161,12 +147,12 @@ void cGame::clickButtons(int mouseButton)
 		}	
 	}
 	//if nothing pressed
-	if (game_state == SAVING_SCORE)
-	{
-		button[HIGHSCORES_END].clicked = false;
-		//button[HIGHSCORES_END].clicked = true;
-	}
-	else button[HIGHSCORES_END].fadeIn = false;
+	//if (game_state == SAVING_SCORE)
+	//{
+	//	button[HIGHSCORES_END].clicked = false;
+	//	//button[HIGHSCORES_END].clicked = true;
+	//}
+	//else button[HIGHSCORES_END].fadeIn = false;
 }
 void cGame::update()
 {
@@ -207,7 +193,7 @@ void cGame::update()
 				for (int i = 0; i < MAX_BUTTONS; i++) { button[i].update(mouse); } //updates all buttons
 				// 60 times per second
 				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
-				if (button[NEW_STORY_BUTTON].clicked) { button[NEW_STORY_BUTTON].clicked = false; newGame(true); }
+				if (button[LOAD_GAME_BUTTON].clicked) { button[LOAD_GAME_BUTTON].clicked = false; newGame(true); }
 				if (button[EXIT_BUTTON].clicked) { done = true; }
 				if (game_state == PLAY_GAME) 
 				{
