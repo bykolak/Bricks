@@ -55,19 +55,21 @@ float cButton::getOpacity()
 bool cButton::update(sPoint m) //if inside button then change flags to true else make it false
 {
 	int counter = 0;
-
+	if (type != MENU_ITEM)
+	{
 	if (upTriangle.pointInTriangle(m) || downTriangle.pointInTriangle(m) )
 	{
 		mouseOver = true;
 	}
 	else mouseOver = false;
 
-	if (mouseOver) { scale += 0.019; }
-	else { scale -= 0.019; }
+	
+		if (mouseOver) { scale += 0.019; }
+		else { scale -= 0.019; }
 
-	if (scale > 1.2) { scale = 1.2; }
-	if (scale < 1.0) { scale = 1.0; }
-	//if (type == HIGHSCORES_END) scale = 1.0;
+		if (scale > 1.2) { scale = 1.2; }
+		if (scale < 1.0) { scale = 1.0; }
+	}
 	if (fadeIn)
 	{
 		opacity += OPACITY_INCREASE;
@@ -135,7 +137,17 @@ void cButton::create(float posX, float posY, float w, float h, int _type, const 
 		upTriangle.set(point[0], point[1], point[2]);
 		downTriangle.set(point2[0], point2[1], point2[2]);
 	}
+	if (type == MENU_ITEM)
+	{
+		sPoint point[3] = { { posX,posY },{ posX + width, posY },{ posX, height + posY } };
+		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
 
+		opacity = 0.0;
+		al_set_target_bitmap(buttonNotClicked);
+		al_draw_textf(font36, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+		al_set_target_bitmap(buttonClicked);
+		al_draw_textf(font36, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+	}
 	al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
 }
 

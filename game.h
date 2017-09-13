@@ -41,8 +41,8 @@ private:
 	cTile cursor;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
-	
-	
+	cButton button[MAX_BUTTONS];
+	cButton menu_items[MAX_HIGH_SCORE];
 	
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
@@ -50,7 +50,7 @@ private:
 	
 	
 public:
-	cButton button[MAX_BUTTONS];
+	
 	cBitmaps * bitmap = NULL;
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor

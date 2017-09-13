@@ -74,11 +74,14 @@ void cScore::drawHighScores(cGame& game)
 	button -*/
 //	game.button[HIGHSCORES_END].draw(false);
 	//al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
+	float screenX = al_get_display_width(display);
+	float screenY = al_get_display_height(display);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		al_draw_textf(font18, WHITE, 70, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "%i.",i+1);
-		al_draw_ustr(font18, WHITE, 80, (28 * i) + 80, ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-		al_draw_textf(font18, WHITE, 360, (28 * i) + 80, ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	//	game.menu_items[i].draw(false);
+		/*al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.",i+1);
+		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);*/
 	}
 	/*al_set_target_bitmap(al_get_backbuffer(display));
 	float opacity = 0.0;

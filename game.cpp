@@ -74,9 +74,18 @@ cGame::cGame() //default constructor
 	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "LOAD") , al_get_font_line_height(font36), TEXT_BUTTON, "LOAD");
 	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "NEW "), al_get_font_line_height(font36), TEXT_BUTTON, "NEW");
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), TEXT_BUTTON, "OPTIONS");//temp shit
-	button[HIGHSCORES_POPUP].create(screen_width / 2+BUTTON_SIZE , screen_height / 6, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), TEXT_BUTTON, "SCORES");//temp shit
+	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_text_width(font36, "OPTIONS"), al_get_font_line_height(font36), MENU_ITEM, "OPTIONS");
+	button[HIGHSCORES_POPUP].create(screen_width / 2+BUTTON_SIZE , screen_height / 6, al_get_text_width(font36, "SCORES"), al_get_font_line_height(font36), MENU_ITEM, "SCORES");//temp shit
 	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, MUTE_BUTTON, "");//remove magic numbers 414,615
+
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+		const char * text = "1" + i;
+		menu_items[i].create(screen_width / 2 + 70, screen_height / 2 + (28 * i), al_get_text_width(font36, text), al_get_font_line_height(font36), MENU_ITEM, text);
+//			al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.", i + 1);
+//		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+//		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	}
 } 
 void cGame::clickButtons(int mouseButton)
 {
@@ -90,8 +99,6 @@ void cGame::clickButtons(int mouseButton)
 			if (button[OPTIONS_BUTTON].mouseOver) { click = OPTIONS_BUTTON; }
 			if (button[HIGHSCORES_BUTTON].mouseOver) { click = HIGHSCORES_BUTTON; }
 			if (button[EXIT_BUTTON].mouseOver) { click = EXIT_BUTTON; }
-
-
 			if (click != -1) //if button was pressed
 			{
 				for (int i = 0; i < MAX_BUTTONS; i++)
@@ -102,18 +109,15 @@ void cGame::clickButtons(int mouseButton)
 			}
 			if (button[PLAY_BUTTON].clicked)
 			{
-//				button[NEW_STORY_BUTTON].fadeIn = true;
 				button[LOAD_GAME_BUTTON].fadeIn = true;
 				button[NEW_RANDOM_BUTTON].fadeIn = true;
 				click = -1;
-	//			if (button[NEW_STORY_BUTTON].mouseOver) { click = NEW_STORY_BUTTON; }
 				if (button[LOAD_GAME_BUTTON].mouseOver) { click = LOAD_GAME_BUTTON; }
 				if (button[NEW_RANDOM_BUTTON].mouseOver) { click = NEW_RANDOM_BUTTON; }
 				if (click > -1) { button[click].clicked = true; }
 			}
 			else
 			{
-		//		button[NEW_STORY_BUTTON].fadeIn = false;
 				button[LOAD_GAME_BUTTON].fadeIn = false;
 				button[NEW_RANDOM_BUTTON].fadeIn = false;
 			}
@@ -146,13 +150,6 @@ void cGame::clickButtons(int mouseButton)
 			else game_state = MAIN_MENU;
 		}	
 	}
-	//if nothing pressed
-	//if (game_state == SAVING_SCORE)
-	//{
-	//	button[HIGHSCORES_END].clicked = false;
-	//	//button[HIGHSCORES_END].clicked = true;
-	//}
-	//else button[HIGHSCORES_END].fadeIn = false;
 }
 void cGame::update()
 {
@@ -190,7 +187,12 @@ void cGame::update()
 		{
 			if (event.timer.source == timer)
 			{
-				for (int i = 0; i < MAX_BUTTONS; i++) { button[i].update(mouse); } //updates all buttons
+				for (int i = 0; i < MAX_BUTTONS; i++) 
+				{ 
+					button[i].update(mouse); 
+					if (button[HIGHSCORES_POPUP].clicked) menu_items[i].fadeIn = true;
+					menu_items[i].update(mouse); 
+				} //updates all buttons
 				// 60 times per second
 				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
 				if (button[LOAD_GAME_BUTTON].clicked) { button[LOAD_GAME_BUTTON].clicked = false; newGame(true); }
@@ -524,7 +526,7 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(bitmap->mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(!BUTTON_OVERLAY);	}//if flags set to true
+	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(BUTTON_OVERLAY);	}//if flags set to true
 	if (button[HIGHSCORES_BUTTON].clicked)
 	{
 		button[HIGHSCORES_POPUP].clicked = true;
@@ -543,6 +545,10 @@ void cGame::drawMenu()
 //draw highscores	
 		al_draw_textf(font18, WHITE, 100, 80, ALLEGRO_ALIGN_LEFT, "opacity: %f", button[HIGHSCORES_POPUP].opacity);
 		float opacity = button[HIGHSCORES_POPUP].opacity;//temp fix to pass opacity of button
-		score.drawHighScores(*this);
+		if (button[HIGHSCORES_BUTTON].clicked) //score.drawHighScores(*this);	
+			for (int i = 0; i < MAX_HIGH_SCORE; i++)
+			{
+				menu_items[i].draw(BUTTON_OVERLAY);
+			}
 }
 
