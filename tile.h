@@ -10,10 +10,6 @@ public:
 	ALLEGRO_BITMAP * explosionPNG = NULL;
 	ALLEGRO_BITMAP * backgroundPNG = NULL;
 	ALLEGRO_BITMAP * mainPNG = NULL;
-	ALLEGRO_BITMAP * optionsPNG = NULL;
-	ALLEGRO_BITMAP * highscorePNG = NULL;
-	ALLEGRO_BITMAP * high_scoresTMP = NULL;
-	//ALLEGRO_BITMAP * newgamePNG = NULL;
 	cBitmaps(); // loads bitmaps
 	//~cBitmaps();
 };

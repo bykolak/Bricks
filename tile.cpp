@@ -345,8 +345,6 @@ cBitmaps::cBitmaps()
 	explosionPNG = al_load_bitmap("explosion.png");
 	backgroundPNG = al_load_bitmap("background.png");
 	mainPNG = al_load_bitmap("main.png");
-	optionsPNG = al_load_bitmap("options.png");
-	highscorePNG = al_load_bitmap("highscore.png");
 }
 
 //cBitmaps::~cBitmaps()
@@ -359,7 +357,4 @@ cBitmaps::cBitmaps()
 //	al_destroy_bitmap(highscorePNG);
 //}
 
-//void cBitmaps::load()
-//{
-//	
-//}
+

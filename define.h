@@ -2,10 +2,6 @@
 #define DEFINE_H
 
 #include <vector>
-//using namespace std;
-
-//#define RED al_map_rgb(255,0,0)
-//#define BLUE al_map_rgb(0,0,255)
 #define WHITE al_map_rgb(255,255,255)
 #define YELLOW al_map_rgb(255,255,0)
 #define RED al_map_rgb(255,0,0)
@@ -13,7 +9,6 @@
 #define GREEN al_map_rgb(0,255,0)
 #define BLACK al_map_rgb(0,0,0)
 #define TINT al_map_rgba_f(1, 1, 1, 0.8)
-//#define TINT2 al_map_rgba_f(0.7, 0.7, 0.7, 0.7)
 #define TINT3 al_map_rgba_f(0.3, 0.3, 0.3, 0.3)
 #define MASK_COLOR al_map_rgb(255,0,255)
 
@@ -58,6 +53,5 @@ enum BUTTONS { PLAY_BUTTON, OPTIONS_BUTTON, HIGHSCORES_BUTTON, EXIT_BUTTON, LOAD
 enum BUTTON_TYPE{TEXT_BUTTON,MENU_BUTTON, MASTER_VOLUME,MUTE_BUTTON,GAME_AREA,MENU_ITEM,MAX_TYPE};
 enum TILE_STATE{ EMPTY, FULL, SELECTED, EXPLODING,MOVING };
 enum GAME_STATE {PLAY_GAME, REFRESH_GAME, HIGH_SCORE, OPTIONS, END_GAME, SAVING_SCORE, CHEAT, MAIN_MENU};
-//enum KEYS { UP, DOWN, LEFT, RIGHT };
-//enum EXIT_CODES{DELAYED,ANIMATING};
+
 #endif

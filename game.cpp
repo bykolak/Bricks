@@ -65,23 +65,21 @@ cGame::cGame() //default constructor
 	timer2 = al_create_timer(1.0 / SELECTION_SPEED);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
-	//int sd = al_get_text_width(font36, "NEW");
-	//int fs = al_get_font_line_height(font36);
-	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON, "PLAY");
-	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON, "OPTIONS");
-	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, MENU_BUTTON,"SCORES");
-	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, BUTTON_SIZE , BUTTON_SIZE, MENU_BUTTON,"EXIT");
-	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "LOAD") , al_get_font_line_height(font36), TEXT_BUTTON, "LOAD");
-	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , al_get_text_width(font36, "NEW "), al_get_font_line_height(font36), TEXT_BUTTON, "NEW");
-	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, area_width, area_height, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width / 16, screen_height / 4, al_get_text_width(font36, "OPTIONS"), al_get_font_line_height(font36), MENU_ITEM, "OPTIONS");
-	button[HIGHSCORES_POPUP].create(screen_width / 2+BUTTON_SIZE , screen_height / 6, al_get_text_width(font36, "SCORES"), al_get_font_line_height(font36), MENU_ITEM, "SCORES");//temp shit
-	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 24,24, MUTE_BUTTON, "");//remove magic numbers 414,615
+	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, 36, MENU_BUTTON, "PLAY");
+	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, 36, MENU_BUTTON, "OPTIONS");
+	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, 36, MENU_BUTTON,"SCORES");
+	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, 36, MENU_BUTTON,"EXIT");
+	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, "LOAD");
+	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, "NEW");
+	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, 36, GAME_AREA,"");
+	button[OPTIONS_POPUP].create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, "OPTIONS");
+	button[HIGHSCORES_POPUP].create(screen_width *0.75 , screen_height / 4, 100, MENU_ITEM, "SCORES");
+	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 36, MUTE_BUTTON, "");
 
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		const char * text = "1" + i;
-		menu_items[i].create(screen_width / 2 + 70, screen_height / 2 + (28 * i), al_get_text_width(font36, text), al_get_font_line_height(font36), MENU_ITEM, text);
+		const char * text = "1" + i;//TODO add std::string and update cButton.create to change it to const char*
+		menu_items[i].create(screen_width*0.75, screen_height / 2 + (36 * i), 36, TEXT_BUTTON, text);
 //			al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.", i + 1);
 //		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
 //		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
@@ -216,7 +214,7 @@ void cGame::update()
 		if (render && al_is_event_queue_empty(event_queue))
 		{
 			render = false;
-			drawGameArea();
+			if (game_state != MAIN_MENU) drawGameArea();
 			if (game_state == END_GAME || game_state == SAVING_SCORE) { score.drawHighScores(*this); if (game_state == SAVING_SCORE) score.drawEnd(); }
 
 			if (game_state == MAIN_MENU)		{	drawMenu();	}
@@ -526,29 +524,13 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(bitmap->mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	{	button[i].draw(BUTTON_OVERLAY);	}//if flags set to true
-	if (button[HIGHSCORES_BUTTON].clicked)
-	{
-		button[HIGHSCORES_POPUP].clicked = true;
+	for (int i = 0; i < MAX_BUTTONS; i++)	
+	{	
+		button[i].draw(BUTTON_OVERLAY);	//if flags are set to true then draw overlay showing collision box
 	}
-	if (button[HIGHSCORES_POPUP].opacity == 0) { button[HIGHSCORES_POPUP].clicked = false; }
-	
-	if (button[OPTIONS_BUTTON].clicked)
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		button[OPTIONS_POPUP].clicked = true;
+		if (button[HIGHSCORES_BUTTON].clicked) menu_items[i].draw(BUTTON_OVERLAY);
 	}
-	if (button[OPTIONS_POPUP].opacity == 0) { button[OPTIONS_POPUP].clicked = false; }
-
-//draw options	
-		al_draw_tinted_scaled_bitmap(bitmap->optionsPNG, al_map_rgba_f(button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity, button[OPTIONS_POPUP].opacity),
-			0, 0, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), screen_width / 16, screen_height / 4, al_get_bitmap_width(bitmap->optionsPNG), al_get_bitmap_height(bitmap->optionsPNG), 0);
-//draw highscores	
-		al_draw_textf(font18, WHITE, 100, 80, ALLEGRO_ALIGN_LEFT, "opacity: %f", button[HIGHSCORES_POPUP].opacity);
-		float opacity = button[HIGHSCORES_POPUP].opacity;//temp fix to pass opacity of button
-		if (button[HIGHSCORES_BUTTON].clicked) //score.drawHighScores(*this);	
-			for (int i = 0; i < MAX_HIGH_SCORE; i++)
-			{
-				menu_items[i].draw(BUTTON_OVERLAY);
-			}
 }
 
