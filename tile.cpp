@@ -1,5 +1,3 @@
-#include "define.h"
-#include "button.h"
 #include "game.h"
 
 //=====cScore methods
@@ -53,54 +51,54 @@ void cScore::update()
 	if (current / 1 > 0)on_screen += 1;
 	if (on_screen > current) on_screen = current;
 }
-void cScore::drawHighScores(cGame& game)
-{
-	/* DRAWING NEEDS REWORK */
-	/*int shake = selectionList.size() / 5;
-	if (selectionList.size()>100) shake = 20;
-	if (shake == 0) shake = 1;
-	int f = rand() % shake;
-	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) - 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
-	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
-	al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);*/
-	//draw highscores
-	//float highX = al_get_bitmap_width(game.bitmap->highscorePNG);
-	//float highY = al_get_bitmap_height(game.bitmap->highscorePNG);
-
-	//game.bitmap->high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
-	//al_set_target_bitmap(game.bitmap->high_scoresTMP);
-	/*cButton * button = NULL;
-	button = &game.button[HIGHSCORES_POPUP];
-	button -*/
-//	game.button[HIGHSCORES_END].draw(false);
-	//al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
-	float screenX = al_get_display_width(display);
-	float screenY = al_get_display_height(display);
-	for (int i = 0; i < MAX_HIGH_SCORE; i++)
-	{
-	//	game.menu_items[i].draw(false);
-		/*al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.",i+1);
-		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);*/
-	}
-	/*al_set_target_bitmap(al_get_backbuffer(display));
-	float opacity = 0.0;
-	if (game.game_state == SAVING_SCORE) 
-	{
-		opacity = 1.0;
-	}
-	else if (game.game_state == MAIN_MENU)
-	{
-		opacity=game.button->getOpacity();
-
-	}
-	float screen_width = al_get_display_width(display);
-	float screen_height = al_get_display_height(display);
-	al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);*/
-	//float opacity = 
-	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(game. bopacity,opacity,opacity,opacity),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs to takes values from button instead of temp int in drawMenu()
-	//al_destroy_bitmap(game.bitmap->high_scoresTMP);//always destroy temp bitmaps
-}
+//void cScore::drawHighScores(cGame& game)
+//{
+//	/* DRAWING NEEDS REWORK */
+//	/*int shake = selectionList.size() / 5;
+//	if (selectionList.size()>100) shake = 20;
+//	if (shake == 0) shake = 1;
+//	int f = rand() % shake;
+//	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) - 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+//	al_draw_textf(font36, BLACK, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + 2 + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);
+//	al_draw_textf(font36, WHITE, (mouse.bricksX *BRICK_SIZE) + (BRICK_SIZE / 2) + f, (mouse.bricksY *BRICK_SIZE) + TOP_MARGIN + f, NULL, "%i", last_score);*/
+//	//draw highscores
+//	//float highX = al_get_bitmap_width(game.bitmap->highscorePNG);
+//	//float highY = al_get_bitmap_height(game.bitmap->highscorePNG);
+//
+//	//game.bitmap->high_scoresTMP = al_create_bitmap(highX, highY); //creates empty bitmap of highscoresPNG size
+//	//al_set_target_bitmap(game.bitmap->high_scoresTMP);
+//	/*cButton * button = NULL;
+//	button = &game.button[HIGHSCORES_POPUP];
+//	button -*/
+////	game.button[HIGHSCORES_END].draw(false);
+//	//al_draw_bitmap(game.bitmap->highscorePNG, 0, 0, NULL);
+//	float screenX = al_get_display_width(display);
+//	float screenY = al_get_display_height(display);
+//	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+//	{
+//	//	game.menu_items[i].draw(false);
+//		/*al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.",i+1);
+//		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+//		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);*/
+//	}
+//	/*al_set_target_bitmap(al_get_backbuffer(display));
+//	float opacity = 0.0;
+//	if (game.game_state == SAVING_SCORE) 
+//	{
+//		opacity = 1.0;
+//	}
+//	else if (game.game_state == MAIN_MENU)
+//	{
+//		opacity=game.button->getOpacity();
+//
+//	}
+//	float screen_width = al_get_display_width(display);
+//	float screen_height = al_get_display_height(display);
+//	al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(opacity, opacity,opacity,opacity),0, 0, highX, highY, screen_width - screen_width / 3, screen_height / 4, highX, highY, 0);*/
+//	//float opacity = 
+//	//al_draw_tinted_scaled_bitmap(game.bitmap->high_scoresTMP, al_map_rgba_f(game. bopacity,opacity,opacity,opacity),	0, 0, highX, highY, SCREEN_X - SCREEN_X / 3, SCREEN_Y / 4, highX, highY, 0);// temp fix al_map_rgba_f needs to takes values from button instead of temp int in drawMenu()
+//	//al_destroy_bitmap(game.bitmap->high_scoresTMP);//always destroy temp bitmaps
+//}
 void cScore::reset()
 {
 	current = 0;

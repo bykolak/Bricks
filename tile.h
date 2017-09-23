@@ -52,6 +52,7 @@ public:
 
 class cScore : public cTile
 {
+//	friend class cMenu;
 private:
 	int current; // players score
 	int score_earned; //last score
@@ -67,7 +68,7 @@ public:
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true
 	void calculateScore(int selectedBricks); //takes selectionList.size and calculates score for destroyed bricks 
 	void update();
-	void drawHighScores(cGame& game);//cBitmaps bitmap, float opacity);
+	//void drawHighScores(cGame& game);//cBitmaps bitmap, float opacity);
 	void reset();
 	void saveHighScore();
 	void loadHighScore();

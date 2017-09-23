@@ -1,7 +1,4 @@
-#include "button.h"
 #include <allegro5\allegro_primitives.h>
-#include "define.h"
-#include <allegro5\allegro_ttf.h>
 #include "game.h"
 cTriangle::cTriangle()
 {
@@ -38,6 +35,10 @@ bool cTriangle::pointInTriangle(sPoint mouse)
 
 	return false;
 }
+void cButton::fade(bool fade)
+{
+	fadeIn = fade;
+}
 //=====cButton methods
 cButton::cButton()//constructor
 {
@@ -47,6 +48,21 @@ cButton::cButton()//constructor
 	scale = 1.0;
 	buttonPNG = NULL;
 	fadeIn = false;
+}
+
+void cButton::changeClicked(bool click)
+{
+	clicked = click;
+}
+
+bool cButton::isClicked()
+{
+	return clicked;
+}
+
+bool cButton::isMouseOver()
+{
+	return mouseOver;
 }
 
 bool cButton::update(sPoint m) //if inside button then change flags to true else make it false
@@ -79,21 +95,17 @@ bool cButton::update(sPoint m) //if inside button then change flags to true else
 	if (opacity < 0.0) { opacity = 0.0; }
 	return mouseOver;
 }
-void cButton::create(float posX, float posY, int font_size, int _type, const char* text) //sets all button parameters
+void cButton::create(float posX, float posY, int font_size, int _type, ALLEGRO_USTR * _text) //sets all button parameters
 {
 	ALLEGRO_FONT * font = al_load_font("bebas.ttf", font_size, 0);
 	x = posX;		y = posY; //sets bitmap position on screen
 	type = _type;
-	//width=w;
-	//height=h;
 	scale = 1.0;
-	//buttonNotClicked = al_create_bitmap(width, height);
-	//buttonClicked = al_create_bitmap(width, height);
 	buttonPNG = al_load_bitmap("buttons.png");
+	text =_text;
 	if (type == TEXT_BUTTON)//every clickable text
 	{
-
-		width = al_get_text_width(font, text);
+		width = al_get_ustr_width(font, text);
 		height = al_get_font_line_height(font);
 		buttonNotClicked = al_create_bitmap(width, height);
 		buttonClicked = al_create_bitmap(width, height);
@@ -103,9 +115,9 @@ void cButton::create(float posX, float posY, int font_size, int _type, const cha
 		downTriangle.set(point2[0], point2[1], point2[2]);
 		opacity = 0.0;
 		al_set_target_bitmap(buttonNotClicked);
-		al_draw_textf(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);	
+		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);	
 		al_set_target_bitmap(buttonClicked);
-		al_draw_textf(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 	}
 	if (type == MENU_BUTTON)// diamond menu button
 	{
@@ -121,11 +133,11 @@ void cButton::create(float posX, float posY, int font_size, int _type, const cha
 		opacity = 1.0;
 		al_set_target_bitmap(buttonNotClicked);//start drawing on not cliked button sprite
 		al_draw_bitmap_region(buttonPNG, 0, 0, width, height, 0, 0, NULL);
-		al_draw_textf(font, WHITE, BUTTON_SIZE / 2, BUTTON_SIZE / 2 -(al_get_font_line_height(font)/2), ALLEGRO_ALIGN_CENTRE, text);
+		al_draw_ustr(font, WHITE, BUTTON_SIZE / 2, BUTTON_SIZE / 2 -(al_get_font_line_height(font)/2), ALLEGRO_ALIGN_CENTRE, text);
 		
 		al_set_target_bitmap(buttonClicked);//start drawing on clicked button sprite
 		al_draw_bitmap_region(buttonPNG, 0, 0, width, height, 0, 0, NULL);
-		al_draw_textf(font, BUTTON, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - (al_get_font_line_height(font) / 2), ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number	
+		al_draw_ustr(font, BUTTON, BUTTON_SIZE / 2, BUTTON_SIZE / 2 - (al_get_font_line_height(font) / 2), ALLEGRO_ALIGN_CENTRE, text); // (36 / 2) + (1/2 *18)=27 <---magic number	
 	}
 	if (type == MASTER_VOLUME)
 	{
@@ -166,7 +178,7 @@ void cButton::create(float posX, float posY, int font_size, int _type, const cha
 	if (type == MENU_ITEM)
 	{
 
-		width = al_get_text_width(font, text);
+		width = al_get_ustr_width(font, text);
 		height = al_get_font_line_height(font);
 		buttonNotClicked = al_create_bitmap(width, height);
 		buttonClicked = al_create_bitmap(width, height);
@@ -175,9 +187,9 @@ void cButton::create(float posX, float posY, int font_size, int _type, const cha
 
 		opacity = 0.0;
 		al_set_target_bitmap(buttonNotClicked);
-		al_draw_textf(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 		al_set_target_bitmap(buttonClicked);
-		al_draw_textf(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 	}
 	al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
 	al_destroy_font(font);
@@ -203,5 +215,71 @@ void cButton::draw(bool debug)//draw button on screen
 			upTriangle.draw(RED);
 			downTriangle.draw(RED);
 		}
+		al_draw_textf(font18, WHITE, x, y, 0, "%f opacity", opacity);
+		al_draw_textf(font18, WHITE, x, y+20, 0, "%i clicked", clicked);
+	}
+	
+}
+
+void cMenu::fade(bool fade)
+{
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		menu_items[i].fade(fade);
+	}
+}
+
+void cMenu::createOptions()
+{
+	float screen_width = al_get_display_width(display);
+	float screen_height = al_get_display_height(display);
+	text = al_ustr_new("OPTIONS");
+	temp_button.create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, text);
+	menu_items.push_back(temp_button);
+	//TODO
+}
+
+void cMenu::createScores()
+{
+	float screen_width = al_get_display_width(display);
+	float screen_height = al_get_display_height(display);
+	text = al_ustr_new("SCORES");
+	temp_button.create(screen_width *0.75, screen_height / 4, 100, MENU_ITEM, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	{
+	//	text = al_ustr_newf("%i        %s     %i", i, al_cstr(scores.high_score_name[i]), scores.high_score[i]);
+	}
+
+	//TODO
+	//	button[OPTIONS_POPUP].create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, "OPTIONS");
+	//	button[HIGHSCORES_POPUP].create(screen_width *0.75 , screen_height / 4, 100, MENU_ITEM, "SCORES");
+	//	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 36, MUTE_BUTTON, "");
+	//
+	//	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	//	{
+	//		const char * text = "1" + i;//TODO add std::string and update cButton.create to change it to const char*
+	//		menu_items[i].create(screen_width*0.75, screen_height / 2 + (36 * i), 36, TEXT_BUTTON, text);
+	////			al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.", i + 1);
+	////		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
+	////		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
+	//	}
+}
+
+void cMenu::draw()
+{
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		menu_items[i].draw(BUTTON_OVERLAY);
+		
+	}
+}
+
+void cMenu::update(sPoint m)
+{
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		menu_items[i].update(m);
 	}
 }

@@ -4,6 +4,7 @@
 #include "define.h"
 #include <fstream>
 #include <string>
+
 #include "button.h"
 #include <allegro5\allegro_audio.h>
 #include "tile.h"
@@ -42,8 +43,9 @@ private:
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
 	cButton button[MAX_BUTTONS];
-	cButton menu_items[MAX_HIGH_SCORE];
-	
+	//cButton * menu_items[MAX_HIGH_SCORE];
+	cMenu options_menu;
+	cMenu scores_menu;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;

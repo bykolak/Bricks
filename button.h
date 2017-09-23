@@ -2,6 +2,9 @@
 #define BUTTON_H
 
 #include <allegro5\allegro.h>
+#include <vector>
+
+
 struct sPoint
 {
 	float x;
@@ -23,7 +26,7 @@ public:
 };
 class cButton
 {
-	friend class cGame;
+//	friend class cGame;
 private:
 	float opacity;
 	float scale;
@@ -40,11 +43,30 @@ private:
 	bool mouseOver;
 	bool clicked;
 	bool fadeIn;
+	ALLEGRO_USTR * text = NULL;
 public:
+	void fade(bool fade);
 	cButton();//constructor
 	//float getOpacity();
+	void changeClicked(bool click);
+	bool isClicked();
+	bool isMouseOver();
 	bool update(sPoint m); //if inside button then change flags to true else make it false
-	void create(float posX, float posY, int font_size, int _type, const char* text); //sets all button presets
+	void create(float posX, float posY, int font_size, int _type, ALLEGRO_USTR * text); //sets all button presets
 	void draw(bool debug);//draw button on screen
+};
+class cMenu
+{
+private:
+	std::vector<cButton> menu_items;
+	cButton temp_button;
+	ALLEGRO_USTR * text;
+public:
+	void fade(bool fade);
+	//void create(int menu_type);
+	void createOptions();
+	void createScores();
+	void draw();
+	void update(sPoint m);
 };
 #endif

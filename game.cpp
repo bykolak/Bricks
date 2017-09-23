@@ -65,25 +65,15 @@ cGame::cGame() //default constructor
 	timer2 = al_create_timer(1.0 / SELECTION_SPEED);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
-	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, 36, MENU_BUTTON, "PLAY");
-	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, 36, MENU_BUTTON, "OPTIONS");
-	button[HIGHSCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, 36, MENU_BUTTON,"SCORES");
-	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, 36, MENU_BUTTON,"EXIT");
-	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, "LOAD");
-	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, "NEW");
-	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, 36, GAME_AREA,"");
-	button[OPTIONS_POPUP].create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, "OPTIONS");
-	button[HIGHSCORES_POPUP].create(screen_width *0.75 , screen_height / 4, 100, MENU_ITEM, "SCORES");
-	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 36, MUTE_BUTTON, "");
-
-	for (int i = 0; i < MAX_HIGH_SCORE; i++)
-	{
-		const char * text = "1" + i;//TODO add std::string and update cButton.create to change it to const char*
-		menu_items[i].create(screen_width*0.75, screen_height / 2 + (36 * i), 36, TEXT_BUTTON, text);
-//			al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.", i + 1);
-//		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-//		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
-	}
+	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, 36, MENU_BUTTON, al_ustr_new("PLAY"));
+	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, 36, MENU_BUTTON, al_ustr_new("OPTIONS"));
+	button[SCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, 36, MENU_BUTTON, al_ustr_new("SCORES"));
+	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, 36, MENU_BUTTON, al_ustr_new("EXIT"));
+	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, al_ustr_new("LOAD"));
+	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, al_ustr_new("NEW"));
+	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, 36, GAME_AREA, al_ustr_new(" "));
+	options_menu.createOptions();
+	scores_menu.createScores();
 } 
 void cGame::clickButtons(int mouseButton)
 {
@@ -93,43 +83,43 @@ void cGame::clickButtons(int mouseButton)
 		if (game_state == MAIN_MENU)
 		{
 			int click = -1;
-			if (button[PLAY_BUTTON].mouseOver) { click = PLAY_BUTTON; }
-			if (button[OPTIONS_BUTTON].mouseOver) { click = OPTIONS_BUTTON; }
-			if (button[HIGHSCORES_BUTTON].mouseOver) { click = HIGHSCORES_BUTTON; }
-			if (button[EXIT_BUTTON].mouseOver) { click = EXIT_BUTTON; }
+			if (button[PLAY_BUTTON].isMouseOver()) { click = PLAY_BUTTON; }
+			if (button[OPTIONS_BUTTON].isMouseOver()) { click = OPTIONS_BUTTON; }
+			if (button[SCORES_BUTTON].isMouseOver()) { click = SCORES_BUTTON; }
+			if (button[EXIT_BUTTON].isMouseOver()) { click = EXIT_BUTTON; }
 			if (click != -1) //if button was pressed
 			{
 				for (int i = 0; i < MAX_BUTTONS; i++)
 				{
-					button[i].clicked = false;//unclick all buttons
+					button[i].changeClicked(false);//unclick all buttons
 				}
-				button[click].clicked = true;//click button
+				button[click].changeClicked(true);//click button
 			}
-			if (button[PLAY_BUTTON].clicked)
+			if (button[PLAY_BUTTON].isClicked())
 			{
-				button[LOAD_GAME_BUTTON].fadeIn = true;
-				button[NEW_RANDOM_BUTTON].fadeIn = true;
+				button[LOAD_GAME_BUTTON].fade(true);
+				button[NEW_RANDOM_BUTTON].fade(true);
 				click = -1;
-				if (button[LOAD_GAME_BUTTON].mouseOver) { click = LOAD_GAME_BUTTON; }
-				if (button[NEW_RANDOM_BUTTON].mouseOver) { click = NEW_RANDOM_BUTTON; }
-				if (click > -1) { button[click].clicked = true; }
+				if (button[LOAD_GAME_BUTTON].isMouseOver()) { click = LOAD_GAME_BUTTON; }
+				if (button[NEW_RANDOM_BUTTON].isMouseOver()) { click = NEW_RANDOM_BUTTON; }
+				if (click > -1) { button[click].changeClicked(true); }
 			}
 			else
 			{
-				button[LOAD_GAME_BUTTON].fadeIn = false;
-				button[NEW_RANDOM_BUTTON].fadeIn = false;
+				button[LOAD_GAME_BUTTON].fade(false);
+				button[NEW_RANDOM_BUTTON].fade(false);
 			}
 
-			if (button[OPTIONS_BUTTON].clicked)			{		button[OPTIONS_POPUP].fadeIn = true;			}
-			else										{		button[OPTIONS_POPUP].fadeIn = false;			}
+		if (button[OPTIONS_BUTTON].isClicked())			{		options_menu.fade(true);			}
+			else										{		options_menu.fade(false);			}
 
-			if (button[HIGHSCORES_BUTTON].clicked)		{		button[HIGHSCORES_POPUP].fadeIn = true;			}
-			else										{		button[HIGHSCORES_POPUP].fadeIn = false;		}
+			if (button[SCORES_BUTTON].isClicked())		{ scores_menu.fade(true);			}
+			else										{		scores_menu.fade(false);		}
 		}
 
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			if (button[GAME_AREA_BUTTON].mouseOver) { al_play_sample_instance(instanceClick2); selectBrick(); }
+			if (button[GAME_AREA_BUTTON].isMouseOver()) { al_play_sample_instance(instanceClick2); selectBrick(); }
 		}
 		
 	}
@@ -138,7 +128,7 @@ void cGame::clickButtons(int mouseButton)
 		if (game_state == MAIN_MENU)		{			score.resetHighScores();		}//debug
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			if (button[GAME_AREA_BUTTON].mouseOver)			
+			if (button[GAME_AREA_BUTTON].isMouseOver())			
 			{
 				float posX = mouse.bricksX;
 				float posY = mouse.bricksY;
@@ -188,13 +178,14 @@ void cGame::update()
 				for (int i = 0; i < MAX_BUTTONS; i++) 
 				{ 
 					button[i].update(mouse); 
-					if (button[HIGHSCORES_POPUP].clicked) menu_items[i].fadeIn = true;
-					menu_items[i].update(mouse); 
+					
 				} //updates all buttons
+				scores_menu.update(mouse);
+				options_menu.update(mouse);
 				// 60 times per second
-				if (button[NEW_RANDOM_BUTTON].clicked) { button[NEW_RANDOM_BUTTON].clicked = false; newGame(false); }
-				if (button[LOAD_GAME_BUTTON].clicked) { button[LOAD_GAME_BUTTON].clicked = false; newGame(true); }
-				if (button[EXIT_BUTTON].clicked) { done = true; }
+				if (button[NEW_RANDOM_BUTTON].isClicked()) { button[NEW_RANDOM_BUTTON].changeClicked(false); newGame(false); }
+				if (button[LOAD_GAME_BUTTON].isClicked()) { button[LOAD_GAME_BUTTON].changeClicked(false); newGame(true); }
+				if (button[EXIT_BUTTON].isClicked()) { done = true; }
 				if (game_state == PLAY_GAME) 
 				{
 					score.update();
@@ -215,9 +206,10 @@ void cGame::update()
 		{
 			render = false;
 			if (game_state != MAIN_MENU) drawGameArea();
-			if (game_state == END_GAME || game_state == SAVING_SCORE) { score.drawHighScores(*this); if (game_state == SAVING_SCORE) score.drawEnd(); }
+			if (game_state == END_GAME || game_state == SAVING_SCORE) { //score.drawHighScores(*this); 
+			if (game_state == SAVING_SCORE) score.drawEnd(); }
 
-			if (game_state == MAIN_MENU)		{	drawMenu();	}
+			if (game_state == MAIN_MENU)		{	drawMenu(); 	}
 			al_flip_display();
 		}	
 	}
@@ -265,10 +257,12 @@ void cGame::newGame(bool debug) // restart game
 			bricks[t][i].create(position,color,FULL);
 		}
 	
-	for (int i = 0; i < MAX_BUTTONS; i++)
+	/*for (int i = 0; i < MAX_BUTTONS; i++)
 	{
 		button[i].mouseOver = false;
-	}
+	} 
+	//resets buttons
+	*/
 	game_state = PLAY_GAME;
 	score.reset();
 	
@@ -528,9 +522,11 @@ void cGame::drawMenu()
 	{	
 		button[i].draw(BUTTON_OVERLAY);	//if flags are set to true then draw overlay showing collision box
 	}
-	for (int i = 0; i < MAX_HIGH_SCORE; i++)
+	options_menu.draw();
+	scores_menu.draw();
+	/*for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		if (button[HIGHSCORES_BUTTON].clicked) menu_items[i].draw(BUTTON_OVERLAY);
-	}
+		if (button[SCORES_BUTTON].clicked) menu_items[i].draw(BUTTON_OVERLAY);
+	}*/
 }
 
