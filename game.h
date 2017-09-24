@@ -45,7 +45,7 @@ private:
 	cButton button[MAX_BUTTONS];
 	//cButton * menu_items[MAX_HIGH_SCORE];
 	cMenu options_menu;
-	cMenu scores_menu;
+	//cMenu scores_menu;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_TIMER *timer2 = NULL;

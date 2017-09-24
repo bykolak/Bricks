@@ -12,6 +12,10 @@ void cScore::resetHighScores() //resets all saved highscores TODO
 	}
 	saveHighScore();
 }
+void cScore::createMenu()
+{
+	menu.createScores(*this);
+}
 void cScore::drawEnd()
 {
 	/*needs rework*/
@@ -26,6 +30,7 @@ void cScore::drawEnd()
 	//{
 		int x = al_get_display_width(display) / 2;
 		int y = al_get_display_height(display) / 2;
+
 		al_draw_textf(font18, WHITE, x, y, ALLEGRO_ALIGN_CENTRE, "enter your name:");
 		al_draw_ustr(font18, WHITE, x, y+325, ALLEGRO_ALIGN_CENTRE, edited_text);
 	//}
@@ -156,6 +161,16 @@ void cScore::saveScores()
 	}
 	saveHighScore();
 }
+ALLEGRO_USTR * cScore::getScoreEntry(int i)
+{
+	return high_score_name[i];
+}
+ALLEGRO_USTR * cScore::getNameEntry(int i)
+{
+	ALLEGRO_USTR * temp = NULL;
+	temp = al_ustr_newf("%i", high_score[i]);
+	return temp;
+}
 bool cScore::enterPlayerName(int keycode, int unichar)
 {
 	if (keycode <= ALLEGRO_KEY_9 || keycode == ALLEGRO_KEY_SPACE) //if A-Z and 0-9 pressed or spacebar
@@ -169,7 +184,6 @@ bool cScore::enterPlayerName(int keycode, int unichar)
 	{
 		player_name = edited_text;
 		saveScores();
-		//game_state = MAIN_MENU;
 		return true;
 	}
 	return false;

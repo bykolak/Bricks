@@ -57,6 +57,7 @@ public:
 };
 class cMenu
 {
+	friend class cScore;
 private:
 	std::vector<cButton> menu_items;
 	cButton temp_button;
@@ -65,7 +66,7 @@ public:
 	void fade(bool fade);
 	//void create(int menu_type);
 	void createOptions();
-	void createScores();
+	void createScores(cScore & _score);
 	void draw();
 	void update(sPoint m);
 };

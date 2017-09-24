@@ -60,9 +60,14 @@ private:
 	ALLEGRO_USTR* player_name = al_ustr_new("_");
 	ALLEGRO_USTR* edited_text = al_ustr_new("");
 	int high_score[MAX_HIGH_SCORE]; //array that holds all high scores
+	
 public:
+	cMenu menu;
+	ALLEGRO_USTR * getScoreEntry(int i);
+	ALLEGRO_USTR * getNameEntry(int i);
 	bool enterPlayerName(int keycode, int unichar);
 	void resetHighScores();//resets and saves new high score file
+	void createMenu();
 	bool is_saved; //if high scores already saved
 	int on_screen;//shown score
 	bool checkSaveScores();//checks highscores & if your score is > than lowest highscore then return true

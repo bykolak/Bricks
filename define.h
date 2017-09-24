@@ -12,7 +12,7 @@
 #define MASK_COLOR al_map_rgb(255,0,255)
 
 //DEBUGS AND OVERLAYS FLAGS
-const bool BUTTON_OVERLAY = true;
+const bool BUTTON_OVERLAY = false;
 
 const int EXPLOSION_DELAY = 1;
 extern int BRICK_COLORS;

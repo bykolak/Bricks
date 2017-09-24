@@ -102,6 +102,7 @@ void cButton::create(float posX, float posY, int font_size, int _type, ALLEGRO_U
 	type = _type;
 	scale = 1.0;
 	buttonPNG = al_load_bitmap("buttons.png");
+	//al_ustr_free(text);
 	text =_text;
 	if (type == TEXT_BUTTON)//every clickable text
 	{
@@ -192,6 +193,8 @@ void cButton::create(float posX, float posY, int font_size, int _type, ALLEGRO_U
 		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 	}
 	al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
+	al_ustr_free(text);
+	al_destroy_bitmap(buttonPNG);
 	al_destroy_font(font);
 }
 
@@ -234,37 +237,59 @@ void cMenu::createOptions()
 	float screen_width = al_get_display_width(display);
 	float screen_height = al_get_display_height(display);
 	text = al_ustr_new("OPTIONS");
-	temp_button.create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, text);
+	temp_button.create(screen_width *0.0625, screen_height *0.25, 100, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-	//TODO
+	al_ustr_free(text);
+	text = al_ustr_new("VOLUME");
+	temp_button.create(screen_width *0.125, screen_height *0.4, 36, MENU_ITEM, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	text = al_ustr_new("[===PLACEHOLDER===]");
+	temp_button.create(screen_width *0.0625, screen_height *0.45, 36, MENU_ITEM, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	text = al_ustr_new("1920 x 1080");
+	temp_button.create(screen_width *0.12, screen_height *0.50, 36, TEXT_BUTTON, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	text = al_ustr_new("1440 x 810");
+	temp_button.create(screen_width *0.125, screen_height *0.55, 36, TEXT_BUTTON, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	text = al_ustr_new("1280 x 720");
+	temp_button.create(screen_width *0.125, screen_height *0.60, 36, TEXT_BUTTON, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
 }
 
-void cMenu::createScores()
+void cMenu::createScores(cScore & score)
 {
 	float screen_width = al_get_display_width(display);
 	float screen_height = al_get_display_height(display);
 	text = al_ustr_new("SCORES");
 	temp_button.create(screen_width *0.75, screen_height / 4, 100, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-	//	text = al_ustr_newf("%i        %s     %i", i, al_cstr(scores.high_score_name[i]), scores.high_score[i]);
+		text = score.getScoreEntry(i);
+		temp_button.create(screen_width*0.78, screen_height *0.4 + (24 * i), 24, MENU_ITEM, text);
+		menu_items.push_back(temp_button);
+		al_ustr_free(text);
+		text = score.getNameEntry(i);
+		temp_button.create(screen_width *0.7, screen_height*0.4 + (24 * i), 24, MENU_ITEM, text);
+		menu_items.push_back(temp_button);
+		al_ustr_free(text);
 	}
-
-	//TODO
-	//	button[OPTIONS_POPUP].create(screen_width *0.0625, screen_height / 4, 100, MENU_ITEM, "OPTIONS");
-	//	button[HIGHSCORES_POPUP].create(screen_width *0.75 , screen_height / 4, 100, MENU_ITEM, "SCORES");
-	//	button[SOUND_MUTE_BUTTON].create(screen_width - screen_width / 3+SOUND_MUTE_X, screen_height / 4 + SOUND_MUTE_Y, 36, MUTE_BUTTON, "");
-	//
-	//	for (int i = 0; i < MAX_HIGH_SCORE; i++)
-	//	{
-	//		const char * text = "1" + i;//TODO add std::string and update cButton.create to change it to const char*
-	//		menu_items[i].create(screen_width*0.75, screen_height / 2 + (36 * i), 36, TEXT_BUTTON, text);
-	////			al_draw_textf(font18, WHITE, screenX / 2 + 70, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "%i.", i + 1);
-	////		al_draw_ustr(font18, WHITE, screenX / 2 + 80, screenY / 2 + (28 * i), ALLEGRO_ALIGN_LEFT, high_score_name[i]);
-	////		al_draw_textf(font18, WHITE, screenX / 2 + 360, screenY / 2 + (28 * i), ALLEGRO_ALIGN_CENTRE, "Points: %i", high_score[i]);
-	//	}
+	//al_ustr_free(text);
+	text = al_ustr_new("CREDITS");
+	temp_button.create(screen_width *0.75, screen_height*0.7 , 24, TEXT_BUTTON, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
+	text = al_ustr_new("STATS");
+	temp_button.create(screen_width *0.85, screen_height*0.7, 24, TEXT_BUTTON, text);
+	menu_items.push_back(temp_button);
+	al_ustr_free(text);
 }
 
 void cMenu::draw()

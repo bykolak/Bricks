@@ -12,7 +12,7 @@
 cGame::cGame() //default constructor
 	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
 {
-//	resetHighScores();//DEBUG: clears high scores from names and points
+	//score.resetHighScores();//DEBUG: clears high scores from names and points
 	done = false;
 	game_state = REFRESH_GAME;
 	destroy_brick_flag = false;
@@ -73,7 +73,7 @@ cGame::cGame() //default constructor
 	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, al_ustr_new("NEW"));
 	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, 36, GAME_AREA, al_ustr_new(" "));
 	options_menu.createOptions();
-	scores_menu.createScores();
+	score.createMenu();
 } 
 void cGame::clickButtons(int mouseButton)
 {
@@ -113,8 +113,8 @@ void cGame::clickButtons(int mouseButton)
 		if (button[OPTIONS_BUTTON].isClicked())			{		options_menu.fade(true);			}
 			else										{		options_menu.fade(false);			}
 
-			if (button[SCORES_BUTTON].isClicked())		{ scores_menu.fade(true);			}
-			else										{		scores_menu.fade(false);		}
+			if (button[SCORES_BUTTON].isClicked())		{ score.menu.fade(true);			}
+			else										{		score.menu.fade(false);		}
 		}
 
 		if (game_state == PLAY_GAME) //if playing game check these clicks
@@ -180,7 +180,7 @@ void cGame::update()
 					button[i].update(mouse); 
 					
 				} //updates all buttons
-				scores_menu.update(mouse);
+				score.menu.update(mouse);
 				options_menu.update(mouse);
 				// 60 times per second
 				if (button[NEW_RANDOM_BUTTON].isClicked()) { button[NEW_RANDOM_BUTTON].changeClicked(false); newGame(false); }
@@ -523,7 +523,7 @@ void cGame::drawMenu()
 		button[i].draw(BUTTON_OVERLAY);	//if flags are set to true then draw overlay showing collision box
 	}
 	options_menu.draw();
-	scores_menu.draw();
+	score.menu.draw();
 	/*for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
 		if (button[SCORES_BUTTON].clicked) menu_items[i].draw(BUTTON_OVERLAY);
