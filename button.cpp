@@ -23,17 +23,29 @@ void cTriangle::draw(ALLEGRO_COLOR color)
 }
 bool cTriangle::pointInTriangle(sPoint mouse)
 {
-	bool b1, b2, b3;
+	//bool b1, b2, b3;
 
-	b1 = sign(mouse, vertex[0], vertex[1]) < 0.0f;
-	b2 = sign(mouse, vertex[1], vertex[2]) < 0.0f;
-	b3 = sign(mouse, vertex[2], vertex[0]) < 0.0f;
-	if (exist)
-	{
-		return ((b1 == b2) && (b2 == b3));
-	}
+	//b1 = sign(mouse, vertex[0], vertex[1]) < 0.0f;
+	//b2 = sign(mouse, vertex[1], vertex[2]) < 0.0f;
+	//b3 = sign(mouse, vertex[2], vertex[0]) < 0.0f;
+	//if (exist)
+	//{
+	//	return ((b1 == b2) && (b2 == b3));
+	//}
 
-	return false;
+	//return false;
+		int as_x = mouse.x - vertex[0].x;
+		int as_y = mouse.y - vertex[0].y;
+
+		bool s_ab = (vertex[1].x - vertex[0].x)*as_y - (vertex[1].y - vertex[0].y)*as_x > 0;
+
+		if ((vertex[2].x - vertex[0].x)*as_y - (vertex[2].y - vertex[0].y)*as_x > 0 == s_ab) return false;
+
+		if ((vertex[2].x - vertex[1].x)*(mouse.y - vertex[1].y) - (vertex[2].y - vertex[1].y)*(mouse.x - vertex[1].x) > 0 != s_ab) return false;
+
+		return true;
+	
+
 }
 void cButton::fade(bool fade)
 {
@@ -103,7 +115,7 @@ void cButton::create(float posX, float posY, int font_size, int _type, ALLEGRO_U
 	scale = 1.0;
 	buttonPNG = al_load_bitmap("buttons.png");
 	//al_ustr_free(text);
-	text =_text;
+	text = _text;
 	if (type == TEXT_BUTTON)//every clickable text
 	{
 		width = al_get_ustr_width(font, text);
@@ -178,24 +190,25 @@ void cButton::create(float posX, float posY, int font_size, int _type, ALLEGRO_U
 	}
 	if (type == MENU_ITEM)
 	{
-
 		width = al_get_ustr_width(font, text);
 		height = al_get_font_line_height(font);
 		buttonNotClicked = al_create_bitmap(width, height);
 		buttonClicked = al_create_bitmap(width, height);
 		sPoint point[3] = { { posX,posY },{ posX + width, posY },{ posX, height + posY } };
-		sPoint point2[3] = { { posX + width, posY },{ posX, posY + height },{ posX + width, posY + height } };
+		sPoint point2[3] = { { posX, posY + height },{ posX + width, posY },{ posX + width, posY + height } };
 
 		opacity = 0.0;
 		al_set_target_bitmap(buttonNotClicked);
 		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
 		al_set_target_bitmap(buttonClicked);
 		al_draw_ustr(font, WHITE, width / 2, 0, ALLEGRO_ALIGN_CENTRE, text);
+		
 	}
 	al_set_target_bitmap(al_get_backbuffer(display)); //sets drawing to screen again
-	al_ustr_free(text);
+	//al_ustr_free(text);
 	al_destroy_bitmap(buttonPNG);
-	al_destroy_font(font);
+	//al_destroy_font(font);
+	
 }
 
 void cButton::draw(bool debug)//draw button on screen 
@@ -218,8 +231,8 @@ void cButton::draw(bool debug)//draw button on screen
 			upTriangle.draw(RED);
 			downTriangle.draw(RED);
 		}
-		al_draw_textf(font18, WHITE, x, y, 0, "%f opacity", opacity);
-		al_draw_textf(font18, WHITE, x, y+20, 0, "%i clicked", clicked);
+	//	al_draw_textf(font18, WHITE, x, y, 0, "%f opacity", opacity);
+	//	al_draw_textf(font18, WHITE, x, y+20, 0, "%i clicked", clicked);
 	}
 	
 }
@@ -269,23 +282,23 @@ void cMenu::createScores(cScore & score)
 	text = al_ustr_new("SCORES");
 	temp_button.create(screen_width *0.75, screen_height / 4, 100, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-
+	//al_ustr_free(text);
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
 		text = score.getScoreEntry(i);
-		temp_button.create(screen_width*0.78, screen_height *0.4 + (24 * i), 24, MENU_ITEM, text);
+		temp_button.create(screen_width*0.7, screen_height *0.4 + (24 * i), 24, MENU_ITEM, text);
 		menu_items.push_back(temp_button);
-		al_ustr_free(text);
+		//al_ustr_free(text);
 		text = score.getNameEntry(i);
-		temp_button.create(screen_width *0.7, screen_height*0.4 + (24 * i), 24, MENU_ITEM, text);
+		temp_button.create(screen_width *0.78, screen_height*0.4 + (24 * i), 24, MENU_ITEM, text);
 		menu_items.push_back(temp_button);
-		al_ustr_free(text);
+		//al_ustr_free(text);
 	}
 	//al_ustr_free(text);
 	text = al_ustr_new("CREDITS");
 	temp_button.create(screen_width *0.75, screen_height*0.7 , 24, TEXT_BUTTON, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+	//al_ustr_free(text);
 	text = al_ustr_new("STATS");
 	temp_button.create(screen_width *0.85, screen_height*0.7, 24, TEXT_BUTTON, text);
 	menu_items.push_back(temp_button);

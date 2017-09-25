@@ -5,9 +5,9 @@ void cScore::resetHighScores() //resets all saved highscores TODO
 {
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
-		high_score[i] = 0;
+		//high_score[i] = 0;
 		al_ustr_free(high_score_name[i]);
-		high_score_name[i] = al_ustr_new(" ");
+		high_score_name[i] = al_ustr_new("   ");
 		high_score[i] = 0;
 	}
 	saveHighScore();
@@ -151,8 +151,8 @@ void cScore::saveScores()
 				}
 				high_score[i] = current;
 				high_score_name[i] = player_name;
-				player_name = al_ustr_new("");
-				edited_text = al_ustr_new("");
+				player_name = al_ustr_new(" ");
+				edited_text = al_ustr_new(" ");
 				//		game_state = END_GAME;
 				is_saved = true;
 				i = MAX_HIGH_SCORE + 1;
@@ -161,11 +161,11 @@ void cScore::saveScores()
 	}
 	saveHighScore();
 }
-ALLEGRO_USTR * cScore::getScoreEntry(int i)
+ALLEGRO_USTR * cScore::getNameEntry(int i)
 {
 	return high_score_name[i];
 }
-ALLEGRO_USTR * cScore::getNameEntry(int i)
+ALLEGRO_USTR * cScore::getScoreEntry(int i)
 {
 	ALLEGRO_USTR * temp = NULL;
 	temp = al_ustr_newf("%i", high_score[i]);
