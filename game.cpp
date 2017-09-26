@@ -8,6 +8,13 @@
 #include <allegro5\allegro_acodec.h>
 #include "game.h"
 
+void cGame::loadSettings()
+{
+	settings = al_load_config_file("set.ini");
+	//al_get_config_value(settings,)
+	
+}
+
 //=====cGame methods
 cGame::cGame() //default constructor
 	:bricks(BRICKS_MAP_X, std::vector<cTile>(BRICKS_MAP_Y))
@@ -65,16 +72,18 @@ cGame::cGame() //default constructor
 	timer2 = al_create_timer(1.0 / SELECTION_SPEED);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
-	button[PLAY_BUTTON].create(screen_width / 2 - BUTTON_SIZE/2, screen_height / 2 - BUTTON_SIZE-AWAY_FROM_CENTER, 36, MENU_BUTTON, al_ustr_new("PLAY"));
-	button[OPTIONS_BUTTON].create(screen_width / 2 - BUTTON_SIZE - AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE/2, 36, MENU_BUTTON, al_ustr_new("OPTIONS"));
-	button[SCORES_BUTTON].create(screen_width / 2 + AWAY_FROM_CENTER, screen_height / 2 - BUTTON_SIZE / 2, 36, MENU_BUTTON, al_ustr_new("SCORES"));
-	button[EXIT_BUTTON].create(screen_width / 2 - BUTTON_SIZE / 2, screen_height / 2 + AWAY_FROM_CENTER, 36, MENU_BUTTON, al_ustr_new("EXIT"));
-	button[LOAD_GAME_BUTTON].create(screen_width / 2 - BUTTON_SIZE, screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, al_ustr_new("LOAD"));
-	button[NEW_RANDOM_BUTTON].create(screen_width / 2 + BUTTON_SIZE- al_get_text_width(font36, "NEW "), screen_height / 2 - BUTTON_SIZE , 36, TEXT_BUTTON, al_ustr_new("NEW"));
-	button[GAME_AREA_BUTTON].create(0, TOP_MARGIN, 36, GAME_AREA, al_ustr_new(" "));
+	button[PLAY_BUTTON].create(screen_width * 0.428, screen_height *0.225, 36, MENU_BUTTON, al_ustr_new("PLAY"));
+	button[OPTIONS_BUTTON].create(screen_width * 0.346, screen_height*0.372, 36, MENU_BUTTON, al_ustr_new("OPTIONS"));
+	button[SCORES_BUTTON].create(screen_width *0.51, screen_height *0.372, 36, MENU_BUTTON, al_ustr_new("SCORES"));
+	button[EXIT_BUTTON].create(screen_width *0.4282, screen_height * 0.518, 36, MENU_BUTTON, al_ustr_new("EXIT"));
+	button[LOAD_GAME_BUTTON].create(screen_width *0.376, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("LOAD"));
+	button[NEW_RANDOM_BUTTON].create(screen_width *0.590, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("NEW"));
+	button[GAME_AREA_BUTTON].create(screen_width * 0.000, screen_height*0.06, 36, GAME_AREA, al_ustr_new(" "));
 	options_menu.createOptions();
 	score.createMenu();
 } 
+// 2 + AWAY_FROM_CENTER
+//0.5 - BUTTON_SIZE - AWAY_FROM_CENTER
 void cGame::clickButtons(int mouseButton)
 {
 	if (mouseButton == 1) //if left mouse button pressed

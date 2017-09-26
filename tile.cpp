@@ -357,6 +357,10 @@ cBitmaps::cBitmaps()
 	explosionPNG = al_load_bitmap("explosion.png");
 	backgroundPNG = al_load_bitmap("background.png");
 	mainPNG = al_load_bitmap("main.png");
+
+	//explosionPNG = al_load_bitmap("x.bmp");
+	//backgroundPNG = al_load_bitmap("x.bmp");
+	//mainPNG = al_load_bitmap("x.bmp");
 }
 
 //cBitmaps::~cBitmaps()

@@ -19,6 +19,7 @@ class cGame
 {
 	friend class cButton;
 private:
+	ALLEGRO_CONFIG * settings;
 	bool done;
 	sPoint mouse;// contains postion of mouse on screen
 	std::vector<cTile> selectionList;//vector of selected tiles
@@ -52,7 +53,7 @@ private:
 	
 	
 public:
-	
+	void loadSettings();
 	cBitmaps * bitmap = NULL;
 	int game_state; // using enum GAME_STATE to tell program in what state game is
 	cGame(); //default constructor
