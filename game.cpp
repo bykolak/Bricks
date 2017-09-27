@@ -11,8 +11,37 @@
 void cGame::loadSettings()
 {
 	settings = al_load_config_file("set.ini");
-	//al_get_config_value(settings,)
-	
+
+	int max = atoi(al_get_config_value(settings, "Define", "Max Buttons"));
+	screen_width= atoi(al_get_config_value(settings, "Screen", "width"));
+	screen_height = atoi(al_get_config_value(settings, "Screen", "height"));
+	char buffer[10] = "Button ";
+	char button_number[10];
+	for (int i = 0; i < max; i++)
+	{
+		_itoa_s(i, button_number, 10);
+		if (i > 10)
+		{
+			buffer[7]= button_number[0];
+			buffer[8] = button_number[1];
+			buffer[9] = 0;
+		}
+		else
+		{
+			buffer[7] = button_number[0];
+			buffer[8] = button_number[1];
+		}
+		const char * temp = buffer;
+		float x = strtof(al_get_config_value(settings, temp, "posX"),NULL);
+		float y = strtof(al_get_config_value(settings, temp, "posY"), NULL);
+		int font = atoi(al_get_config_value(settings, temp, "fontSize"));
+		int type = atoi(al_get_config_value(settings, temp, "buttonType"));
+		const char * text = al_get_config_value(settings, temp, "text");
+		ALLEGRO_USTR *textUSTR = al_ustr_newf("%s", text);
+		button[i].create(x*screen_width, y*screen_height, font, type, textUSTR);
+		//char text = "Button " + buffer;
+
+	}
 }
 
 //=====cGame methods
@@ -72,13 +101,14 @@ cGame::cGame() //default constructor
 	timer2 = al_create_timer(1.0 / SELECTION_SPEED);
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer2));
-	button[PLAY_BUTTON].create(screen_width * 0.428, screen_height *0.225, 36, MENU_BUTTON, al_ustr_new("PLAY"));
-	button[OPTIONS_BUTTON].create(screen_width * 0.346, screen_height*0.372, 36, MENU_BUTTON, al_ustr_new("OPTIONS"));
-	button[SCORES_BUTTON].create(screen_width *0.51, screen_height *0.372, 36, MENU_BUTTON, al_ustr_new("SCORES"));
-	button[EXIT_BUTTON].create(screen_width *0.4282, screen_height * 0.518, 36, MENU_BUTTON, al_ustr_new("EXIT"));
-	button[LOAD_GAME_BUTTON].create(screen_width *0.376, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("LOAD"));
-	button[NEW_RANDOM_BUTTON].create(screen_width *0.590, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("NEW"));
-	button[GAME_AREA_BUTTON].create(screen_width * 0.000, screen_height*0.06, 36, GAME_AREA, al_ustr_new(" "));
+	loadSettings();
+	//button[PLAY_BUTTON].create(screen_width * 0.428, screen_height *0.225, 36, MENU_BUTTON, al_ustr_new("PLAY"));
+	//button[OPTIONS_BUTTON].create(screen_width * 0.346, screen_height*0.372, 36, MENU_BUTTON, al_ustr_new("OPTIONS"));
+	//button[SCORES_BUTTON].create(screen_width *0.51, screen_height *0.372, 36, MENU_BUTTON, al_ustr_new("SCORES"));
+	//button[EXIT_BUTTON].create(screen_width *0.4282, screen_height * 0.518, 36, MENU_BUTTON, al_ustr_new("EXIT"));
+	//button[LOAD_GAME_BUTTON].create(screen_width *0.376, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("LOAD"));
+	//button[NEW_RANDOM_BUTTON].create(screen_width *0.590, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("NEW"));
+	//button[GAME_AREA_BUTTON].create(screen_width * 0.000, screen_height*0.06, 36, GAME_AREA, al_ustr_new(" "));
 	options_menu.createOptions();
 	score.createMenu();
 } 
