@@ -237,6 +237,11 @@ void cButton::draw(bool debug)//draw button on screen
 	
 }
 
+int cButton::getGroup()
+{
+	return group;
+}
+
 void cMenu::fade(bool fade)
 {
 	for (unsigned int i = 0; i < menu_items.size(); i++)
@@ -286,11 +291,11 @@ void cMenu::createScores(cScore & score)
 	for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
 		text = score.getScoreEntry(i);
-		temp_button.create(screen_width*0.7, screen_height *0.4 + (24 * i), 24, MENU_ITEM, text);
+		temp_button.create(screen_width*0.7, screen_height *0.4 + (24 * i), 18, MENU_ITEM, text);
 		menu_items.push_back(temp_button);
 		//al_ustr_free(text);
 		text = score.getNameEntry(i);
-		temp_button.create(screen_width *0.78, screen_height*0.4 + (24 * i), 24, MENU_ITEM, text);
+		temp_button.create(screen_width *0.78, screen_height*0.4 + (24 * i), 18, MENU_ITEM, text);
 		menu_items.push_back(temp_button);
 		//al_ustr_free(text);
 	}

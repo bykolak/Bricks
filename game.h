@@ -43,9 +43,10 @@ private:
 	cTile cursor;
 	int screen_width;//screen size x in pixels
 	int screen_height;//screen size y in pixels	
-	cButton button[MAX_BUTTONS];
+	std::vector<cButton> buttons;
+	//cButton button[MAX_BUTTONS];
 	//cButton * menu_items[MAX_HIGH_SCORE];
-	cMenu options_menu;
+	//cMenu options_menu;
 	//cMenu scores_menu;
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;

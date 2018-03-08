@@ -44,6 +44,7 @@ private:
 	bool clicked;
 	bool fadeIn;
 	ALLEGRO_USTR * text = NULL;
+	int group;
 public:
 	void fade(bool fade);
 	cButton();//constructor
@@ -54,6 +55,7 @@ public:
 	bool update(sPoint m); //if inside button then change flags to true else make it false
 	void create(float posX, float posY, int font_size, int _type, ALLEGRO_USTR * text); //sets all button presets
 	void draw(bool debug);//draw button on screen
+	int getGroup();
 };
 class cMenu
 {

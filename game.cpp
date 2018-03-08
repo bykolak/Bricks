@@ -10,6 +10,7 @@
 
 void cGame::loadSettings()
 {
+	cButton tempButton;
 	settings = al_load_config_file("set.ini");
 
 	int max = atoi(al_get_config_value(settings, "Define", "Max Buttons"));
@@ -38,7 +39,8 @@ void cGame::loadSettings()
 		int type = atoi(al_get_config_value(settings, temp, "buttonType"));
 		const char * text = al_get_config_value(settings, temp, "text");
 		ALLEGRO_USTR *textUSTR = al_ustr_newf("%s", text);
-		button[i].create(x*screen_width, y*screen_height, font, type, textUSTR);
+		tempButton.create(x*screen_width, y*screen_height, font, type, textUSTR);
+		buttons.push_back(tempButton);
 		//char text = "Button " + buffer;
 
 	}
@@ -109,7 +111,8 @@ cGame::cGame() //default constructor
 	//button[LOAD_GAME_BUTTON].create(screen_width *0.376, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("LOAD"));
 	//button[NEW_RANDOM_BUTTON].create(screen_width *0.590, screen_height *0.244, 36, TEXT_BUTTON, al_ustr_new("NEW"));
 	//button[GAME_AREA_BUTTON].create(screen_width * 0.000, screen_height*0.06, 36, GAME_AREA, al_ustr_new(" "));
-	options_menu.createOptions();
+	//options_menu.createOptions();
+
 	score.createMenu();
 } 
 // 2 + AWAY_FROM_CENTER
@@ -118,47 +121,67 @@ void cGame::clickButtons(int mouseButton)
 {
 	if (mouseButton == 1) //if left mouse button pressed
 	{
+		int click = -1;
+		for (unsigned int i = 0; i < buttons.size(); i++)
+		{
+			if (game_state == MAIN_MENU && buttons[i].isMouseOver() && buttons[i].getGroup()==0)
+			{
+				click = i;
+				break;
+			}
+			if (game_state == MAIN_MENU && buttons[i].isMouseOver() && buttons[i].getGroup() == 1 )
+			{
+				click = i;
+				break;
+			}
+		}
+		for (unsigned int i = 0; i < buttons.size(); i++)
+		{
+			buttons[i].changeClicked(false);//unclick all buttons
+		}
+	 if(click>=0)	buttons[click].changeClicked(true);//click button
+
 		al_play_sample_instance(instanceClick2);
 		if (game_state == MAIN_MENU)
 		{
 			int click = -1;
-			if (button[PLAY_BUTTON].isMouseOver()) { click = PLAY_BUTTON; }
-			if (button[OPTIONS_BUTTON].isMouseOver()) { click = OPTIONS_BUTTON; }
-			if (button[SCORES_BUTTON].isMouseOver()) { click = SCORES_BUTTON; }
-			if (button[EXIT_BUTTON].isMouseOver()) { click = EXIT_BUTTON; }
+			if (buttons[PLAY_BUTTON].isMouseOver()) { click = PLAY_BUTTON; }
+			if (buttons[OPTIONS_BUTTON].isMouseOver()) { click = OPTIONS_BUTTON; }
+			if (buttons[SCORES_BUTTON].isMouseOver()) { click = SCORES_BUTTON; }
+			if (buttons[EXIT_BUTTON].isMouseOver()) { click = EXIT_BUTTON; }
 			if (click != -1) //if button was pressed
 			{
-				for (int i = 0; i < MAX_BUTTONS; i++)
+				for (unsigned int i = 0; i < buttons.size(); i++)
 				{
-					button[i].changeClicked(false);//unclick all buttons
+					buttons[i].changeClicked(false);//unclick all buttons
 				}
-				button[click].changeClicked(true);//click button
+				buttons[click].changeClicked(true);//click button
 			}
-			if (button[PLAY_BUTTON].isClicked())
+			if (buttons[PLAY_BUTTON].isClicked())
 			{
-				button[LOAD_GAME_BUTTON].fade(true);
-				button[NEW_RANDOM_BUTTON].fade(true);
+				buttons[LOAD_GAME_BUTTON].fade(true);
+				buttons[NEW_RANDOM_BUTTON].fade(true);
 				click = -1;
-				if (button[LOAD_GAME_BUTTON].isMouseOver()) { click = LOAD_GAME_BUTTON; }
-				if (button[NEW_RANDOM_BUTTON].isMouseOver()) { click = NEW_RANDOM_BUTTON; }
-				if (click > -1) { button[click].changeClicked(true); }
+				if (buttons[LOAD_GAME_BUTTON].isMouseOver()) { click = LOAD_GAME_BUTTON; }
+				if (buttons[NEW_RANDOM_BUTTON].isMouseOver()) { click = NEW_RANDOM_BUTTON; }
+				if (click > -1) { buttons[click].changeClicked(true); }
 			}
 			else
 			{
-				button[LOAD_GAME_BUTTON].fade(false);
-				button[NEW_RANDOM_BUTTON].fade(false);
+				buttons[LOAD_GAME_BUTTON].fade(false);
+				buttons[NEW_RANDOM_BUTTON].fade(false);
 			}
 
-		if (button[OPTIONS_BUTTON].isClicked())			{		options_menu.fade(true);			}
-			else										{		options_menu.fade(false);			}
+			/*if (buttons[OPTIONS_BUTTON].isClicked()) { for (unsigned int i = 7; i<	options_menu.fade(true); }
+			else										{		options_menu.fade(false);			} */
 
-			if (button[SCORES_BUTTON].isClicked())		{ score.menu.fade(true);			}
+			if (buttons[SCORES_BUTTON].isClicked())		{ score.menu.fade(true);			}
 			else										{		score.menu.fade(false);		}
 		}
 
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			if (button[GAME_AREA_BUTTON].isMouseOver()) { al_play_sample_instance(instanceClick2); selectBrick(); }
+			if (buttons[GAME_AREA_BUTTON].isMouseOver()) { al_play_sample_instance(instanceClick2); selectBrick(); }
 		}
 		
 	}
@@ -167,7 +190,7 @@ void cGame::clickButtons(int mouseButton)
 		if (game_state == MAIN_MENU)		{			score.resetHighScores();		}//debug
 		if (game_state == PLAY_GAME) //if playing game check these clicks
 		{
-			if (button[GAME_AREA_BUTTON].isMouseOver())			
+			if (buttons[GAME_AREA_BUTTON].isMouseOver())			
 			{
 				float posX = mouse.bricksX;
 				float posY = mouse.bricksY;
@@ -214,17 +237,17 @@ void cGame::update()
 		{
 			if (event.timer.source == timer)
 			{
-				for (int i = 0; i < MAX_BUTTONS; i++) 
+				for (unsigned int i = 0; i < buttons.size(); i++) 
 				{ 
-					button[i].update(mouse); 
+					buttons[i].update(mouse); 
 					
 				} //updates all buttons
 				score.menu.update(mouse);
-				options_menu.update(mouse);
+				//options_menu.update(mouse);
 				// 60 times per second
-				if (button[NEW_RANDOM_BUTTON].isClicked()) { button[NEW_RANDOM_BUTTON].changeClicked(false); newGame(false); }
-				if (button[LOAD_GAME_BUTTON].isClicked()) { button[LOAD_GAME_BUTTON].changeClicked(false); newGame(true); }
-				if (button[EXIT_BUTTON].isClicked()) { done = true; }
+				if (buttons[NEW_RANDOM_BUTTON].isClicked()) { buttons[NEW_RANDOM_BUTTON].changeClicked(false); newGame(false); }
+				if (buttons[LOAD_GAME_BUTTON].isClicked()) { buttons[LOAD_GAME_BUTTON].changeClicked(false); newGame(true); }
+				if (buttons[EXIT_BUTTON].isClicked()) { done = true; }
 				if (game_state == PLAY_GAME) 
 				{
 					score.update();
@@ -557,11 +580,11 @@ void cGame::loadGame()
 void cGame::drawMenu()
 {
 	al_draw_bitmap(bitmap->mainPNG, 0, 0, 0);
-	for (int i = 0; i < MAX_BUTTONS; i++)	
+	for (unsigned int i = 0; i < buttons.size(); i++)	
 	{	
-		button[i].draw(BUTTON_OVERLAY);	//if flags are set to true then draw overlay showing collision box
+		buttons[i].draw(BUTTON_OVERLAY);	//if flags are set to true then draw overlay showing collision box
 	}
-	options_menu.draw();
+	//options_menu.draw();
 	score.menu.draw();
 	/*for (int i = 0; i < MAX_HIGH_SCORE; i++)
 	{
