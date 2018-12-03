@@ -252,27 +252,27 @@ void cMenu::createOptions()
 	text = al_ustr_new("OPTIONS");
 	temp_button.create(screen_width *0.0625, screen_height *0.25, 100, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 	text = al_ustr_new("VOLUME");
 	temp_button.create(screen_width *0.125, screen_height *0.4, 36, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 	text = al_ustr_new("[===PLACEHOLDER===]");
 	temp_button.create(screen_width *0.0625, screen_height *0.45, 36, MENU_ITEM, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 	text = al_ustr_new("1920 x 1080");
 	temp_button.create(screen_width *0.12, screen_height *0.50, 36, TEXT_BUTTON, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 	text = al_ustr_new("1440 x 810");
 	temp_button.create(screen_width *0.125, screen_height *0.55, 36, TEXT_BUTTON, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 	text = al_ustr_new("1280 x 720");
 	temp_button.create(screen_width *0.125, screen_height *0.60, 36, TEXT_BUTTON, text);
 	menu_items.push_back(temp_button);
-	al_ustr_free(text);
+//	al_ustr_free(text);
 }
 
 void cMenu::createScores(cScore & score)
