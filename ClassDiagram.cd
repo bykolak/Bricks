@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="cGame" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ARSGkUBRwGCgAQkNGBAJA0GAMSBCEREAABOGCAAHDCg=</HashCode>
+      <FileName>game.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="cTriangle" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAQYQAAAAAAAAABAAAQAAAAAAAAA=</HashCode>
+      <FileName>button.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="cButton" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAAAAgBIAAAACAQAAAAAAAQBiAAAEAJg=</HashCode>
+      <FileName>button.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="cTile" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAQQAAAAAAQAQAMAAAQAAEAAAgCEAABgwgAEQQA=</HashCode>
+      <FileName>tile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="sPoint" Collapsed="true">
+    <Position X="0.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAADAAA=</HashCode>
+      <FileName>button.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="BUTTONS" Collapsed="true">
+    <Position X="2.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAACACAAAAAAAIBACAgAEEAAQEEAAAAABAAAAAABAA=</HashCode>
+      <FileName>define.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="BUTTON_TYPE" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgACAAAAAAAQAAAAAAAAAIAAAAAAAAAQA=</HashCode>
+      <FileName>define.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TILE_STATE" Collapsed="true">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAgAAAAAAAAAACAAAAAACAAAAAAAAIAAA=</HashCode>
+      <FileName>define.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="GAME_STATE" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAABAABgACAAAAAAAQBAIAAAA=</HashCode>
+      <FileName>define.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

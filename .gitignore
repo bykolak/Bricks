@@ -43,3 +43,45 @@ Temporary Items
 .apdisk
 
 *.psd
+*.log
+*.tlog
+*.bmp
+Release/Bricks.ipdb
+*.opendb
+Release/Bricks.exe
+*.iobj
+*.pdb
+*.obj
+Project1.sdf
+*.suo
+Debug/vc120.idb
+*.suo
+Project1.v12.suo
+*.exe
+*.ilk
+*.suo
+Project1.v12.suo
+*.suo
+*.suo
+*.sdf
+*.xml
+Debug/classes.obj.enc
+*.idb
+*.lib
+*.lastcodeanalysissucceeded
+Project1.vcxproj.user
+sSave.bri
+/version-4.7z
+/version-2.7z
+/main_tmp41
+/ec561f3bef8c807df06dc38badb16637.png
+/brickz.7z
+/bricks.7z
+/bricks - 64.png
+/bricks - 48.png
+/allegro-5.0.10.zip
+/aaaexplosion.png
+/button.mp3
+/brickz
+/Debug/game.obj.enc
+/Debug/button.obj.enc
